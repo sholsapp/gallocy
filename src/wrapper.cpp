@@ -2,10 +2,11 @@
 #include <cstdlib>
 #include <cstdio>
 
-//#include <malloc/malloc.h>
+#include <malloc.h>
 
 extern "C" {
 
+  // Declare symbols, but define them somewhere else
   void* custom_malloc(size_t);
   void custom_free(void *);
 
