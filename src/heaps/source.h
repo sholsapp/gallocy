@@ -1,3 +1,7 @@
+#include <cstring>
+#include <cstdlib>
+#include <sys/mman.h>
+
 #define ZONE_SZ   4096
 #define MMAP_PROT PROT_READ|PROT_WRITE
 #define MMAP_FLAG MAP_ANON|MAP_SHARED
