@@ -4,7 +4,7 @@
 
 #include "heaps/source.h"
 
-class MainHeap : public SimpleHeap {};
+class MainHeap : public SourceHeap<SimpleHeap> {};
 
 MainHeap heap;
 

@@ -1,8 +1,5 @@
-#ifndef __PT_ALLOCATOR_H__
-#define __PT_ALLOCATOR_H__
- 
 #include <limits>
- 
+
 /**
  * A custom allocator class for STL containers.
  */
@@ -15,15 +12,15 @@ template <class T, class Allocator> class STLAllocator {
     typedef const T& const_reference;
     typedef std::size_t size_type;
     typedef std::ptrdiff_t difference_type;
- 
+
     STLAllocator() throw() {
       _alloc = Allocator();
     }
- 
+
     STLAllocator(const STLAllocator&) throw() {}
- 
+
     template <class U> STLAllocator (const STLAllocator<U, Allocator>&) throw() {}
- 
+
     ~STLAllocator() throw() {}
 
     /**
@@ -94,5 +91,3 @@ bool operator!= (const STLAllocator<T1, A1>&,
     const STLAllocator<T2, A2>&) throw() {
   return false;
 }
-
-#endif
