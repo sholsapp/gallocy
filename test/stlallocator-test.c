@@ -5,28 +5,23 @@
 #include "heaps/source.h"
 
 typedef
-  std::map<int, int>
-    TheirMap;
-
-typedef
   std::map<int, int,
   std::less<int>,
-  STLAllocator<std::pair<int, int>, SimpleHeap> >
+  STLAllocator<std::pair<int, int>, FreelistHeap<SimpleHeap> > >
     MyMap;
 
 int main(int argc, char* argv[]) {
-
-  TheirMap test;
-  test[1] = 1;
-  test[2] = 4;
-  fprintf(stderr, "%d -> %d\n", 1, test[1]);
-  fprintf(stderr, "%d -> %d\n", 2, test[2]);
-
-  MyMap test2;
-  test2[1] = 1;
-  test2[2] = 4;
-  fprintf(stderr, "%d -> %d\n", 1, test2[1]);
-  fprintf(stderr, "%d -> %d\n", 2, test2[2]);
-
+  MyMap mymap;
+  MyMap::iterator it;
+  mymap[1] = 1;
+  mymap[2] = 4;
+  mymap[3] = 9;
+  mymap[4] = 16;
+  it = mymap.find(3);
+  mymap.erase(it);
+  mymap[3] = 9;
+  for (it = mymap.begin(); it != mymap.end(); it++) {
+    fprintf(stderr, "%d->%d\n", (*it).first, (*it).second);
+  }
   return 0;
 }

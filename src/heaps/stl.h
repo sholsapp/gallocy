@@ -1,3 +1,6 @@
+#ifndef __STL_H__
+#define __STL_H__
+
 #include <limits>
 
 /**
@@ -91,3 +94,5 @@ bool operator!= (const STLAllocator<T1, A1>&,
     const STLAllocator<T2, A2>&) throw() {
   return false;
 }
+
+#endif
