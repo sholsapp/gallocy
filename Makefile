@@ -1,6 +1,6 @@
 CPP=g++
 CFLAGS= -Wall -Isrc -g
-LDFLAGS= -shared
+LDFLAGS= -shared -fPIC
 
 BUILD_DIR=$(shell pwd)
 
