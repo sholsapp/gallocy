@@ -2,9 +2,19 @@
 #include <cstdlib>
 #include <sys/mman.h>
 
-#include "heaps/source.h"
+volatile int anyThreadCreated = 0;
 
-class MainHeap : public SourceHeap<SimpleHeap> {};
+#include "heaplayers/myhashmap.h"
+#include "heaplayers/spinlock.h"
+#include "heaplayers/lockedheap.h"
+#include "heaplayers/freelistheap.h"
+#include "heaplayers/firstfitheap.h"
+#include "heaplayers/zoneheap.h"
+#include "heaplayers/source.h"
+
+
+class MainHeap :
+  public HL::LockedHeap<HL::SpinLockType, HL::FreelistHeap<HL::ZoneHeap<SimpleHeap, 16384 - 16> > > {};
 
 MainHeap heap;
 

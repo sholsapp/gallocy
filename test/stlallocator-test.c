@@ -1,26 +1,43 @@
 #include <cstdio>
 #include <map>
 
-#include "heaps/stl.h"
-#include "heaps/source.h"
+volatile int anyThreadCreated = 0;
+
+#include "heaplayers/myhashmap.h"
+#include "heaplayers/spinlock.h"
+#include "heaplayers/lockedheap.h"
+#include "heaplayers/freelistheap.h"
+#include "heaplayers/firstfitheap.h"
+#include "heaplayers/zoneheap.h"
+#include "heaplayers/source.h"
+#include "heaplayers/stl.h"
+
+
+class MainHeap :
+  public HL::LockedHeap<HL::SpinLockType, HL::FreelistHeap<HL::ZoneHeap<SingletonHeap, 16384 - 16> > > {};
+
 
 typedef
   std::map<int, int,
   std::less<int>,
-  STLAllocator<std::pair<int, int>, FreelistHeap<SimpleHeap> > >
+  STLAllocator<std::pair<int, int>, MainHeap> >
     MyMap;
 
 
 typedef
   std::vector<int,
-  STLAllocator<int, FreelistHeap<SimpleHeap> > >
+  STLAllocator<int, MainHeap> >
     MyList;
 
 
 int main(int argc, char* argv[]) {
 
+  int i = 0;
+
   MyList mylist;
   for (int i = 1; i <= 10; i++)
+
+    fprintf(stderr, "PUSHING %d\n", i);
     mylist.push_back(i);
   for (int i = 0; i < mylist.size(); i++)
     fprintf(stderr, "%d -> %d\n", i, mylist[i]);

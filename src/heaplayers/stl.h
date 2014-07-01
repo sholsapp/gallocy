@@ -6,7 +6,8 @@
 /**
  * A custom allocator class for STL containers.
  */
-template <class T, class Allocator> class STLAllocator {
+template <class T, class Allocator>
+class STLAllocator : public Allocator {
   public:
     typedef T value_type;
     typedef T* pointer;
@@ -16,9 +17,7 @@ template <class T, class Allocator> class STLAllocator {
     typedef std::size_t size_type;
     typedef std::ptrdiff_t difference_type;
 
-    STLAllocator() throw() {
-      _alloc = Allocator();
-    }
+    STLAllocator() throw() {}
 
     STLAllocator(const STLAllocator&) throw() {}
 
@@ -54,7 +53,7 @@ template <class T, class Allocator> class STLAllocator {
      * Allocate but don't initialize num elements of type T.
      */
     pointer allocate (size_type num, const void* = 0) {
-      pointer ret = (pointer)(_alloc.malloc(num*sizeof(T)));
+      pointer ret = (pointer)(Allocator::malloc(num*sizeof(T)));
       return ret;
     }
 
@@ -76,7 +75,7 @@ template <class T, class Allocator> class STLAllocator {
      * Deallocate storage p of deleted elements.
      */
     void deallocate (pointer p, size_type num) {
-      _alloc.free((void*)p);
+      Allocator::free((void*)p);
     }
 
   private:
