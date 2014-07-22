@@ -5,6 +5,7 @@ a.out
 *.slo
 *.lo
 *.o
+sqlite3.so.*
 
 # Compiled Dynamic libraries
 *.so

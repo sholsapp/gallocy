@@ -2,7 +2,11 @@
 #include <cstdlib>
 #include <cstdio>
 
+#ifdef __APPLE__
+#include <malloc/malloc.h>
+#else
 #include <malloc.h>
+#endif
 
 extern "C" {
 

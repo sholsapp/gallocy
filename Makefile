@@ -1,17 +1,21 @@
 CPP=g++
-CFLAGS= -Wall -Isrc -g
-LDFLAGS= -shared -fPIC
+CFLAGS= -Wall -Isrc -Isrc/externals/sqlite3 -g
+LDFLAGS= -shared -fPIC -lpthread -ldl
 
 BUILD_DIR=$(shell pwd)
 
 TESTS=simple simple-free nested-malloc stlallocator-test double-ptr-test
-ALL=gallocy $(TESTS)
+EXTERNAL=externals
+ALL=gallocy $(EXTERNALS) $(TESTS)
 all:	$(ALL)
 
 # This is the main shared library
 
 gallocy:
 	$(CPP) $(CFLAGS) -o libgallocy.so $(LDFLAGS) src/libgallocy.cpp src/wrapper.cpp
+
+externals:
+	gcc $(CFLAGS) -o sqlite3.so $(LDFLAGS) src/external/sqlite3/shell.c src/external/sqlite3/sqlite3.c
 
 # Put tests below this comment
 
