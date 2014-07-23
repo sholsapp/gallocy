@@ -9,7 +9,7 @@
 
 namespace app {
   void* malloc(size_t sz) {
-    fprintf(stderr, "app malloc %d\n", sz);
+    fprintf(stderr, "app malloc %lu\n", sz);
     return ::malloc(sz);
   }
 }
