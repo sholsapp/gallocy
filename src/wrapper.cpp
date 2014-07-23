@@ -4,10 +4,13 @@
 
 #ifdef __APPLE__
 #include <malloc/malloc.h>
-#else
+#elif __linux__
 #include <malloc.h>
+#else
+#error "Unsupported platform!"
 #endif
 
+#if __linux__
 extern "C" {
 
   // Declare symbols, but define them somewhere else
@@ -46,3 +49,10 @@ extern "C" {
   void (*__malloc_initialize_hook) (void) = my_init_hook;
 
 }
+#elif __APPLE__
+
+#else
+
+#error "Unsupported platform!"
+
+#endif

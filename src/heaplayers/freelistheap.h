@@ -35,7 +35,7 @@ public:
 
   inline void clear (void) {
     void * ptr;
-    while (ptr = _freelist.get()) {
+    while ((ptr = _freelist.get())) {
       SuperHeap::free (ptr);
     }
   }

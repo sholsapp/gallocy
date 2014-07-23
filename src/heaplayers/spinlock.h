@@ -17,6 +17,7 @@
 
 #if defined(__APPLE__)
 #include <libkern/OSAtomic.h>
+#include <sched.h>
 #endif
 
 #include "hldefines.h"

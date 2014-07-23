@@ -35,4 +35,4 @@ double-ptr-test: gallocy
 	$(CPP) $(CFLAGS) test/double-ptr.c -o double-ptr-test -L. -lgallocy
 
 clean:
-	rm -rf libgallocy.so *-test
+	rm -rf libgallocy.so *-test *.dSYM

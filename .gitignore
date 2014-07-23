@@ -9,6 +9,7 @@ sqlite3.so.*
 
 # Compiled Dynamic libraries
 *.so
+*.dSYM
 
 # Compiled Static libraries
 *.lai
