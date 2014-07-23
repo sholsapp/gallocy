@@ -1,5 +1,5 @@
 CPP=g++
-CFLAGS= -Wall -Isrc -Isrc/externals/sqlite3 -g
+CFLAGS= -Wall -Isrc -Isrc/externals/sqlite3 -g -fstack-protector-all -Wstack-protector -fno-omit-frame-pointer
 LDFLAGS= -shared -fPIC -lpthread -ldl
 
 BUILD_DIR=$(shell pwd)

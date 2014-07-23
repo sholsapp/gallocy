@@ -47,7 +47,6 @@ public:
       l = l->next;
     }
     // Didn't find it.
-    fprintf(stderr, "my hash map >> fuck - didn't find %p\n", (void*) k);
     return 0;
   }
 
