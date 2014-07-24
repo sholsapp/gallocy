@@ -11,8 +11,11 @@ all:	$(ALL)
 
 # This is the main shared library
 
-gallocy:
-	$(CPP) $(CFLAGS) -o libgallocy.so $(LDFLAGS) src/libgallocy.cpp src/wrapper.cpp
+gallocy: sqlite3.o
+	$(CPP) $(CFLAGS) -o libgallocy.so sqlite3.o $(LDFLAGS) src/libgallocy.cpp src/wrapper.cpp src/pagetable.cpp
+
+sqlite3.o:
+	gcc $(CLFAGS) -c -o sqlite3.o src/external/sqlite3/sqlite3.c
 
 externals:
 	gcc $(CFLAGS) -o sqlite3.so $(LDFLAGS) src/external/sqlite3/shell.c src/external/sqlite3/sqlite3.c
@@ -38,4 +41,4 @@ sqlite-test:
 	gcc $(CFLAGS) -Isrc/external/sqlite3 src/external/sqlite3/sqlite3.c test/sqlite.c -o sqlite-test
 
 clean:
-	rm -rf libgallocy.so *-test *.dSYM test.db
+	rm -rf libgallocy.so *-test *.dSYM test.db *.o

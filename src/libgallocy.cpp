@@ -13,10 +13,6 @@ volatile int anyThreadCreated = 0;
 #include "heaplayers/source.h"
 
 
-//class MainHeap :
-//  public HL::LockedHeap<HL::SpinLockType, HL::FreelistHeap<HL::ZoneHeap<SimpleHeap, 16384 - 16> > > {};
-//
-
 class MainHeap: public SourceHeap {};
 
 MainHeap heap;
@@ -24,6 +20,7 @@ MainHeap heap;
 extern "C" {
 
   void* custom_malloc(size_t sz) {
+    fprintf(stderr, "custom_malloc\n");
     return heap.malloc(sz);
   }
 

@@ -43,6 +43,7 @@ static int select_callback(void *data, int argc, char **argv, char **azColName){
 
 
 int main(int argc, char* argv[]) {
+  init_sqlite_memory();
    sqlite3 *db;
    char *zErrMsg = 0;
    int  rc;
