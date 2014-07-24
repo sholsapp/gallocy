@@ -37,8 +37,11 @@ stlallocator-test: gallocy
 double-ptr-test: gallocy
 	$(CPP) $(CFLAGS) test/double-ptr.c -o double-ptr-test -L. -lgallocy
 
-sqlite-test:
-	gcc $(CFLAGS) -Isrc/external/sqlite3 src/external/sqlite3/sqlite3.c test/sqlite.c -o sqlite-test
+sqlite.o:
+	gcc $(CFLAGS) -Isrc/external/sqlite3 src/external/sqlite3/sqlite3.c -c -o sqlite.o
+
+sqlite-test: sqlite.o
+	g++ $(CFLAGS) -Isrc/external/sqlite3 sqlite.o test/sqlite.c -o sqlite-test -lpthread -ldl
 
 clean:
 	rm -rf libgallocy.so *-test *.dSYM test.db *.o

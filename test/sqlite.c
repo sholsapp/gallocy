@@ -10,6 +10,77 @@
 #include <stdlib.h>
 #include <sqlite3.h>
 
+#include <map>
+
+
+std::map<void*, int> xSizeMap;
+
+
+void* xMalloc(int sz) {
+  if (sz == 0) {
+    return NULL;
+  }
+  void* ptr = malloc(sz);
+  xSizeMap.insert(std::pair<void*, int>(ptr, sz));
+  fprintf(stderr, "%p = xMalloc(%d)\n", ptr, sz);
+  return ptr;
+}
+
+void xFree(void* ptr) {
+  fprintf(stderr, "xFree(%p)\n", ptr);
+  xSizeMap.erase(ptr);
+  free(ptr);
+  return;
+}
+
+void* xRealloc(void* ptr, int sz) {
+  void* new_ptr = realloc(ptr, sz);
+  fprintf(stderr, "%p = xRealloc(%p, %d)\n", new_ptr, ptr, sz);
+  xSizeMap.insert(std::pair<void*, int>(new_ptr, sz));
+  return new_ptr;
+}
+
+int xSize(void* ptr) {
+  int sz = xSizeMap[ptr];
+  fprintf(stderr, "%d = xSize(%p)\n", sz, ptr);
+  return sz;
+}
+
+int xRoundup(int sz) {
+  fprintf(stderr, "xRoundup(%d)\n", sz);
+  return sz;
+}
+
+int xInit(void* ptr) {
+  fprintf(stderr, "xInit\n");
+  return 0;
+}
+
+void xShutdown(void* ptr) {
+  fprintf(stderr, "xShutdown\n");
+  return;
+}
+
+
+sqlite3_mem_methods my_mem = {
+  &xMalloc,
+  &xFree,
+  &xRealloc,
+  &xSize,
+  &xRoundup,
+  &xInit,
+  &xShutdown,
+  0
+};
+
+
+void init_sqlite_memory() {
+  fprintf(stdout, "Initializing sqlite memory configuration!\n");
+  if (sqlite3_config(SQLITE_CONFIG_MALLOC, &my_mem) != SQLITE_OK) {
+    fprintf(stdout, "Failed to set custom sqlite memory allocator!\n");
+  }
+  fprintf(stdout, "Success!\n");
+}
 
 static int create_callback(void *NotUsed, int argc, char **argv, char **azColName){
    int i;
@@ -47,6 +118,8 @@ int main(int argc, char* argv[]) {
    char *zErrMsg = 0;
    int  rc;
    char *sql;
+
+   init_sqlite_memory();
 
    /* Open database */
    rc = sqlite3_open("test.db", &db);
