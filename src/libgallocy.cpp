@@ -2,20 +2,11 @@
 #include <cstdlib>
 #include <sys/mman.h>
 
+#include "libgallocy.h"
+
+
 volatile int anyThreadCreated = 0;
 
-#include "heaplayers/myhashmap.h"
-#include "heaplayers/spinlock.h"
-#include "heaplayers/lockedheap.h"
-#include "heaplayers/freelistheap.h"
-#include "heaplayers/firstfitheap.h"
-#include "heaplayers/zoneheap.h"
-#include "heaplayers/source.h"
-
-
-class MainHeap: public SourceHeap {};
-
-MainHeap heap;
 
 extern "C" {
 

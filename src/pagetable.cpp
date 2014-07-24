@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <sqlite3.h>
 
+#include "pagetable.h"
+
 
 //typedef struct sqlite3_mem_methods sqlite3_mem_methods;
 //struct sqlite3_mem_methods {

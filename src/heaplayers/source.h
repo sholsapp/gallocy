@@ -5,8 +5,13 @@
 #include <map>
 #include <vector>
 
+
 #include "myhashmap.h"
 #include "spinlock.h"
+#include "lockedheap.h"
+#include "freelistheap.h"
+#include "firstfitheap.h"
+#include "zoneheap.h"
 
 
 #define ZONE_SZ   4096 * 16 * 2
