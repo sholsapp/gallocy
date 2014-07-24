@@ -4,7 +4,7 @@ LDFLAGS= -shared -fPIC -lpthread -ldl
 
 BUILD_DIR=$(shell pwd)
 
-TESTS=simple simple-free nested-malloc stlallocator-test double-ptr-test
+TESTS=simple simple-free nested-malloc stlallocator-test double-ptr-test sqlite-test
 EXTERNAL=externals
 ALL=gallocy $(EXTERNALS) $(TESTS)
 all:	$(ALL)
@@ -34,5 +34,8 @@ stlallocator-test: gallocy
 double-ptr-test: gallocy
 	$(CPP) $(CFLAGS) test/double-ptr.c -o double-ptr-test -L. -lgallocy
 
+sqlite-test:
+	gcc $(CFLAGS) -Isrc/external/sqlite3 src/external/sqlite3/sqlite3.c test/sqlite.c -o sqlite-test
+
 clean:
-	rm -rf libgallocy.so *-test *.dSYM
+	rm -rf libgallocy.so *-test *.dSYM test.db
