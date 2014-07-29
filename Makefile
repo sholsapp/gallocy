@@ -1,5 +1,5 @@
 CPP=g++
-CFLAGS= -Wall -Isrc -Isrc/externals/sqlite3 -g -fstack-protector-all -Wstack-protector -fno-omit-frame-pointer
+CFLAGS= -Wall -Isrc -Isrc/external/sqlite3 -g -fstack-protector-all -Wstack-protector -fno-omit-frame-pointer
 LDFLAGS= -shared -fPIC -lpthread -ldl
 
 BUILD_DIR=$(shell pwd)
@@ -15,7 +15,7 @@ gallocy: sqlite3.o
 	$(CPP) $(CFLAGS) -o libgallocy.so sqlite3.o $(LDFLAGS) src/libgallocy.cpp src/wrapper.cpp src/pagetable.cpp
 
 sqlite3.o:
-	gcc $(CLFAGS) -c -o sqlite3.o src/external/sqlite3/sqlite3.c
+	gcc $(CLFAGS) -c -o sqlite3.o src/external/sqlite3/sqlite3.c -fPIC
 
 externals:
 	gcc $(CFLAGS) -o sqlite3.so $(LDFLAGS) src/external/sqlite3/shell.c src/external/sqlite3/sqlite3.c
@@ -41,7 +41,7 @@ sqlite.o:
 	gcc $(CFLAGS) -Isrc/external/sqlite3 src/external/sqlite3/sqlite3.c -c -o sqlite.o
 
 sqlite-test: sqlite.o
-	g++ $(CFLAGS) -Isrc/external/sqlite3 sqlite.o test/sqlite.c -o sqlite-test -lpthread -ldl
+	$(CPP) $(CFLAGS) -Isrc/external/sqlite3 sqlite.o test/sqlite.c -o sqlite-test -lpthread -ldl
 
 clean:
 	rm -rf libgallocy.so *-test *.dSYM test.db *.o

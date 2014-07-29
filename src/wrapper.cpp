@@ -22,7 +22,7 @@ extern "C" {
   // Store the old hooks just in case.
   static void* (*old_malloc_hook)(size_t, const void*);
   static void (*old_free_hook)(void*, const void*);
-  static void (*old_realloc_hook)(void*, size_t, const void*);
+  static void* (*old_realloc_hook)(void*, size_t, const void*);
 
   static void* my_malloc_hook(size_t size, const void*) {
     return custom_malloc(size);
@@ -33,7 +33,7 @@ extern "C" {
   }
 
   static void* my_realloc_hook(void* ptr, size_t sz, const void*) {
-    return custom_reallaoc(ptr, sz);
+    return custom_realloc(ptr, sz);
   }
 
   static void my_init_hook (void) {
@@ -41,10 +41,12 @@ extern "C" {
     // Store the old hooks.
     old_malloc_hook = __malloc_hook;
     old_free_hook = __free_hook;
+    old_realloc_hook = __realloc_hook;
 
     // Point the hooks to the replacement functions.
     __malloc_hook = my_malloc_hook;
     __free_hook = my_free_hook;
+    __realloc_hook = my_realloc_hook;
 
   }
 
