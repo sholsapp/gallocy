@@ -12,6 +12,7 @@ extern "C" {
 
   void* custom_malloc(size_t);
   void custom_free(void*);
+  void* custom_realloc(void*, size_t);
 
 #ifdef __APPLE__
 

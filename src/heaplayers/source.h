@@ -30,20 +30,14 @@ class SimpleHeap {
         }
         next = (char*) zone;
         bytes_left = ZONE_SZ;
-        //fprintf(stderr, "> OS gives %d bytes(s) at %p\n", ZONE_SZ, zone);
-        //fprintf(stderr, "> Allocator(%p) has bytes_left=%lu\n", this, bytes_left);
       }
       if (bytes_left > sz) {
         mem  = (void*) next;
         next = next + sz;
         bytes_left -= sz;
-        //fprintf(stderr, "> Allocated %zu byte(s) at %p\n", sz, mem);
-        //fprintf(stderr, "> Allocator(%p) has bytes_left=%lu\n", this, bytes_left);
         return mem;
       }
       else {
-        //fprintf(stderr, "> Exhausted virtual memory\n");
-        //fprintf(stderr, "> Allocator(%p) has bytes_left=%lu\n", this, bytes_left);
         return NULL;
       }
     }
@@ -75,16 +69,16 @@ class SimpleHeap {
 
 class SourceHeap: public SimpleHeap {
   public:
-    inline void * malloc (size_t sz) {
+    inline void* malloc(size_t sz) {
       void* ptr = SimpleHeap::malloc(sz);
       MyMapLock.lock();
       MyMap.set (ptr, sz);
       MyMapLock.unlock();
       //assert (reinterpret_cast<size_t>(ptr) % 4096 == 0);
-      return const_cast<void *>(ptr);
+      return const_cast<void*>(ptr);
     }
 
-    inline size_t getSize (void * ptr) {
+    inline size_t getSize(void* ptr) {
       MyMapLock.lock();
       size_t sz = MyMap.get(ptr);
       MyMapLock.unlock();
@@ -92,11 +86,11 @@ class SourceHeap: public SimpleHeap {
     }
 
     // WORKAROUND: apparent gcc bug.
-    void free (void* ptr, size_t sz) {
+    void free(void* ptr, size_t sz) {
       SimpleHeap::free (ptr, sz);
     }
 
-    inline void free (void * ptr) {
+    inline void free(void* ptr) {
       //assert (reinterpret_cast<size_t>(ptr) % 4096 == 0);
       MyMapLock.lock();
       size_t sz = MyMap.get(ptr);
@@ -111,7 +105,7 @@ class SourceHeap: public SimpleHeap {
       // FIX ME: 16 = size of ZoneHeap header.
       public HL::LockedHeap<HL::SpinLockType, HL::FreelistHeap<HL::ZoneHeap<SimpleHeap, 16384 - 16> > > {};
 
-    typedef HL::MyHashMap<void *, size_t, MyHeap> mapType;
+    typedef HL::MyHashMap<void*, size_t, MyHeap> mapType;
 
   protected:
 

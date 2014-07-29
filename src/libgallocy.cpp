@@ -11,12 +11,24 @@ volatile int anyThreadCreated = 0;
 extern "C" {
 
   void* custom_malloc(size_t sz) {
-    fprintf(stderr, "custom_malloc\n");
     return heap.malloc(sz);
   }
 
   void custom_free(void* ptr) {
     heap.free(ptr);
+  }
+
+  void* custom_realloc(void* ptr, size_t sz) {
+    if (ptr == NULL) {
+      return custom_malloc(sz);
+    }
+    size_t min_size = heap.getSize(ptr);
+    void* buf = custom_malloc(sz);
+    if (buf != NULL) {
+      memcpy(buf, ptr, min_size);
+      custom_free(ptr);
+    }
+    return buf;
   }
 
 #ifdef __APPLE__
