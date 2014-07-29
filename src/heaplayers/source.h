@@ -140,8 +140,4 @@ class SingletonHeap {
     //SingletonHeap() {};
     //SingletonHeap(SingletonHeap const&);
     //void operator=(SingletonHeap const&);
-
 };
-
-SimpleHeap singletonHeap;
-SimpleHeap SingletonHeap::heap = singletonHeap;

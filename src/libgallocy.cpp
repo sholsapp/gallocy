@@ -8,6 +8,16 @@
 volatile int anyThreadCreated = 0;
 
 
+class MainHeap: public SourceHeap {};
+
+MainHeap heap;
+
+
+SimpleHeap singletonHeap;
+
+SimpleHeap SingletonHeap::heap = singletonHeap;
+
+
 extern "C" {
 
   void* custom_malloc(size_t sz) {

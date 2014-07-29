@@ -4,10 +4,6 @@
 #include "heaplayers/source.h"
 
 
-class MainHeap: public SourceHeap {};
-
-MainHeap heap;
-
 extern "C" {
 
   void* custom_malloc(size_t);
