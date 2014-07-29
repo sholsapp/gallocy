@@ -16,7 +16,10 @@
 //  void *pAppData;                /* Argument to xInit() and xShutdown() */
 //};
 
-typedef struct sqlite3_mem_methods sqlite3_mem_methods;
+// TODO(sholsapp): Use a custom memory allocator here that is seperate than
+// the one that we expose to the application. SQLite is going to be used as a
+// home for the distributed application's page table, so we don't want to mix
+// it up with application memory.
 sqlite3_mem_methods my_mem = {
   0,
   0,
@@ -29,9 +32,7 @@ sqlite3_mem_methods my_mem = {
 
 
 void init_sqlite_memory() {
-  fprintf(stderr, "HELLO\n");
   if (sqlite3_config(SQLITE_CONFIG_MALLOC, &my_mem) != SQLITE_OK) {
     fprintf(stderr, "Failed to set custom sqlite memory allocator!\n");
   }
 }
-

@@ -116,7 +116,9 @@ class SourceHeap: public SimpleHeap {
 };
 
 
-
+// TODO(sholsapp): This class needs to be improved to support additional
+// operations like ::getSize. This will make it more useful as a general
+// purpose allocator.
 class SingletonHeap {
   public:
     static SingletonHeap& getInstance() {
@@ -135,7 +137,7 @@ class SingletonHeap {
   private:
     static SimpleHeap heap;
 
-    // Need public for STL allocators...
+    // Need public for STL allocators.
     //
     //SingletonHeap() {};
     //SingletonHeap(SingletonHeap const&);

@@ -5,16 +5,21 @@
 #include "libgallocy.h"
 
 
+// When we start handling multithreaded applications, this
+// must be set to `1` when a thread is created.
 volatile int anyThreadCreated = 0;
 
 
-class MainHeap: public SourceHeap {};
-
+// This is the main heap that we expose to the application.
 MainHeap heap;
 
 
+// This is a secondary heap which draws all of its memory from a single pool
+// for structures using STL objects that must be required to use a dedicated
+// memory space. The singleton property is important because of weird STL
+// implementation (i.e., using a singleton pool was the only way I could make
+// this work, else produce memory errors in deep STL codes).
 SimpleHeap singletonHeap;
-
 SimpleHeap SingletonHeap::heap = singletonHeap;
 
 
