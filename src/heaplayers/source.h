@@ -14,7 +14,7 @@
 #include "zoneheap.h"
 
 
-#define ZONE_SZ   4096 * 16 * 2
+#define ZONE_SZ   4096 * 512
 #define MMAP_PROT PROT_READ|PROT_WRITE
 #define MMAP_FLAG MAP_ANON|MAP_SHARED
 

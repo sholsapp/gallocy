@@ -11,7 +11,8 @@ volatile int anyThreadCreated = 0;
 extern "C" {
 
   void* custom_malloc(size_t sz) {
-    return heap.malloc(sz);
+    void* ptr = heap.malloc(sz);
+    return ptr;
   }
 
   void custom_free(void* ptr) {
