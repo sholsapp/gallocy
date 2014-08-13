@@ -5,5 +5,6 @@
 
 
 void init_sqlite_memory();
+void init_database();
 
 #endif

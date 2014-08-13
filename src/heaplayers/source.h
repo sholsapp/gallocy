@@ -1,3 +1,6 @@
+#ifndef _SOURCE_H
+#define _SOURCE_H
+
 #include <cstring>
 #include <cstdlib>
 #include <sys/mman.h>
@@ -143,3 +146,5 @@ class SingletonHeap {
     //SingletonHeap(SingletonHeap const&);
     //void operator=(SingletonHeap const&);
 };
+
+#endif
