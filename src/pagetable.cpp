@@ -1,3 +1,5 @@
+#include <string>
+#include <sstream>
 #include <stdio.h>
 #include <sqlite3.h>
 
@@ -117,53 +119,68 @@ void init_sqlite_memory() {
 }
 
 
-static int create_callback(void *NotUsed, int argc, char **argv, char **azColName){
+int PageTable::noop_callback(void *not_used, int argc, char **argv, char **az_col_name){
+   return 0;
+}
+
+
+int PageTable::print_callback(void *not_used, int argc, char **argv, char **az_col_name){
    int i;
    for(i=0; i<argc; i++) {
-      printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+      printf("%s = %s\n", az_col_name[i], argv[i] ? argv[i] : "NULL");
    }
    printf("\n");
    return 0;
 }
 
 
-void init_database() {
-  sqlite3 *db;
-  char *zErrMsg = 0;
+void PageTable::open_database() {
   int  rc;
-  char *sql;
-
-  //rc = sqlite3_open("test.db", &db);
-  rc = sqlite3_open(":memory:", &db);
-
+  rc = sqlite3_open(database_path.c_str(), &db);
   if(rc) {
      fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
      exit(0);
   } else {
      fprintf(stdout, "Opened database successfully\n");
   }
+}
 
-  sql = "CREATE TABLE APPLICATION_PAGE_TABLE("            \
-        "ID INT PRIMARY KEY     NOT NULL," \
-        "ADDRESS        INT     NOT NULL );";
 
-  rc = sqlite3_exec(db, sql, create_callback, 0, &zErrMsg);
+void PageTable::create_tables() {
+  char *zErrMsg = 0;
+  int  rc;
+  std::string sql;
+  sql = "CREATE TABLE APPLICATION_PAGE_TABLE(" \
+        "ID INT PRIMARY KEY     NOT NULL,    " \
+        "ADDRESS        INT     NOT NULL );  ";
+  rc = sqlite3_exec(db, sql.c_str(), print_callback, 0, &zErrMsg);
   if(rc != SQLITE_OK) {
     fprintf(stderr, "SQL error: %s\n", zErrMsg);
     sqlite3_free(zErrMsg);
   } else {
     fprintf(stdout, "Table created successfully\n");
   }
-
+  return;
 }
 
 
-class Control {
-  public:
-    Control() {
-      init_sqlite_memory();
-      init_database();
-    }
-};
+void PageTable::insert_page_table_entry(void* ptr) {
+  static int unique_id = 0;
+  char *zErrMsg = 0;
+  int  rc;
+  std::stringstream sql;
+  sql << "INSERT INTO APPLICATION_PAGE_TABLE (ID,ADDRESS) " \
+        "VALUES (" << unique_id++ << "," << (intptr_t) ptr << "); ";
+  /* Execute SQL statement */
+  rc = sqlite3_exec(db, sql.str().c_str(), print_callback, 0, &zErrMsg);
+  if(rc != SQLITE_OK) {
+     fprintf(stderr, "SQL error: %s\n", zErrMsg);
+     sqlite3_free(zErrMsg);
+  } else {
+     fprintf(stdout, "Records created successfully\n");
+  }
+  return;
+}
 
-Control c;
+
+PageTable pt;

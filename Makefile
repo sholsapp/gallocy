@@ -41,4 +41,4 @@ sqlite-test: sqlite.o
 	$(CPP) $(CFLAGS) -Isrc/external/sqlite3 sqlite.o test/sqlite.c -o sqlite-test -lpthread -ldl
 
 clean:
-	rm -rf libgallocy.so *-test *.dSYM test.db *.o
+	rm -rf libgallocy.so *-test *.dSYM test.db *.o *.db

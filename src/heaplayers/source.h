@@ -46,9 +46,6 @@ class SimpleHeap {
     }
 
     inline void free(void* ptr) {
-      // A `SimpleHeap` never free's memory once it is mapped. Note, could
-      // unmap here using something like: munmap (reinterpret_cast<char
-      // *>(ptr), getSize(ptr));
       munmap(reinterpret_cast<char*>(ptr), getSize(ptr));
       return;
     }
