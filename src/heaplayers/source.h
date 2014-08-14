@@ -16,6 +16,8 @@
 #include "firstfitheap.h"
 #include "zoneheap.h"
 
+#include "pagetable.h"
+
 
 #define ZONE_SZ   4096 * 512
 #define MMAP_PROT PROT_READ|PROT_WRITE

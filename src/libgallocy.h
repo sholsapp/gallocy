@@ -1,10 +1,12 @@
 #ifndef _LIBGALLOCY_H
 #define _LIBGALLOCY_H
 
+#include "pagetable.h"
+#include "heaplayers/pagetableheap.h"
 #include "heaplayers/source.h"
 
 
-class MainHeap: public SourceHeap {};
+class MainHeap: public HL::PageTableHeap<SourceHeap> {};
 
 
 extern MainHeap heap;

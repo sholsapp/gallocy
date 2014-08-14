@@ -1,7 +1,6 @@
 #include <string>
 #include <sstream>
 #include <stdio.h>
-#include <sqlite3.h>
 
 #include "pagetable.h"
 
@@ -168,11 +167,26 @@ void PageTable::insert_page_table_entry(void* ptr) {
   static int unique_id = 0;
   char *zErrMsg = 0;
   int  rc;
-  std::stringstream sql;
-  sql << "INSERT INTO APPLICATION_PAGE_TABLE (ID,ADDRESS) " \
-        "VALUES (" << unique_id++ << "," << (intptr_t) ptr << "); ";
+  char sql[256];
+
+  // NOTE: this doesn't work because std::stringstream uses memory in a way
+  // that causes infinite loop. I.e., it looks like application memory.
+  //std::stringstream sql;
+  //sql << "INSERT INTO APPLICATION_PAGE_TABLE (ID,ADDRESS) " \
+  //      "VALUES (" << unique_id++ << "," << (intptr_t) ptr << "); ";
+
+  snprintf(
+    sql,
+    256,
+    "INSERT INTO APPLICATION_PAGE_TABLE (ID,ADDRESS)" \
+    "VALUES (%d, %ld);",
+    unique_id,
+    (intptr_t) ptr);
+
+  unique_id++;
+
   /* Execute SQL statement */
-  rc = sqlite3_exec(db, sql.str().c_str(), print_callback, 0, &zErrMsg);
+  rc = sqlite3_exec(db, sql, print_callback, 0, &zErrMsg);
   if(rc != SQLITE_OK) {
      fprintf(stderr, "SQL error: %s\n", zErrMsg);
      sqlite3_free(zErrMsg);
