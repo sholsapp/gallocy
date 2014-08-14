@@ -18,3 +18,6 @@ sqlite3.so.*
 
 # VIM swaps
 *.swp
+
+# SQLite
+*.db
