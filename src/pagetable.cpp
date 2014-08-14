@@ -135,7 +135,7 @@ int PageTable::print_callback(void *not_used, int argc, char **argv, char **az_c
 
 void PageTable::open_database() {
   int  rc;
-  rc = sqlite3_open(database_path.c_str(), &db);
+  rc = sqlite3_open(database_path, &db);
   if(rc) {
      fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
      exit(0);
@@ -148,11 +148,11 @@ void PageTable::open_database() {
 void PageTable::create_tables() {
   char *zErrMsg = 0;
   int  rc;
-  std::string sql;
+  char *sql;
   sql = "CREATE TABLE APPLICATION_PAGE_TABLE(" \
         "ID INT PRIMARY KEY     NOT NULL,    " \
         "ADDRESS        INT     NOT NULL );  ";
-  rc = sqlite3_exec(db, sql.c_str(), print_callback, 0, &zErrMsg);
+  rc = sqlite3_exec(db, sql, print_callback, 0, &zErrMsg);
   if(rc != SQLITE_OK) {
     fprintf(stderr, "SQL error: %s\n", zErrMsg);
     sqlite3_free(zErrMsg);

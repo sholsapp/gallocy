@@ -27,7 +27,7 @@ class PageTable {
   private:
 
     sqlite3 *db;
-    std::string database_path;
+    char *database_path;
 
 };
 
