@@ -190,8 +190,6 @@ void PageTable::insert_page_table_entry(void* ptr) {
   if(rc != SQLITE_OK) {
      fprintf(stderr, "SQL error: %s\n", zErrMsg);
      sqlite3_free(zErrMsg);
-  } else {
-     fprintf(stdout, "Records created successfully\n");
   }
   return;
 }
