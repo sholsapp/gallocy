@@ -10,9 +10,36 @@ void init_sqlite_memory();
 
 
 typedef struct condition_callback_param {
-  pthread_mutex_t mutex;
-  pthread_cond_t cv;
+  pthread_mutex_t *mutex;
+  pthread_cond_t *cv;
 } condition_callback_param;
+
+
+// TODO: read about cleaner ways to do this at
+// http://stackoverflow.com/questions/1151582/pthread-function-from-a-class.
+class Scheduler {
+  public:
+    Scheduler() {
+      pthread_mutex_init(&page_table_initd_mutex, NULL);
+      pthread_cond_init(&page_table_initd_cv, NULL);
+      pthread_create(&master_thread, NULL, &Scheduler::construct_page_table, NULL);
+    }
+
+    static void *construct_page_table(void *ptr) {
+      fprintf(stderr, "construct_page_table\n");
+      return NULL;
+    }
+
+    static void *construct_network_stack(void *ptr) {
+      fprintf(stderr, "construct_network_stack\n");
+      return NULL;
+    }
+
+  private:
+    pthread_t master_thread;
+    pthread_mutex_t page_table_initd_mutex;
+    pthread_cond_t page_table_initd_cv;
+};
 
 
 class PageTable {
@@ -26,7 +53,7 @@ class PageTable {
 
     void open_database();
     void create_tables();
-    void insert_page_table_entry(void* ptr);
+    void insert_page_table_entry(void* ptr, int ptr_sz);
 
     static int noop_callback(void *not_used, int argc, char **argv, char **az_col_name);
     static int print_callback(void *not_used, int argc, char **argv, char **az_col_name);
@@ -36,9 +63,6 @@ class PageTable {
 
     sqlite3 *db;
     char *database_path;
-
-    pthread_mutex_t table_created_mutex;
-    pthread_cond_t table_created_cv;
 
 };
 

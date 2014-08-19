@@ -124,21 +124,20 @@ int PageTable::noop_callback(void *not_used, int argc, char **argv, char **az_co
 
 
 int PageTable::print_callback(void *not_used, int argc, char **argv, char **az_col_name) {
-   int i;
-   for(i=0; i<argc; i++) {
-      printf("%s = %s\n", az_col_name[i], argv[i] ? argv[i] : "NULL");
-   }
-   printf("\n");
-   return 0;
+  int i;
+  for(i=0; i<argc; i++) {
+    printf("%s = %s\n", az_col_name[i], argv[i] ? argv[i] : "NULL");
+  }
+  printf("\n");
+  return 0;
 }
 
 
 int PageTable::condition_callback(void *cond_param, int argc, char **argv, char **az_col_name) {
-   int i;
-   for(i=0; i<argc; i++) {
-      printf("%s = %s\n", az_col_name[i], argv[i] ? argv[i] : "NULL");
-   }
-   printf("\n");
+  condition_callback_param *param = (condition_callback_param *) cond_param;
+  pthread_mutex_lock(param->mutex);
+  pthread_cond_signal(param->cv);
+  pthread_mutex_unlock(param->mutex);
   return 0;
 }
 
@@ -159,10 +158,11 @@ void PageTable::create_tables() {
   char *zErrMsg = 0;
   int  rc;
   char *sql;
-  sql = "CREATE TABLE APPLICATION_PAGE_TABLE(" \
-        "ID INT PRIMARY KEY     NOT NULL,    " \
-        "ADDRESS        INT     NOT NULL );  ";
-  rc = sqlite3_exec(db, sql, condition_callback, 0, &zErrMsg);
+  sql = "CREATE TABLE pagetable (" \
+        "id INT PRIMARY KEY     NOT NULL,    " \
+        "address        INT     NOT NULL,    " \
+        "size           INT     NOT NULL);   ";
+  rc = sqlite3_exec(db, sql, print_callback, 0, &zErrMsg);
   if(rc != SQLITE_OK) {
     fprintf(stderr, "SQL error: %s\n", zErrMsg);
     sqlite3_free(zErrMsg);
@@ -173,7 +173,7 @@ void PageTable::create_tables() {
 }
 
 
-void PageTable::insert_page_table_entry(void* ptr) {
+void PageTable::insert_page_table_entry(void* ptr, int ptr_sz) {
   static int unique_id = 0;
   char *zErrMsg = 0;
   int  rc;
@@ -188,10 +188,11 @@ void PageTable::insert_page_table_entry(void* ptr) {
   snprintf(
     sql,
     256,
-    "INSERT INTO APPLICATION_PAGE_TABLE (ID,ADDRESS)" \
-    "VALUES (%d, %ld);",
+    "INSERT INTO pagetable (id,address,size)" \
+    "VALUES (%d, %ld, %d);",
     unique_id,
-    (intptr_t) ptr);
+    (intptr_t) ptr,
+    ptr_sz);
 
   unique_id++;
 
@@ -206,3 +207,4 @@ void PageTable::insert_page_table_entry(void* ptr) {
 
 
 PageTable pt;
+Scheduler s;

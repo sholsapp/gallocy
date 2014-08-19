@@ -13,7 +13,8 @@ public:
   inline void * malloc (size_t sz) {
     void *ptr;
     ptr = SuperHeap::malloc (sz);
-    pt.insert_page_table_entry(ptr);
+    if (ptr)
+      pt.insert_page_table_entry(ptr, sz);
     return ptr;
   }
 
