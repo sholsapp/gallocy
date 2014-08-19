@@ -118,18 +118,28 @@ void init_sqlite_memory() {
 }
 
 
-int PageTable::noop_callback(void *not_used, int argc, char **argv, char **az_col_name){
+int PageTable::noop_callback(void *not_used, int argc, char **argv, char **az_col_name) {
    return 0;
 }
 
 
-int PageTable::print_callback(void *not_used, int argc, char **argv, char **az_col_name){
+int PageTable::print_callback(void *not_used, int argc, char **argv, char **az_col_name) {
    int i;
    for(i=0; i<argc; i++) {
       printf("%s = %s\n", az_col_name[i], argv[i] ? argv[i] : "NULL");
    }
    printf("\n");
    return 0;
+}
+
+
+int PageTable::condition_callback(void *cond_param, int argc, char **argv, char **az_col_name) {
+   int i;
+   for(i=0; i<argc; i++) {
+      printf("%s = %s\n", az_col_name[i], argv[i] ? argv[i] : "NULL");
+   }
+   printf("\n");
+  return 0;
 }
 
 
@@ -152,7 +162,7 @@ void PageTable::create_tables() {
   sql = "CREATE TABLE APPLICATION_PAGE_TABLE(" \
         "ID INT PRIMARY KEY     NOT NULL,    " \
         "ADDRESS        INT     NOT NULL );  ";
-  rc = sqlite3_exec(db, sql, print_callback, 0, &zErrMsg);
+  rc = sqlite3_exec(db, sql, condition_callback, 0, &zErrMsg);
   if(rc != SQLITE_OK) {
     fprintf(stderr, "SQL error: %s\n", zErrMsg);
     sqlite3_free(zErrMsg);
