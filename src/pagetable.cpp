@@ -1,6 +1,7 @@
 #include <string>
 #include <sstream>
 #include <stdio.h>
+#include <unistd.h>
 
 #include "pagetable.h"
 
@@ -207,4 +208,4 @@ void PageTable::insert_page_table_entry(void* ptr, int ptr_sz) {
 
 
 PageTable pt;
-Scheduler s;
+//Scheduler s;
