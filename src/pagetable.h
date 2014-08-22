@@ -45,7 +45,8 @@ class Scheduler {
 class PageTable {
 
   public:
-    PageTable() : database_path("pagetable.db") {
+    //PageTable() : database_path("pagetable.db") {
+    PageTable() : database_path(":memory:") {
       init_sqlite_memory();
       open_database();
       create_tables();

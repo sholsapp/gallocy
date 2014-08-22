@@ -19,7 +19,7 @@
 #include "pagetable.h"
 
 
-#define ZONE_SZ   4096 * 512
+#define ZONE_SZ   4096 * 4096 * 16
 #define MMAP_PROT PROT_READ|PROT_WRITE
 #define MMAP_FLAG MAP_ANON|MAP_SHARED
 
@@ -97,7 +97,7 @@ class SourceHeap: public SimpleHeap {
       MyMapLock.lock();
       size_t sz = MyMap.get(ptr);
       SimpleHeap::free(ptr, sz);
-      MyMap.erase (ptr);
+      MyMap.erase(ptr);
       MyMapLock.unlock();
     }
 
