@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 
-TEST(SampleTest, AssertionTrue) {
+
+TEST(GallocyTest, AssertionTrue) {
     ASSERT_EQ(1, 1);
 }
