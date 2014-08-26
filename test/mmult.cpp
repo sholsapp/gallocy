@@ -1,7 +1,3 @@
-/********************************************
- * Unoptimized matrix matrix multiplication *
- ********************************************/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -12,6 +8,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "gtest/gtest.h"
+
+#include "libgallocy.h"
+
 
 #define MAX_THREAD 4
 
@@ -19,9 +19,9 @@
 int NDIM = -1;
 
 
-double** a;
-double** b;
-double** c;
+double** a = NULL;
+double** b = NULL;
+double** c = NULL;
 
 
 typedef struct {
@@ -34,9 +34,9 @@ typedef struct {
 
 void init_matrix(double*** m) {
    int i;
-   *m = (double**) malloc(sizeof(double*) * NDIM);
+   *m = (double**) custom_malloc(sizeof(double*) * NDIM);
    for (i = 0; i < NDIM; i++) {
-      (*m)[i] = (double*) malloc(sizeof(double) * NDIM);
+      (*m)[i] = (double*) custom_malloc(sizeof(double) * NDIM);
    }
 }
 
@@ -64,6 +64,7 @@ void* worker(void *arg) {
 }
 
 
+#if 0
 void print_matrix(int dim) {
    int i,j;
    printf("The %d * %d matrix is\n", dim,dim);
@@ -73,12 +74,12 @@ void print_matrix(int dim) {
       printf("\n");
    }
 }
+#endif
 
 
-void check_matrix(int dim) {
+int check_matrix(int dim) {
   int i,j,k;
   int error=0;
-  printf("Now checking the results\n");
   for(i=0;i<dim;i++) {
     for(j=0;j<dim;j++) {
       double e=0.0;
@@ -88,20 +89,19 @@ void check_matrix(int dim) {
         error++;
     }
   }
-  if (error)
-    printf("%d elements error\n",error);
-  else
-    printf("success\n");
+  return error;
 }
 
 
-int main(int argc, char *argv[]) {
+TEST(GallocyTest, MatrixMultiplication) {
+
    int j;
    pthread_t* threads;
    pthread_attr_t pthread_custom_attr;
    parm* arg;
    int n, i;
 
+#if 0
    if (argc != 3) {
       printf("Usage: %s n dim\n  where n is no. of thread and dim is the size of matrix\n", argv[0]);
       exit(1);
@@ -115,10 +115,22 @@ int main(int argc, char *argv[]) {
    }
 
    NDIM = atoi(argv[2]);
+#endif
+
+   n = 4;
+   NDIM = 128;
+
+   ASSERT_EQ(a, (void *) NULL);
+   ASSERT_EQ(b, (void *) NULL);
+   ASSERT_EQ(c, (void *) NULL);
 
    init_matrix(&a);
    init_matrix(&b);
    init_matrix(&c);
+
+   ASSERT_NE(a, (void *) NULL);
+   ASSERT_NE(b, (void *) NULL);
+   ASSERT_NE(c, (void *) NULL);
 
    for (i = 0; i < NDIM; i++) {
       for (j = 0; j < NDIM; j++) {
@@ -127,11 +139,9 @@ int main(int argc, char *argv[]) {
       }
    }
 
-   threads = (pthread_t*) malloc(n * sizeof(pthread_t));
+   threads = (pthread_t*) custom_malloc(n * sizeof(pthread_t));
    pthread_attr_init(&pthread_custom_attr);
-
-   arg = (parm*) malloc(sizeof(parm) * n);
-
+   arg = (parm*) custom_malloc(sizeof(parm) * n);
    for (i = 0; i < n; i++) {
       arg[i].id = i;
       arg[i].noproc = n;
@@ -147,11 +157,10 @@ int main(int argc, char *argv[]) {
    }
 
    // For small arrays, print them to the screen
-   if (NDIM <= 16)
-     print_matrix(NDIM);
+   //if (NDIM <= 16)
+   //  print_matrix(NDIM);
 
-   check_matrix(NDIM);
-   free(arg);
+   ASSERT_EQ(check_matrix(NDIM), 0);
 
-   return 0;
+   custom_free(arg);
 }
