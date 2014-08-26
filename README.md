@@ -49,3 +49,9 @@ that is running the dsm stack.
 This region of memory must follow whatever coherency paradigm we implement in
 gallocy, be it strong consistency, eventual consistency, lazy consistency, or,
 lazy-release consistency.
+
+## testing
+
+DYLD_LIBRAY_PATH
+LD_LIBRARY_PATH
+
