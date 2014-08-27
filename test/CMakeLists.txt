@@ -10,6 +10,7 @@ set(test_sources
   simple-malloc.cpp
   simple-free.cpp
   mmult.cpp
+  hashmap.cpp
 )
 add_executable(sample_tests ${test_sources})
 target_link_libraries(sample_tests gtest_main gallocy-core "dl")
