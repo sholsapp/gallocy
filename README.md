@@ -52,6 +52,10 @@ lazy-release consistency.
 
 ## testing
 
-DYLD_LIBRAY_PATH
-LD_LIBRARY_PATH
-
+```bash
+cmake -G "Unix Makefiles"
+make && make install
+export DYLD_LIBRAY_PATH=`pwd`/build/lib
+export LD_LIBRARY_PATH=`pwd`/build/lib
+./build/bin/sample_tests
+```
