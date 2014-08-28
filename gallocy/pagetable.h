@@ -63,7 +63,7 @@ class PageTable {
   private:
 
     sqlite3 *db;
-    char *database_path;
+    const char *database_path;
 
 };
 

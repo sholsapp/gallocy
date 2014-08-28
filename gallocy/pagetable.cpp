@@ -158,8 +158,8 @@ void PageTable::open_database() {
 void PageTable::create_tables() {
   char *zErrMsg = 0;
   int  rc;
-  char *sql;
-  sql = "CREATE TABLE pagetable (" \
+  const char *sql = \
+        "CREATE TABLE pagetable (" \
         "id INT PRIMARY KEY     NOT NULL,    " \
         "address        INT     NOT NULL,    " \
         "size           INT     NOT NULL);   ";
@@ -178,13 +178,9 @@ void PageTable::insert_page_table_entry(void* ptr, int ptr_sz) {
   static int unique_id = 0;
   char *zErrMsg = 0;
   int  rc;
-  char sql[256];
 
-  // NOTE: this doesn't work because std::stringstream uses memory in a way
-  // that causes infinite loop. I.e., it looks like application memory.
-  //std::stringstream sql;
-  //sql << "INSERT INTO APPLICATION_PAGE_TABLE (ID,ADDRESS) " \
-  //      "VALUES (" << unique_id++ << "," << (intptr_t) ptr << "); ";
+  // TODO: fix me, this scary.
+  char sql[256];
 
   snprintf(
     sql,
