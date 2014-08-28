@@ -60,7 +60,6 @@ class FirstFitHeap : public Super {
             }
          }
          assert (classInvariant());
-         //fprintf(stderr, ">> malloc(%d) = %p\n", sz, ptr);
          return ptr;
       }
 

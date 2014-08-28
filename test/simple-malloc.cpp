@@ -63,3 +63,26 @@ TEST(GallocyTest, ManyMalloc) {
     custom_free(ptr);
   }
 }
+
+
+TEST(GallocyTest, ReuseOldAllocations) {
+  char* ptr;
+  char* _ptr = NULL;
+  for (int i = 0; i < 16; i++) {
+    ptr = (char*) custom_malloc(64 - i);
+    ASSERT_TRUE(ptr != NULL);
+    if (_ptr)
+      ASSERT_EQ(_ptr, ptr);
+    memset(ptr, 'A', 64);
+    custom_free(ptr);
+    _ptr = ptr;
+  }
+  ptr = (char*) custom_malloc(65);
+  ASSERT_TRUE(ptr != NULL);
+
+  // These shouldn't be equal but generate a segmentation fault. The current
+  // custom heap is bad.
+  //ASSERT_NE(ptr, _ptr);
+
+  custom_free(ptr);
+}

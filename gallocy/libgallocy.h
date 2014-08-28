@@ -3,10 +3,11 @@
 
 #include "pagetable.h"
 #include "heaplayers/pagetableheap.h"
+#include "firstfitheap.h"
 #include "heaplayers/source.h"
 
-
-class MainHeap: public HL::PageTableHeap<SourceHeap> {};
+class MainHeap:
+  public HL::FreelistHeap<HL::ZoneHeap<HL::PageTableHeap<SourceHeap>, 16384 - 16> > {};
 
 
 extern MainHeap heap;
