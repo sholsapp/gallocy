@@ -1,0 +1,10 @@
+language: cpp
+compiler:
+  - gcc
+  - clang
+script:
+  - cmake -G "Unix Makefiles"
+  - make && make install
+  - export LD_LIBRARY_PATH=./build/lib/
+  - export DYLD_LIBRARY_PATH=./build/lib/
+  - ./build/bin/gallocy_tests
