@@ -11,6 +11,7 @@ set(test_sources
   test_simple_free.cpp
   test_mmult.cpp
   test_hashmap.cpp
+  test_freesllist.cpp
 )
 add_executable(gallocy_tests ${test_sources})
 target_link_libraries(gallocy_tests gtest_main gallocy-core "dl")
