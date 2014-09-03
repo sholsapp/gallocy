@@ -1,5 +1,3 @@
-// -*- C++ -*-
-
 #ifndef _FREESLLIST_H_
 #define _FREESLLIST_H_
 
@@ -22,7 +20,7 @@ public:
   }
 
   class Entry;
-  
+
   /// Get the head of the list.
   inline Entry * get (void) {
     const Entry * e = head.next;
@@ -41,7 +39,7 @@ public:
     head.next = e->next;
     return const_cast<Entry *>(e);
   }
-  
+
   inline void insert (void * e) {
     Entry * entry = reinterpret_cast<Entry *>(e);
     entry->next = head.next;
@@ -60,14 +58,10 @@ public:
     Entry& operator=(const Entry&);
 #endif
   };
-  
+
 private:
   Entry head;
 };
 
 
 #endif
-
-
-
-
