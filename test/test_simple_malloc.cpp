@@ -68,11 +68,11 @@ TEST(GallocyTest, ManyMalloc) {
 TEST(GallocyTest, ReuseOldAllocations) {
   char* ptr;
   char* _ptr = NULL;
-  for (int i = 0; i < 16; i++) {
-    ptr = (char*) custom_malloc(64 - i);
+  for (int i = 0; i < 8; i++) {
+    ptr = (char*) custom_malloc(64);
     ASSERT_TRUE(ptr != NULL);
     if (_ptr)
-      ASSERT_EQ(_ptr, ptr);
+      ASSERT_EQ(_ptr, ptr) << "Failure on iteration [" << i << "]";
     memset(ptr, 'A', 64);
     custom_free(ptr);
     _ptr = ptr;
