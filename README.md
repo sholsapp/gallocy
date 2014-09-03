@@ -10,6 +10,31 @@ thesis. The gallocy project is a complete rewrite of that prototype, that seeks
 to apply the many lessons and shortcomings discovered during those miserable
 few years.
 
+## getting started
+
+### building
+
+We use cmake to build gallocy. Use the following commands on a Unix-style host
+to generate the makefiles.
+
+```bash
+cmake -G "Unix Makefiles"
+make && make install
+```
+
+This installs test binaries and libraryes into the build/ directory.
+
+### testing
+
+We use gtest to test gallocy. Use the following commands on a Unix-style host
+to run the test binary.
+
+```bash
+export DYLD_LIBRARY_PATH=`pwd`/build/lib
+export LD_LIBRARY_PATH=`pwd`/build/lib
+./build/bin/sample_tests
+```
+
 ## design
 
 Building a distributed shared memory system is easy. This section goes over the
@@ -50,12 +75,4 @@ This region of memory must follow whatever coherency paradigm we implement in
 gallocy, be it strong consistency, eventual consistency, lazy consistency, or,
 lazy-release consistency.
 
-## testing
 
-```bash
-cmake -G "Unix Makefiles"
-make && make install
-export DYLD_LIBRAY_PATH=`pwd`/build/lib
-export LD_LIBRARY_PATH=`pwd`/build/lib
-./build/bin/sample_tests
-```
