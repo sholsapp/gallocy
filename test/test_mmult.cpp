@@ -16,12 +16,7 @@
 #define MAX_THREAD 4
 
 
-int NDIM = -1;
-
-
-double** a = NULL;
-double** b = NULL;
-double** c = NULL;
+int NDIM = 4;
 
 
 typedef struct {
@@ -38,6 +33,17 @@ void init_matrix(double*** m) {
    for (i = 0; i < NDIM; i++) {
       (*m)[i] = (double*) custom_malloc(sizeof(double) * NDIM);
    }
+}
+
+
+void free_matrix(double*** m) {
+  int i;
+  for (i = 0; i < NDIM; i++) {
+    custom_free((*m)[i]);
+  }
+
+  custom_free(*m);
+
 }
 
 
@@ -77,7 +83,7 @@ void print_matrix(int dim) {
 #endif
 
 
-int check_matrix(int dim) {
+int check_matrix(int dim, double** a, double** b, double** c) {
   int i,j,k;
   int error=0;
   for(i=0;i<dim;i++) {
@@ -94,6 +100,11 @@ int check_matrix(int dim) {
 
 
 TEST(GallocyTest, MatrixMultiplication) {
+
+   double** a = NULL;
+   double** b = NULL;
+   double** c = NULL;
+
 
    int j;
    pthread_t* threads;
@@ -118,7 +129,6 @@ TEST(GallocyTest, MatrixMultiplication) {
 #endif
 
    n = 4;
-   NDIM = 128;
 
    ASSERT_EQ(a, (void *) NULL);
    ASSERT_EQ(b, (void *) NULL);
@@ -160,7 +170,12 @@ TEST(GallocyTest, MatrixMultiplication) {
    //if (NDIM <= 16)
    //  print_matrix(NDIM);
 
-   ASSERT_EQ(check_matrix(NDIM), 0);
+   ASSERT_EQ(check_matrix(NDIM, a, b, c), 0);
+
+   // TODO: why does this cause segmentation fault sometimes?
+   //free_matrix(&a);
+   //free_matrix(&b);
+   //free_matrix(&c);
 
    custom_free(arg);
 }
