@@ -50,7 +50,7 @@ extern "C" {
 
   }
 
-  void (*__malloc_initialize_hook) (void) = my_init_hook;
+  void (*__MALLOC_HOOK_VOLATILE __malloc_initialize_hook) (void) = my_init_hook;
 
 }
 #elif __APPLE__
@@ -58,6 +58,7 @@ extern "C" {
 #include <malloc/malloc.h>
 #include <unistd.h>
 #include <assert.h>
+
 
 extern "C" {
 
@@ -75,10 +76,12 @@ extern "C" {
 
 }
 
+
 typedef struct interpose_s {
   void* new_func;
   void* orig_func;
 } interpose_t;
+
 
 #define MAC_INTERPOSE(newf,oldf) __attribute__((used)) \
   static const interpose_t macinterpose##newf##oldf \
