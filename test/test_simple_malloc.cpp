@@ -65,6 +65,19 @@ TEST(GallocyTest, ManyMalloc) {
 }
 
 
+TEST(GallocyTest, ReuseAllocation) {
+  char* ptr1 = NULL;
+  char* ptr2 = NULL;
+
+  ptr1 = (char*) custom_malloc(128);
+  memset(ptr1, 'A', 64);
+  custom_free(ptr1);
+
+  ptr2 = (char*) custom_malloc(16);
+  ASSERT_EQ(ptr1, ptr2);
+}
+
+
 TEST(GallocyTest, ReuseOldAllocations) {
   char* ptr;
   char* _ptr = NULL;

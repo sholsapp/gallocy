@@ -7,7 +7,7 @@
 #include "heaplayers/source.h"
 
 class MainHeap:
-  public HL::FreelistHeap<HL::ZoneHeap<HL::PageTableHeap<SourceHeap>, 16384 - 16> > {};
+  public FirstFitHeap<HL::FreelistHeap<HL::ZoneHeap<HL::PageTableHeap<SourceHeap>, 16384 - 16> > > {};
 
 
 extern MainHeap heap;

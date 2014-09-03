@@ -172,10 +172,9 @@ TEST(GallocyTest, MatrixMultiplication) {
 
    ASSERT_EQ(check_matrix(NDIM, a, b, c), 0);
 
-   // TODO: why does this cause segmentation fault sometimes?
-   //free_matrix(&a);
-   //free_matrix(&b);
-   //free_matrix(&c);
+   free_matrix(&a);
+   free_matrix(&b);
+   free_matrix(&c);
 
    custom_free(arg);
 }
