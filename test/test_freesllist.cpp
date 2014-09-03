@@ -17,10 +17,14 @@ TEST(InternalTest, FreeSLList) {
       }
     }
   }
+  // Test FreeSLList
   FreeSLList freelist;
   freelist.insert(ptr[0]);
   ASSERT_EQ(freelist.get(), ptr[0]);
   freelist.insert(ptr[1]);
   ASSERT_EQ(freelist.get(), ptr[1]);
   ASSERT_TRUE(freelist.get() == NULL);
+  // Clean up pointers to memory
+  for (int i = 0; i < sz; i++)
+    free(ptr[i]);
 }
