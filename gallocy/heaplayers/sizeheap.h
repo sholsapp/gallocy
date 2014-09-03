@@ -25,7 +25,7 @@ class UseSizeHeap : public Super {
 public:
 
   inline UseSizeHeap (void) {}
- 
+
   inline static size_t getSize (const void * ptr) {
     return ((freeObject *) ptr - 1)->sz;
   }
