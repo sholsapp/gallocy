@@ -74,6 +74,7 @@ TEST(GallocyTest, ReuseAllocation) {
   custom_free(ptr1);
 
   ptr2 = (char*) custom_malloc(16);
+  memset(ptr2, 'B', 16);
   ASSERT_EQ(ptr1, ptr2);
 }
 
