@@ -135,7 +135,7 @@ TEST_F(MallocTests, ManyReallocs) {
   ptr = (char*) custom_malloc(sizeof(char) * 16);
   memset(ptr, 'A', 16);
 
-  for (int i = 1; i < 2048 - sz; i++) {
+  for (int i = 1; i < 4096 - sz; i++) {
     new_ptr = (char*) custom_realloc(ptr, sz + i);
     ASSERT_NE(new_ptr, (void*) NULL);
     memset(new_ptr, 'A', sz + i);
