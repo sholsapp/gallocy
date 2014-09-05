@@ -19,6 +19,7 @@ TEST_F(MallocTests, ZeroMalloc) {
   void* ptr = NULL;
   ptr = custom_malloc(0);
   ASSERT_NE(ptr, (void*) NULL);
+  ASSERT_EQ(custom_malloc_usable_size(ptr), 0);
 }
 
 
@@ -36,6 +37,7 @@ TEST_F(MallocTests, SimpleMalloc) {
 TEST_F(MallocTests, SmallMalloc) {
   char* ptr = (char*) custom_malloc(1);
   ASSERT_TRUE(ptr != NULL);
+  ASSERT_EQ(custom_malloc_usable_size(ptr), 1);
   ptr[0] = 'A';
   ASSERT_EQ(*ptr, 'A');
 }
@@ -127,19 +129,31 @@ TEST_F(MallocTests, ManyAllocations) {
 }
 
 
+TEST_F(MallocTests, RandomAllocations) {
+  int rand_sz = 0;
+  void* ptr = NULL;
+  for (int i = 0; i < 4096; i++) {
+    int sz = rand() % 4096;
+    ptr = custom_malloc(sz);
+    ASSERT_NE(ptr, (void*) NULL);
+    ASSERT_GE(custom_malloc_usable_size(ptr), sz);
+    custom_free(ptr);
+  }
+}
+
+
 TEST_F(MallocTests, ManyReallocs) {
   char* ptr = NULL;
   char* new_ptr = NULL;
   size_t sz = 16;
-
   ptr = (char*) custom_malloc(sizeof(char) * 16);
   memset(ptr, 'A', 16);
-
-  for (int i = 1; i < 4096 - sz; i++) {
+  for (int i = 1; i <= 4096 - sz; i++) {
     new_ptr = (char*) custom_realloc(ptr, sz + i);
     ASSERT_NE(new_ptr, (void*) NULL);
     memset(new_ptr, 'A', sz + i);
     ptr = new_ptr;
   }
-
+  ASSERT_EQ(custom_malloc_usable_size(ptr), 4096);
+  custom_free(ptr);
 }
