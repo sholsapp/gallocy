@@ -7,7 +7,14 @@
 #include "libgallocy.h"
 
 
-TEST(GallocyTest, SimpleMalloc) {
+TEST(MallocTests, ZeroMalloc) {
+  void* ptr = NULL;
+  ptr = custom_malloc(0);
+  ASSERT_NE(ptr, (void*) NULL);
+}
+
+
+TEST(MallocTests, SimpleMalloc) {
   char* ptr = (char*) custom_malloc(sizeof(char) * 16);
   ASSERT_TRUE(ptr != NULL);
   for (int i = 0; i < 15; i++) {
@@ -19,7 +26,7 @@ TEST(GallocyTest, SimpleMalloc) {
 }
 
 
-TEST(GallocyTest, SmallMalloc) {
+TEST(MallocTests, SmallMalloc) {
   char* ptr = (char*) custom_malloc(1);
   ASSERT_TRUE(ptr != NULL);
   ptr[0] = 'A';
@@ -27,7 +34,7 @@ TEST(GallocyTest, SmallMalloc) {
 }
 
 
-TEST(GallocyTest, MediumMalloc) {
+TEST(MallocTests, MediumMalloc) {
   int sz = 4312;
   char* ptr = (char*) custom_malloc(sz);
   ASSERT_TRUE(ptr != NULL);
@@ -39,7 +46,7 @@ TEST(GallocyTest, MediumMalloc) {
 }
 
 
-TEST(GallocyTest, BigMalloc) {
+TEST(MallocTests, BigMalloc) {
   int sz =  4096 * 16;
   char* ptr = (char*) custom_malloc(sz);
   ASSERT_TRUE(ptr != NULL);
@@ -51,7 +58,7 @@ TEST(GallocyTest, BigMalloc) {
 }
 
 
-TEST(GallocyTest, ManyMalloc) {
+TEST(MallocTests, ManyMalloc) {
   char* ptr;
   for (int i = 0; i < 4096; i++) {
     ptr = (char*) custom_malloc(32);
@@ -65,7 +72,7 @@ TEST(GallocyTest, ManyMalloc) {
 }
 
 
-TEST(GallocyTest, ReuseAllocation) {
+TEST(MallocTests, ReuseAllocation) {
   char* ptr1 = NULL;
   char* ptr2 = NULL;
 
@@ -79,7 +86,7 @@ TEST(GallocyTest, ReuseAllocation) {
 }
 
 
-TEST(GallocyTest, ReuseOldAllocations) {
+TEST(MallocTests, ReuseOldAllocations) {
   char* ptr;
   char* _ptr = NULL;
   for (int i = 0; i < 8; i++) {
@@ -99,4 +106,16 @@ TEST(GallocyTest, ReuseOldAllocations) {
   //ASSERT_NE(ptr, _ptr);
 
   custom_free(ptr);
+}
+
+
+TEST(MallocTests, ManyAllocations) {
+  int MANY = 1000;
+  char* ptr = NULL;
+  for (int i = 0; i < MANY; i++) {
+    ptr = (char*) custom_malloc(256);
+    ASSERT_TRUE(ptr != NULL);
+    memset(ptr, 'A', 256);
+    custom_free(ptr);
+  }
 }

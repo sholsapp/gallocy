@@ -7,7 +7,12 @@
 #include "libgallocy.h"
 
 
-TEST(GallocyTest, SimpleFree) {
+TEST(FreeTests, NullFree) {
+  custom_free(NULL);
+}
+
+
+TEST(FreeTests, SimpleFree) {
   char* ptr1 = (char*) custom_malloc(sizeof(char) * 16);
   ASSERT_TRUE(ptr1 != NULL);
   char* ptr2 = (char*) custom_malloc(sizeof(char) * 16);
@@ -23,7 +28,7 @@ TEST(GallocyTest, SimpleFree) {
 }
 
 
-TEST(GallocyTest, UsageFree) {
+TEST(FreeTests, UsageFree) {
   char* ptr1 = (char*) custom_malloc(sizeof(char) * 32);
   ASSERT_TRUE(ptr1 != NULL);
   for (int i = 0; i < 32; i++)

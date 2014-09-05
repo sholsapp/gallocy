@@ -1,6 +1,6 @@
 # gallocy
 
-<img src='https://secure.travis-ci.org/sholsapp/gallocy.png?branch=master'></a>
+<img src='https://secure.travis-ci.org/sholsapp/gallocy.png?branch=master'>
 
 The gallocy library is a custom memory allocator that enables processes to
 utilize memory on many machines. One could call gallocy a distributed shared
