@@ -126,7 +126,7 @@ class SourceHeap: public SimpleHeap {
 
 
 class _Heap:
-  public FirstFitHeap<HL::SizeHeap<HL::ZoneHeap<SourceHeap, 16384 - 16> > > {};
+  public FirstFitHeap<HL::SizeHeap<HL::ZoneHeap<SimpleHeap, 16384 - 16> > > {};
 
 
 class SingletonHeap {
