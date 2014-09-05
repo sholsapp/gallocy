@@ -15,6 +15,7 @@
 #include "freelistheap.h"
 #include "firstfitheap.h"
 #include "zoneheap.h"
+#include "sizeheap.h"
 
 #include "pagetable.h"
 
@@ -111,7 +112,7 @@ class SourceHeap: public SimpleHeap {
 
     class MyHeap :
       // FIX ME: 16 = size of ZoneHeap header.
-      public HL::LockedHeap<HL::SpinLockType, HL::FreelistHeap<HL::ZoneHeap<SimpleHeap, 16384 - 16> > > {};
+      public HL::LockedHeap<HL::SpinLockType, FirstFitHeap<HL::SizeHeap<HL::ZoneHeap<SimpleHeap, 16384 - 16> > > > {};
 
     typedef HL::MyHashMap<void*, size_t, MyHeap> mapType;
 
