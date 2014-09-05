@@ -6,8 +6,8 @@
 
 namespace HL {
 
-template <class SuperHeap>
-class PageTableHeap : public SuperHeap {
+template <class Super>
+class PageTableHeap : public Super {
 public:
 
   PageTableHeap() {
@@ -16,15 +16,20 @@ public:
 
   inline void * malloc (size_t sz) {
     void *ptr;
-    ptr = SuperHeap::malloc (sz);
-    if (ptr)
+    ptr = Super::malloc (sz);
+    if (ptr) {
       pt.insert_page_table_entry(ptr, sz);
       sum += sz;
+    }
     return ptr;
   }
 
   inline void free (void *ptr) {
-    SuperHeap::free(ptr);
+    Super::free(ptr);
+  }
+
+  inline void __reset() {
+    Super::__reset();
   }
 
 private:

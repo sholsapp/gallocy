@@ -17,6 +17,8 @@ extern MainHeap heap;
 
 extern "C" {
 
+  void __reset_memory_allocator();
+
   void* custom_malloc(size_t);
   void custom_free(void*);
   void* custom_realloc(void*, size_t);

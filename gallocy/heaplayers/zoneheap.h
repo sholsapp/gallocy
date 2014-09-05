@@ -15,8 +15,24 @@ namespace HL {
 	pastArenas (NULL)
     {}
 
-    ~ZoneHeap (void)
-    {
+    ~ZoneHeap (void) {
+      __reset();
+    }
+
+    inline void * malloc (size_t sz) {
+      void * ptr = zoneMalloc (sz);
+      return ptr;
+    }
+
+    inline void free (void *) {
+      return;
+    }
+
+    inline int remove (void *) {
+      return 0;
+    }
+
+    inline void __reset() {
       // Delete all of our arenas.
       Arena * ptr = pastArenas;
       while (ptr != NULL) {
@@ -26,18 +42,8 @@ namespace HL {
       }
       if (currentArena != NULL)
 	Super::free (currentArena);
+      Super::__reset();
     }
-
-    inline void * malloc (size_t sz) {
-      void * ptr = zoneMalloc (sz);
-      return ptr;
-    }
-
-    /// Free in a zone allocator is a no-op.
-    inline void free (void *) {}
-
-    /// Remove in a zone allocator is a no-op.
-    inline int remove (void *) { return 0; }
 
 
   private:

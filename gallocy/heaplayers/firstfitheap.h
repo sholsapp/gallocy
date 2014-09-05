@@ -14,20 +14,8 @@ class FirstFitHeap : public Super {
       assert (classInvariant());
     }
 
-    ~FirstFitHeap (void)
-    {
-#if 1
-      // Delete everything on the free list.
-      void * ptr = myFreeList;
-      while (ptr != NULL) {
-        // assert (nObjects > 0);
-        assert (ptr != NULL);
-        void * oldptr = ptr;
-        ptr = (void *) ((freeObject *) ptr)->next;
-        Super::free (oldptr);
-        --nObjects;
-      }
-#endif
+    ~FirstFitHeap (void) {
+      __reset();
     }
 
     inline void * malloc (size_t sz) {
@@ -93,6 +81,22 @@ class FirstFitHeap : public Super {
         prev->next = (freeObject *) ptr;
       }
       assert (classInvariant());
+    }
+
+    inline void __reset() {
+      // Delete everything on the free list.
+      void * ptr = myFreeList;
+      while (ptr != NULL) {
+        // assert (nObjects > 0);
+        assert (ptr != NULL);
+        void * oldptr = ptr;
+        ptr = (void *) ((freeObject *) ptr)->next;
+        Super::free (oldptr);
+        --nObjects;
+      }
+      myFreeList = NULL;
+      nObjects = 0;
+      Super::__reset();
     }
 
   private:

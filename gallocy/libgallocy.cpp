@@ -25,6 +25,10 @@ SimpleHeap SingletonHeap::heap = singletonHeap;
 
 extern "C" {
 
+  void __reset_memory_allocator() {
+    heap.__reset();
+  }
+
   void* custom_malloc(size_t sz) {
     void* ptr = heap.malloc(sz);
     return ptr;

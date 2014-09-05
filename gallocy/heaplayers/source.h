@@ -19,7 +19,7 @@
 #include "pagetable.h"
 
 
-#define ZONE_SZ   4096 * 4096 * 16
+#define ZONE_SZ   4096 * 256
 #define MMAP_PROT PROT_READ|PROT_WRITE
 #define MMAP_FLAG MAP_ANON|MAP_SHARED
 
@@ -60,6 +60,12 @@ class SimpleHeap {
       // This is broken, and always will be. Parent should never call this
       // method.
       return -1;
+    }
+
+    inline void __reset() {
+      zone = NULL;
+      next = NULL;
+      bytes_left = 0;
     }
 
   private:
@@ -134,6 +140,10 @@ class SingletonHeap {
 
     static void free(void* ptr) {
       heap.free(ptr);
+    }
+
+    static void __reset() {
+      return;
     }
 
   private:

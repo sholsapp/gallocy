@@ -58,6 +58,9 @@ public:
   inline void free (void * ptr) {
     SuperHeap::free ((freeObject *) ptr - 1);
   }
+  inline void __reset() {
+    SuperHeap::__reset();
+  }
 };
 
 };

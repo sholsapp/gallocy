@@ -7,14 +7,22 @@
 #include "libgallocy.h"
 
 
-TEST(MallocTests, ZeroMalloc) {
+class MallocTests: public ::testing::Test {
+  protected:
+    virtual void TearDown() {
+      __reset_memory_allocator();
+    }
+};
+
+
+TEST_F(MallocTests, ZeroMalloc) {
   void* ptr = NULL;
   ptr = custom_malloc(0);
   ASSERT_NE(ptr, (void*) NULL);
 }
 
 
-TEST(MallocTests, SimpleMalloc) {
+TEST_F(MallocTests, SimpleMalloc) {
   char* ptr = (char*) custom_malloc(sizeof(char) * 16);
   ASSERT_NE(ptr, (void *) NULL);
   ASSERT_EQ(custom_malloc_usable_size(ptr), 16);
@@ -25,7 +33,7 @@ TEST(MallocTests, SimpleMalloc) {
 }
 
 
-TEST(MallocTests, SmallMalloc) {
+TEST_F(MallocTests, SmallMalloc) {
   char* ptr = (char*) custom_malloc(1);
   ASSERT_TRUE(ptr != NULL);
   ptr[0] = 'A';
@@ -33,7 +41,7 @@ TEST(MallocTests, SmallMalloc) {
 }
 
 
-TEST(MallocTests, MediumMalloc) {
+TEST_F(MallocTests, MediumMalloc) {
   int sz = 4312;
   char* ptr = (char*) custom_malloc(sz);
   ASSERT_TRUE(ptr != NULL);
@@ -45,7 +53,7 @@ TEST(MallocTests, MediumMalloc) {
 }
 
 
-TEST(MallocTests, BigMalloc) {
+TEST_F(MallocTests, BigMalloc) {
   int sz =  4096 * 16;
   char* ptr = (char*) custom_malloc(sz);
   ASSERT_TRUE(ptr != NULL);
@@ -57,7 +65,7 @@ TEST(MallocTests, BigMalloc) {
 }
 
 
-TEST(MallocTests, ManyMalloc) {
+TEST_F(MallocTests, ManyMalloc) {
   char* ptr;
   for (int i = 0; i < 4096; i++) {
     ptr = (char*) custom_malloc(32);
@@ -71,7 +79,7 @@ TEST(MallocTests, ManyMalloc) {
 }
 
 
-TEST(MallocTests, ReuseAllocation) {
+TEST_F(MallocTests, ReuseAllocation) {
   char* ptr1 = NULL;
   char* ptr2 = NULL;
 
@@ -85,7 +93,7 @@ TEST(MallocTests, ReuseAllocation) {
 }
 
 
-TEST(MallocTests, ReuseOldAllocations) {
+TEST_F(MallocTests, ReuseOldAllocations) {
   char* ptr;
   char* _ptr = NULL;
   for (int i = 0; i < 8; i++) {
@@ -100,14 +108,14 @@ TEST(MallocTests, ReuseOldAllocations) {
   ptr = (char*) custom_malloc(156);
   ASSERT_TRUE(ptr != NULL);
 
-  // TODO: fix me -- need test case isolation.
-  //ASSERT_NE(ptr, _ptr);
+  ASSERT_NE(ptr, _ptr);
+  ASSERT_EQ(custom_malloc_usable_size(ptr), 156);
 
   custom_free(ptr);
 }
 
 
-TEST(MallocTests, ManyAllocations) {
+TEST_F(MallocTests, ManyAllocations) {
   int MANY = 1000;
   char* ptr = NULL;
   for (int i = 0; i < MANY; i++) {
