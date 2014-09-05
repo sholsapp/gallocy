@@ -65,6 +65,9 @@ class FirstFitHeap : public Super {
 
       inline void free (void * ptr) {
 
+         if (!ptr)
+           return;
+
          for (int i = 0; i < Super::getSize((void*) ptr); i++) {
             ((unsigned char*) ptr)[i] = 0xED;
          }

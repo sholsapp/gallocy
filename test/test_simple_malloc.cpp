@@ -98,11 +98,10 @@ TEST(MallocTests, ReuseOldAllocations) {
     custom_free(ptr);
     _ptr = ptr;
   }
-  ptr = (char*) custom_malloc(65);
+  ptr = (char*) custom_malloc(156);
   ASSERT_TRUE(ptr != NULL);
 
-  // These shouldn't be equal but generate a segmentation fault. The current
-  // custom heap is bad.
+  // TODO: fix me -- need test case isolation.
   //ASSERT_NE(ptr, _ptr);
 
   custom_free(ptr);
