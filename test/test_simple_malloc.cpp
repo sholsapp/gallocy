@@ -125,3 +125,21 @@ TEST_F(MallocTests, ManyAllocations) {
     custom_free(ptr);
   }
 }
+
+
+TEST_F(MallocTests, ManyReallocs) {
+  char* ptr = NULL;
+  char* new_ptr = NULL;
+  size_t sz = 16;
+
+  ptr = (char*) custom_malloc(sizeof(char) * 16);
+  memset(ptr, 'A', 16);
+
+  for (int i = 1; i < 2048 - sz; i++) {
+    new_ptr = (char*) custom_realloc(ptr, sz + i);
+    ASSERT_NE(new_ptr, (void*) NULL);
+    memset(new_ptr, 'A', sz + i);
+    ptr = new_ptr;
+  }
+
+}
