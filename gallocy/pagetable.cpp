@@ -15,10 +15,11 @@
 #include "heaplayers/zoneheap.h"
 #include "heaplayers/source.h"
 #include "heaplayers/stl.h"
+#include "heaplayers/sizeheap.h"
 
 
 class xSizeHeap :
-  public HL::LockedHeap<HL::SpinLockType, HL::FreelistHeap<HL::ZoneHeap<SingletonHeap, 16384 - 16> > > {};
+  public HL::LockedHeap<HL::SpinLockType, FirstFitHeap<HL::SizeHeap<HL::ZoneHeap<SingletonHeap, 16384 - 16> > > > {};
 
 
 typedef

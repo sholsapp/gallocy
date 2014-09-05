@@ -9,7 +9,7 @@
 #include "heaplayers/sizeheap.h"
 
 class MainHeap:
-  public FirstFitHeap<HL::SizeHeap<HL::FreelistHeap<HL::ZoneHeap<HL::PageTableHeap<SourceHeap>, 16384 - 16> > > > {};
+  public FirstFitHeap<HL::SizeHeap<HL::ZoneHeap<HL::PageTableHeap<SourceHeap>, 16384 - 16> > > {};
 
 
 extern MainHeap heap;
