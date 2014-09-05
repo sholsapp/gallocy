@@ -2,10 +2,9 @@ language: cpp
 compiler:
   - gcc
   - clang
-matrix:
-  - os: linux
-    env: ARCH=x86_64
-  - os: osx
+os:
+  - linux
+  - osx
 script:
   - cmake -G "Unix Makefiles"
   - make && make install
