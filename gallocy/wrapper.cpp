@@ -7,6 +7,10 @@
 
 #include <malloc.h>
 
+#ifndef __MALLOC_HOOK_VOLATILE
+#define __MALLOC_HOOK_VOLATILE
+#endif
+
 extern "C" {
 
   // Declare symbols, but define them somewhere else
