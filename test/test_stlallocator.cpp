@@ -29,10 +29,10 @@ typedef
 TEST(STLTests, VectorTest) {
   int i = 0;
   MyList mylist;
-  for (int i = 0; i <= 10; i++)
+  for (int i = 0; i < 4096; i++)
     mylist.push_back(i);
   for (int i = 0; i < mylist.size(); i++)
-    ASSERT_EQ(mylist[i], i);
+    ASSERT_EQ(mylist[i], i) << "Failed on iteration [" << i << "]";
   mylist.clear();
 }
 
@@ -40,13 +40,8 @@ TEST(STLTests, VectorTest) {
 TEST(STLTests, MapTest) {
   MyMap mymap;
   MyMap::iterator it;
-  mymap[1] = 1;
-  mymap[2] = 4;
-  mymap[3] = 9;
-  mymap[4] = 16;
-  it = mymap.find(3);
-  mymap.erase(it);
-  mymap[3] = 9;
+  for (int i = 0; i < 4096; i++)
+    mymap[i] = i * i;
   ASSERT_EQ(mymap[1], 1);
   ASSERT_EQ(mymap[2], 4);
   ASSERT_EQ(mymap[3], 9);
