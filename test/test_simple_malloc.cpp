@@ -16,10 +16,9 @@ TEST(MallocTests, ZeroMalloc) {
 
 TEST(MallocTests, SimpleMalloc) {
   char* ptr = (char*) custom_malloc(sizeof(char) * 16);
-  ASSERT_TRUE(ptr != NULL);
-  for (int i = 0; i < 15; i++) {
-    ptr[i] = 'A';
-  }
+  ASSERT_NE(ptr, (void *) NULL);
+  ASSERT_EQ(custom_malloc_usable_size(ptr), 16);
+  memset(ptr, 'A', 15);
   ptr[15] = 0;
   ASSERT_EQ(strcmp(ptr, "AAAAAAAAAAAAAAA"), 0);
   custom_free(ptr);

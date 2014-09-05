@@ -47,12 +47,11 @@ extern "C" {
     return buf;
   }
 
-#ifdef __APPLE__
-
   size_t custom_malloc_usable_size(void* ptr) {
-    // Hopefully we don't need these yet!
-    return -1;
+    return heap.getSize(ptr);
   }
+
+#ifdef __APPLE__
 
   void custom_malloc_lock() {
     // Hopefully we don't need these yet!

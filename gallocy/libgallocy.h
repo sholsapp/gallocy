@@ -21,9 +21,11 @@ extern "C" {
   void custom_free(void*);
   void* custom_realloc(void*, size_t);
 
+  // This is an OSX thing, but is useful to provide for testing...
+  size_t custom_malloc_usable_size(void*);
+
 #ifdef __APPLE__
 
-  size_t custom_malloc_usable_size(void*);
   void custom_malloc_lock();
   void custom_malloc_unlock();
 
