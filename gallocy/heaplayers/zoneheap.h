@@ -17,17 +17,14 @@ namespace HL {
 
     ~ZoneHeap (void)
     {
-      // printf ("deleting arenas!\n");
       // Delete all of our arenas.
       Arena * ptr = pastArenas;
       while (ptr != NULL) {
 	void * oldPtr = (void *) ptr;
 	ptr = ptr->nextArena;
-	//printf ("deleting %x\n", ptr);
 	Super::free (oldPtr);
       }
       if (currentArena != NULL)
-	//printf ("deleting %x\n", currentArena);
 	Super::free (currentArena);
     }
 
