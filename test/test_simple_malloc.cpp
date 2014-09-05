@@ -146,14 +146,15 @@ TEST_F(MallocTests, ManyReallocs) {
   char* ptr = NULL;
   char* new_ptr = NULL;
   size_t sz = 16;
+  size_t max_sz = 1024;
   ptr = (char*) custom_malloc(sizeof(char) * 16);
   memset(ptr, 'A', 16);
-  for (int i = 1; i <= 4096 - sz; i++) {
+  for (int i = 1; i <= max_sz - sz; i++) {
     new_ptr = (char*) custom_realloc(ptr, sz + i);
     ASSERT_NE(new_ptr, (void*) NULL);
     memset(new_ptr, 'A', sz + i);
     ptr = new_ptr;
   }
-  ASSERT_EQ(custom_malloc_usable_size(ptr), 4096);
+  ASSERT_EQ(custom_malloc_usable_size(ptr), max_sz);
   custom_free(ptr);
 }

@@ -10,6 +10,8 @@ set(test_sources
   test_simple_malloc.cpp
   test_simple_free.cpp
   test_mmult.cpp
+  test_singleton.cpp
+  test_stlallocator.cpp
   #test_hashmap.cpp
   #test_freesllist.cpp
 )

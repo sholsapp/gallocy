@@ -125,9 +125,10 @@ class SourceHeap: public SimpleHeap {
 };
 
 
-// TODO(sholsapp): This class needs to be improved to support additional
-// operations like ::getSize. This will make it more useful as a general
-// purpose allocator.
+class _Heap:
+  public FirstFitHeap<HL::SizeHeap<HL::ZoneHeap<SourceHeap, 16384 - 16> > > {};
+
+
 class SingletonHeap {
   public:
     static SingletonHeap& getInstance() {
@@ -144,11 +145,11 @@ class SingletonHeap {
     }
 
     static void __reset() {
-      return;
+      heap.__reset();
     }
 
   private:
-    static SimpleHeap heap;
+    static _Heap heap;
 
     // Need public for STL allocators.
     //

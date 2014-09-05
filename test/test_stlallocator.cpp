@@ -1,48 +1,43 @@
 #include <cstdio>
 #include <map>
 
+#include "gtest/gtest.h"
+
 volatile int anyThreadCreated = 0;
 
-#include "heaplayers/myhashmap.h"
-#include "heaplayers/spinlock.h"
-#include "heaplayers/lockedheap.h"
-#include "heaplayers/freelistheap.h"
-#include "heaplayers/firstfitheap.h"
-#include "heaplayers/zoneheap.h"
-#include "heaplayers/source.h"
+#include "libgallocy.h"
 #include "heaplayers/stl.h"
 
 
-class MainHeap :
-  public HL::LockedHeap<HL::SpinLockType, HL::FreelistHeap<HL::ZoneHeap<SingletonHeap, 16384 - 16> > > {};
+class STLTestHeap :
+  public HL::LockedHeap<HL::SpinLockType, SingletonHeap> {};
 
 
 typedef
   std::map<int, int,
   std::less<int>,
-  STLAllocator<std::pair<int, int>, MainHeap> >
+  STLAllocator<std::pair<int, int>, STLTestHeap> >
     MyMap;
 
 
 typedef
   std::vector<int,
-  STLAllocator<int, MainHeap> >
+  STLAllocator<int, STLTestHeap> >
     MyList;
 
 
-int main(int argc, char* argv[]) {
-
+TEST(STLTests, VectorTest) {
   int i = 0;
-
   MyList mylist;
-  for (int i = 1; i <= 10; i++)
-
-    fprintf(stderr, "PUSHING %d\n", i);
+  for (int i = 0; i <= 10; i++)
     mylist.push_back(i);
   for (int i = 0; i < mylist.size(); i++)
-    fprintf(stderr, "%d -> %d\n", i, mylist[i]);
+    ASSERT_EQ(mylist[i], i);
   mylist.clear();
+}
 
+
+TEST(STLTests, MapTest) {
   MyMap mymap;
   MyMap::iterator it;
   mymap[1] = 1;
@@ -52,8 +47,10 @@ int main(int argc, char* argv[]) {
   it = mymap.find(3);
   mymap.erase(it);
   mymap[3] = 9;
+  ASSERT_EQ(mymap[1], 1);
+  ASSERT_EQ(mymap[2], 4);
+  ASSERT_EQ(mymap[3], 9);
+  ASSERT_EQ(mymap[4], 16);
   for (it = mymap.begin(); it != mymap.end(); it++)
-    fprintf(stderr, "%d->%d\n", (*it).first, (*it).second);
-
-  return 0;
+    ASSERT_EQ((*it).second, mymap[(*it).first]);
 }

@@ -15,6 +15,9 @@ class MainHeap:
 extern MainHeap heap;
 
 
+extern _Heap singletonHeap;
+
+
 extern "C" {
 
   void __reset_memory_allocator();
