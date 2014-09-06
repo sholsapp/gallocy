@@ -7,8 +7,8 @@ include_directories(${gtest_SOURCE_DIR}/include)
 
 set(test_sources
   gtest.cpp
-  test_simple_malloc.cpp
-  test_simple_free.cpp
+  test_malloc.cpp
+  test_free.cpp
   test_mmult.cpp
   test_singleton.cpp
   test_stlallocator.cpp
