@@ -32,7 +32,9 @@ typedef
 xSizeMapType xSizeMap;
 
 
-class SqliteHeap: public SourceHeap {};
+//class SqliteHeap: public SourceHeap {};
+class SqliteHeap:
+  public FirstFitHeap<HL::SizeHeap<HL::ZoneHeap<SourceHeap, 16384 - 16> > > {};
 
 
 SqliteHeap sqliteHeap;
@@ -181,7 +183,7 @@ void PageTable::insert_page_table_entry(void* ptr, int ptr_sz) {
   int  rc;
 
   // TODO: fix me, this scary.
-  char sql[256];
+  char sql[512];
 
   snprintf(
     sql,
