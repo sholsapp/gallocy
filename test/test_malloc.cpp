@@ -158,3 +158,59 @@ TEST_F(MallocTests, ManyReallocs) {
   ASSERT_EQ(custom_malloc_usable_size(ptr), max_sz);
   custom_free(ptr);
 }
+
+
+TEST_F(MallocTests, CheckManySmallAllocations) {
+
+  const size_t alloc_sz = 256;
+  const size_t arr_sz = 4096;
+  char* small_ptrs[arr_sz];
+
+  for (int i = 0; i < arr_sz; i++) {
+    small_ptrs[i] = (char*) custom_malloc(sizeof(char) * alloc_sz);
+    ASSERT_NE(small_ptrs[i], (void*) NULL);
+    memset(&small_ptrs[i][0], (char) i % 255, alloc_sz);
+  }
+
+  for (int i = 0; i < arr_sz; i++) {
+    ASSERT_NE(small_ptrs[i], (void*) NULL);
+    for (int j = 0; j < alloc_sz; j++) {
+      char target = (char) i % 255;
+      ASSERT_EQ(small_ptrs[i][j], target) << "Failed at iteration [" << i << "] at offset [" << j << "].";
+    }
+  }
+
+  for (int i = 0; i < arr_sz; i++) {
+    custom_free(small_ptrs[i]);
+  }
+
+}
+
+
+TEST_F(MallocTests, CheckManyRandomAllocations) {
+
+  const int rand_sz = 4096 * 1;
+  const size_t arr_sz = 4096;
+  char* small_ptrs[arr_sz];
+  size_t small_ptrs_sz[arr_sz];
+
+  for (int i = 0; i < arr_sz; i++) {
+    small_ptrs_sz[i] = rand() % rand_sz;
+    small_ptrs[i] = (char*) custom_malloc(sizeof(char) * small_ptrs_sz[i]);
+    ASSERT_NE(small_ptrs[i], (void*) NULL);
+    memset(&small_ptrs[i][0], (char) i % 255, small_ptrs_sz[i]);
+  }
+
+  for (int i = 0; i < arr_sz; i++) {
+    ASSERT_NE(small_ptrs[i], (void*) NULL);
+    for (int j = 0; j < small_ptrs_sz[i]; j++) {
+      char target = (char) i % 255;
+      ASSERT_EQ(small_ptrs[i][j], target) << "Failed at iteration [" << i << "] at offset [" << j << "].";
+    }
+  }
+
+  for (int i = 0; i < arr_sz; i++) {
+    custom_free(small_ptrs[i]);
+  }
+
+}

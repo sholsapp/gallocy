@@ -40,3 +40,45 @@ TEST(FreeTests, UsageFree) {
     ptr2[i] = 'B';
   custom_free(ptr2);
 }
+
+
+TEST(FreeTests, CheckManySmallFrees) {
+
+  const size_t alloc_sz = 239;
+  const size_t arr_sz = 4096;
+  char* small_ptrs[arr_sz];
+
+  // Allocate a bunch of pointers and fill them with ascii
+  for (int i = 0; i < arr_sz; i++) {
+    small_ptrs[i] = (char*) custom_malloc(sizeof(char) * alloc_sz);
+    ASSERT_NE(small_ptrs[i], (void*) NULL);
+    memset(&small_ptrs[i][0], (char) i % 255, alloc_sz);
+  }
+
+  // Free the even half of the pointers
+  for (int i = 0; i < arr_sz; i += 2) {
+    custom_free(small_ptrs[i]);
+  }
+
+  // Allocatote a bunch of pointers of the same size and fill with null byte
+  for (int i = 0; i < arr_sz / 2; i++) {
+    char* trash = (char*) custom_malloc(sizeof(char) * alloc_sz);
+    ASSERT_NE(trash, (void*) NULL) << "Failed to allocate trash pointer on iteration [" << i << "].";
+    memset(trash, 0, alloc_sz);
+  }
+
+  // Check for any clobbered memory
+  for (int i = 1; i < arr_sz; i += 2) {
+    ASSERT_NE(small_ptrs[i], (void*) NULL);
+    for (int j = 0; j < alloc_sz; j++) {
+      char target = (char) i % 255;
+      ASSERT_EQ(small_ptrs[i][j], target) << "Failed at iteration [" << i << "] at offset [" << j << "].";
+    }
+  }
+
+  // Clean up the pointers
+  for (int i = 0; i < arr_sz; i++) {
+    custom_free(small_ptrs[i]);
+  }
+
+}
