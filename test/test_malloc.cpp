@@ -190,7 +190,7 @@ TEST_F(MallocTests, CheckManySmallAllocations) {
 TEST_F(MallocTests, CheckManyRandomAllocations) {
 
   const int rand_sz = 4096 * 1;
-  const size_t arr_sz = 4096;
+  const size_t arr_sz = 256;
   char* small_ptrs[arr_sz];
   size_t small_ptrs_sz[arr_sz];
 
