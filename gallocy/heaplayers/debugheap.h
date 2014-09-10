@@ -45,7 +45,7 @@ class DebugHeap : public Super {
       //  abort();
       //}
 
-      for (int i = 0; i < sz; i++) {
+      for (unsigned int i = 0; i < sz; i++) {
         ((char *) ptr)[i] = freeChar;
       }
       Super::free (ptr);

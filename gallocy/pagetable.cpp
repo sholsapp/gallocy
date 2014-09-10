@@ -1,6 +1,7 @@
+#include <cstdio>
+#include <cstring>
 #include <string>
 #include <sstream>
-#include <stdio.h>
 #include <unistd.h>
 
 #include "pagetable.h"
