@@ -19,13 +19,15 @@
 
 #include "pagetable.h"
 
+#include "heaptypes.h"
+
 
 #define ZONE_SZ   4096 * 4096
 #define MMAP_PROT PROT_READ|PROT_WRITE
 #define MMAP_FLAG MAP_ANON|MAP_SHARED
 
 
-class SimpleHeap {
+class SuperDumbMmapHeap {
   public:
     inline void* malloc(size_t sz) {
       void* mem = NULL;
@@ -76,10 +78,21 @@ class SimpleHeap {
 };
 
 
-class SourceHeap: public SimpleHeap {
+typedef
+  HL::LockedHeap<
+    HL::SpinLockType,
+    HL::FirstFitHeap<
+      HL::SizeHeap<
+        HL::ZoneHeap<
+          SuperDumbMmapHeap,
+          16384 - 16> > > >
+  InternalSourceHeapType;
+
+
+class SourceHeap: public SuperDumbMmapHeap {
   public:
     inline void* malloc(size_t sz) {
-      void* ptr = SimpleHeap::malloc(sz);
+      void* ptr = SuperDumbMmapHeap::malloc(sz);
       MyMapLock.lock();
       MyMap.set (ptr, sz);
       MyMapLock.unlock();
@@ -96,24 +109,21 @@ class SourceHeap: public SimpleHeap {
 
     // WORKAROUND: apparent gcc bug.
     void free(void* ptr, size_t sz) {
-      SimpleHeap::free (ptr, sz);
+      SuperDumbMmapHeap::free (ptr, sz);
     }
 
     inline void free(void* ptr) {
       //assert (reinterpret_cast<size_t>(ptr) % 4096 == 0);
       MyMapLock.lock();
       size_t sz = MyMap.get(ptr);
-      SimpleHeap::free(ptr, sz);
+      SuperDumbMmapHeap::free(ptr, sz);
       MyMap.erase(ptr);
       MyMapLock.unlock();
     }
 
   private:
 
-    class MyHeap :
-      // FIX ME: 16 = size of ZoneHeap header.
-      public HL::LockedHeap<HL::SpinLockType, FirstFitHeap<HL::SizeHeap<HL::ZoneHeap<SimpleHeap, 16384 - 16> > > > {};
-
+    class MyHeap : public InternalSourceHeapType {};
     typedef HL::MyHashMap<void*, size_t, MyHeap> mapType;
 
   protected:
@@ -125,8 +135,13 @@ class SourceHeap: public SimpleHeap {
 };
 
 
-class _Heap:
-  public FirstFitHeap<HL::SizeHeap<HL::ZoneHeap<SimpleHeap, 16384 - 16> > > {};
+typedef
+  HL::FirstFitHeap<
+    HL::SizeHeap<
+      HL::ZoneHeap<
+        SuperDumbMmapHeap,
+        16384 - 16> > >
+  SingletonHeapType;
 
 
 class SingletonHeap {
@@ -149,7 +164,7 @@ class SingletonHeap {
     }
 
   private:
-    static _Heap heap;
+    static SingletonHeapType heap;
 
     // Need public for STL allocators.
     //

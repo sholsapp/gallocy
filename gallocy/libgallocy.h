@@ -3,19 +3,17 @@
 
 #include "pagetable.h"
 #include "firstfitheap.h"
-#include "heaplayers/pagetableheap.h"
-#include "heaplayers/source.h"
-#include "heaplayers/addheap.h"
-#include "heaplayers/sizeheap.h"
 
-class MainHeap:
-  public FirstFitHeap<HL::SizeHeap<HL::ZoneHeap<HL::PageTableHeap<SourceHeap>, 16384 - 16> > > {};
+#include "heaplayers/heaptypes.h"
+
+
+class MainHeap: public MainHeapType {};
 
 
 extern MainHeap heap;
 
 
-extern _Heap singletonHeap;
+extern SingletonHeapType singletonHeap;
 
 
 extern "C" {

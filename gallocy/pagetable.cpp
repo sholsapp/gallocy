@@ -4,22 +4,10 @@
 #include <unistd.h>
 
 #include "pagetable.h"
+#include "heaplayers/heaptypes.h"
 
 
-// These should already be included, but include them again to be explicit.
-#include "heaplayers/myhashmap.h"
-#include "heaplayers/spinlock.h"
-#include "heaplayers/lockedheap.h"
-#include "heaplayers/freelistheap.h"
-#include "heaplayers/firstfitheap.h"
-#include "heaplayers/zoneheap.h"
-#include "heaplayers/source.h"
-#include "heaplayers/stl.h"
-#include "heaplayers/sizeheap.h"
-
-
-class xSizeHeap :
-  public HL::LockedHeap<HL::SpinLockType, FirstFitHeap<HL::SizeHeap<HL::ZoneHeap<SingletonHeap, 16384 - 16> > > > {};
+class xSizeHeap: public SqlitexSizeHeapType {};
 
 
 typedef
@@ -32,10 +20,7 @@ typedef
 xSizeMapType xSizeMap;
 
 
-//class SqliteHeap: public SourceHeap {};
-class SqliteHeap:
-  public FirstFitHeap<HL::SizeHeap<HL::ZoneHeap<SourceHeap, 16384 - 16> > > {};
-
+class SqliteHeap: public SqliteAllocatorHeapType {};
 
 SqliteHeap sqliteHeap;
 

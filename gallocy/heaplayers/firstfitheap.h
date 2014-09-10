@@ -4,6 +4,8 @@
 #include <cstdio>
 #include <assert.h>
 
+namespace HL {
+
 template <class Super>
 class FirstFitHeap : public Super {
   public:
@@ -115,5 +117,7 @@ class FirstFitHeap : public Super {
     int nObjects;
 
 };
+
+}
 
 #endif

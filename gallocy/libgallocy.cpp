@@ -19,8 +19,8 @@ MainHeap heap;
 // memory space. The singleton property is important because of weird STL
 // implementation (i.e., using a singleton pool was the only way I could make
 // this work, else produce memory errors in deep STL codes).
-_Heap singletonHeap;
-_Heap SingletonHeap::heap = singletonHeap;
+SingletonHeapType singletonHeap;
+SingletonHeapType SingletonHeap::heap = singletonHeap;
 
 
 extern "C" {

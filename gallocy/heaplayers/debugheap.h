@@ -7,42 +7,50 @@
 namespace HL {
 
 template <class Super,
+          char allocChar = 'A',
 	  char freeChar = 'F'>
 class DebugHeap : public Super {
-private:
 
-  enum { CANARY = 0xdeadbeef };
+  private:
 
-public:
+    enum { CANARY = 0xdeadbeef };
 
-  // Fill with A's.
-  inline void * malloc (size_t sz) {
-    // Add a guard area at the end.
-    void * ptr;
-    ptr = Super::malloc (sz + sizeof(unsigned long));
-    for (int i = 0; i < sz; i++) {
-      ((char *) ptr)[i] = 'A';
+  public:
+
+    inline void * malloc (size_t sz) {
+      void * ptr;
+      ptr = Super::malloc (sz);
+      //ptr = Super::malloc (sz + sizeof(unsigned long));
+      for (int i = 0; i < sz; i++) {
+        ((char *) ptr)[i] = allocChar;
+      }
+
+      //*((unsigned long *) ((char *) ptr + sz)) = (unsigned long) CANARY;
+      //assert (Super::getSize(ptr) >= sz);
+
+      return ptr;
     }
-    *((unsigned long *) ((char *) ptr + sz)) = (unsigned long) CANARY;
-    assert (Super::getSize(ptr) >= sz);
-    return ptr;
-  }
 
-  // Fill with F's.
-  inline void free (void * ptr) {
-    char * b = (char *) ptr;
-    size_t sz = Super::getSize(ptr);
-    // Check for the canary.
-    unsigned long storedCanary = *((unsigned long *) b + sz - sizeof(unsigned long));
-    if (storedCanary != CANARY) {
-      abort();
+    inline void free (void * ptr) {
+
+      if (!ptr)
+        return;
+
+      //char * b = (char *) ptr;
+      size_t sz = Super::getSize(ptr);
+
+      // Check for the canary.
+      //unsigned long storedCanary = *((unsigned long *) b + sz - sizeof(unsigned long));
+      //if (storedCanary != CANARY) {
+      //  abort();
+      //}
+
+      for (int i = 0; i < sz; i++) {
+        ((char *) ptr)[i] = freeChar;
+      }
+      Super::free (ptr);
     }
-    for (int i = 0; i < sz; i++) {
-      ((char *) ptr)[i] = freeChar;
-    }
-    Super::free (ptr);
-  }
-};
+  };
 
 }
 
