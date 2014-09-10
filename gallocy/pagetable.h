@@ -1,6 +1,8 @@
 #ifndef _PAGETABLE_H
 #define _PAGETABLE_H
 
+
+#include <map>
 #include <string>
 #include <pthread.h>
 #include <sqlite3.h>

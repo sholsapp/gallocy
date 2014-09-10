@@ -1,13 +1,8 @@
 #ifndef _SOURCE_H
 #define _SOURCE_H
 
-#include <cstring>
-#include <cstdlib>
+
 #include <sys/mman.h>
-
-#include <map>
-#include <vector>
-
 
 #include "myhashmap.h"
 #include "spinlock.h"
@@ -16,9 +11,6 @@
 #include "firstfitheap.h"
 #include "zoneheap.h"
 #include "sizeheap.h"
-
-#include "pagetable.h"
-
 #include "heaptypes.h"
 
 
