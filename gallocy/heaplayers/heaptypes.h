@@ -2,9 +2,12 @@
 #define _HEAPTYPES_H
 
 
+// FIX ME: 16 = size of ZoneHeap header.
+#define DEFAULT_ZONE_SZ 16384 - 16
+
+
 #include "heaplayers/debugheap.h"
 #include "heaplayers/pagetableheap.h"
-#include "heaplayers/source.h"
 #include "heaplayers/addheap.h"
 #include "heaplayers/sizeheap.h"
 #include "heaplayers/myhashmap.h"
@@ -16,13 +19,23 @@
 #include "heaplayers/stl.h"
 
 
+namespace HL {
 
-// FIX ME: 16 = size of ZoneHeap header.
-#define DEFAULT_ZONE_SZ 16384 - 16
+class SourceMmapHeap;
+
+}
 
 
-// NOTE: there are two other heap definitions in heaplayers/source.h which are
-// used for internal purposes for the heaps there.
+typedef
+  HL::FirstFitHeap<
+    HL::SizeHeap<
+      HL::ZoneHeap<
+        HL::SourceMmapHeap,
+        16384 - 16> > >
+  SingletonHeapType;
+
+
+#include "heaplayers/source.h"
 
 
 typedef
@@ -30,7 +43,7 @@ typedef
     HL::FirstFitHeap<
       HL::SizeHeap<
         HL::ZoneHeap<
-          HL::PageTableHeap<SourceHeap>,
+          HL::PageTableHeap<HL::SourceMmapHeap>,
           DEFAULT_ZONE_SZ> > > >
   MainHeapType;
 
@@ -41,7 +54,7 @@ typedef
     HL::FirstFitHeap<
       HL::SizeHeap<
         HL::ZoneHeap<
-          SingletonHeap,
+          HL::SingletonHeap,
           DEFAULT_ZONE_SZ> > > >
   SqlitexSizeHeapType;
 
@@ -50,7 +63,7 @@ typedef
   HL::FirstFitHeap<
     HL::SizeHeap<
       HL::ZoneHeap<
-        SourceHeap,
+        HL::SourceMmapHeap,
         DEFAULT_ZONE_SZ> > >
   SqliteAllocatorHeapType;
 

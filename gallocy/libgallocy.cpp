@@ -20,7 +20,7 @@ MainHeap heap;
 // implementation (i.e., using a singleton pool was the only way I could make
 // this work, else produce memory errors in deep STL codes).
 SingletonHeapType singletonHeap;
-SingletonHeapType SingletonHeap::heap = singletonHeap;
+SingletonHeapType HL::SingletonHeap::heap = singletonHeap;
 
 
 extern "C" {

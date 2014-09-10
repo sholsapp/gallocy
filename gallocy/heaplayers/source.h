@@ -19,18 +19,27 @@
 #define MMAP_FLAG MAP_ANON|MAP_SHARED
 
 
-class SuperDumbMmapHeap {
+namespace HL {
+
+
+class SourceMmapHeap {
+
   public:
+
     inline void* malloc(size_t sz) {
+
       void* mem = NULL;
+
       if (!zone) {
-        if ((zone = mmap(NULL, ZONE_SZ, MMAP_PROT, MMAP_FLAG, -1, 0)) == MAP_FAILED) {
-          fprintf(stderr, "MAP FAILED\n");
-          return NULL;
-        }
+
+        if ((zone = mmap(NULL, ZONE_SZ, MMAP_PROT, MMAP_FLAG, -1, 0)) == MAP_FAILED)
+          abort();
+
         next = (char*) zone;
         bytes_left = ZONE_SZ;
+
       }
+
       if (bytes_left > sz) {
         mem  = (void*) next;
         next = next + sz;
@@ -38,22 +47,22 @@ class SuperDumbMmapHeap {
         return mem;
       }
       else {
-        return NULL;
+        abort();
       }
+
     }
 
     inline void free(void* ptr) {
-      munmap(reinterpret_cast<char*>(ptr), getSize(ptr));
+      //munmap(reinterpret_cast<char*>(ptr), getSize(ptr));
       return;
     }
 
     inline void free(void* ptr, size_t sz) {
+      //munmap(reinterpret_cast<char*>(ptr), getSize(ptr));
       return;
     }
 
     inline size_t getSize(void* ptr) {
-      // This is broken, and always will be. Parent should never call this
-      // method.
       return -1;
     }
 
@@ -69,22 +78,22 @@ class SuperDumbMmapHeap {
     unsigned long bytes_left;
 };
 
-
+#if 0
 typedef
   HL::LockedHeap<
     HL::SpinLockType,
     HL::FirstFitHeap<
       HL::SizeHeap<
         HL::ZoneHeap<
-          SuperDumbMmapHeap,
+          SourceMmapHeap,
           16384 - 16> > > >
   InternalSourceHeapType;
 
 
-class SourceHeap: public SuperDumbMmapHeap {
+class SourceHeap: public SourceMmapHeap {
   public:
     inline void* malloc(size_t sz) {
-      void* ptr = SuperDumbMmapHeap::malloc(sz);
+      void* ptr = SourceMmapHeap::malloc(sz);
       MyMapLock.lock();
       MyMap.set (ptr, sz);
       MyMapLock.unlock();
@@ -101,14 +110,14 @@ class SourceHeap: public SuperDumbMmapHeap {
 
     // WORKAROUND: apparent gcc bug.
     void free(void* ptr, size_t sz) {
-      SuperDumbMmapHeap::free (ptr, sz);
+      SourceMmapHeap::free (ptr, sz);
     }
 
     inline void free(void* ptr) {
       //assert (reinterpret_cast<size_t>(ptr) % 4096 == 0);
       MyMapLock.lock();
       size_t sz = MyMap.get(ptr);
-      SuperDumbMmapHeap::free(ptr, sz);
+      SourceMmapHeap::free(ptr, sz);
       MyMap.erase(ptr);
       MyMapLock.unlock();
     }
@@ -125,15 +134,7 @@ class SourceHeap: public SuperDumbMmapHeap {
     HL::SpinLockType MyMapLock;
 
 };
-
-
-typedef
-  HL::FirstFitHeap<
-    HL::SizeHeap<
-      HL::ZoneHeap<
-        SuperDumbMmapHeap,
-        16384 - 16> > >
-  SingletonHeapType;
+#endif
 
 
 class SingletonHeap {
@@ -164,5 +165,7 @@ class SingletonHeap {
     //SingletonHeap(SingletonHeap const&);
     //void operator=(SingletonHeap const&);
 };
+
+}
 
 #endif

@@ -10,7 +10,7 @@ volatile int anyThreadCreated = 0;
 
 
 class STLTestHeap :
-  public HL::LockedHeap<HL::SpinLockType, SingletonHeap> {};
+  public HL::LockedHeap<HL::SpinLockType, HL::SingletonHeap> {};
 
 
 typedef
