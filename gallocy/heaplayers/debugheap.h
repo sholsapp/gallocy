@@ -21,7 +21,7 @@ class DebugHeap : public Super {
       void * ptr;
       ptr = Super::malloc (sz);
       //ptr = Super::malloc (sz + sizeof(unsigned long));
-      for (int i = 0; i < sz; i++) {
+      for (unsigned int i = 0; i < sz; i++) {
         ((char *) ptr)[i] = allocChar;
       }
 
