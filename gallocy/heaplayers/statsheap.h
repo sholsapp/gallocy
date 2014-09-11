@@ -3,16 +3,18 @@
 
 #include <map>
 
+namespace HL {
+
 template <class SuperHeap>
 class InUseHeap : public SuperHeap {
-private:
-  typedef std::map<void *, int> mapType;
+
 public:
   InUseHeap (void)
     : inUse (0),
       maxInUse (0)
   {}
-  void * malloc (size_t sz) {
+
+  inline void * malloc (size_t sz) {
     void * ptr = SuperHeap::malloc (sz);
     if (ptr != NULL) {
       inUse += sz;
@@ -23,7 +25,8 @@ public:
     }
     return ptr;
   }
-  void free (void * ptr) {
+
+  inline void free (void * ptr) {
     mapType::iterator i;
     i = allocatedObjects.find (ptr);
     if (i == allocatedObjects.end()) {
@@ -38,12 +41,15 @@ public:
   int getInUse (void) const {
     return inUse;
   }
+
   int getMaxInUse (void) const {
     return maxInUse;
   }
+
 private:
   int inUse;
   int maxInUse;
+  typedef std::map<void *, int> mapType;
   mapType allocatedObjects;
 };
 
@@ -90,5 +96,7 @@ public:
     printf ("Max in use = %d, max allocated = %d\n", getMaxInUse(), getMaxAllocated());
   }
 };
+
+}
 
 #endif
