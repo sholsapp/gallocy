@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <new>
 
+#include <cstring>
+
 
 #include "diff.h"
 
@@ -19,8 +21,8 @@ public:
 class Cost {
 public:
   static const int MATCH = 1;
-  static const int GAP = -2;
   static const int MISMATCH = -1;
+  static const int GAP = -2;
 };
 
 
@@ -46,15 +48,49 @@ void print_matrix(Element** matrix, size_t matrix_y, size_t matrix_x) {
 }
 
 
+void print_diff(const char* mem1, size_t mem1_len, const char* mem2, size_t mem2_len) {
+  fprintf(stderr, "-> %s\n", mem1);
+  fprintf(stderr, "-> %s\n", mem2);
+  for (int i = 0; i < mem1_len; i++) {
+    if (mem1[i] == mem2[i]) {
+      // Don't print this, it's noise
+    }
+    else if (mem1[i] == '-') {
+      fprintf(stderr, "@%d: ", i);
+      fprintf(stderr, "+");
+      fprintf(stderr, "%c", mem2[i]);
+      fprintf(stderr, "\n");
+    }
+    else if (mem2[i] == '-') {
+      fprintf(stderr, "@%d: ", i);
+      fprintf(stderr, "-");
+      fprintf(stderr, "%c", mem1[i]);
+      fprintf(stderr, "\n");
+    }
+    else if (mem1[i] != mem2[i]) {
+      fprintf(stderr, "@%d: ", i);
+      fprintf(stderr, "-");
+      fprintf(stderr, "%c", mem1[i]);
+      fprintf(stderr, "+");
+      fprintf(stderr, "%c", mem2[i]);
+      fprintf(stderr, "\n");
+    }
+  }
+}
+
+
 char* diff(
-  const char* mem1, size_t mem1_len,
-  const char* mem2, size_t mem2_len) {
+    const char* mem1, size_t mem1_len,
+    const char* mem2, size_t mem2_len) {
+
+  size_t y_matrix_len = mem1_len + 1;
+  size_t x_matrix_len = mem2_len + 1;
 
   // Allocate the matrices
-  Element** _matrix = (Element**) malloc(sizeof(Element*) * mem1_len);
-  for (int y = 0; y < mem1_len; y++) {
-    _matrix[y] = (Element*) malloc(sizeof(Element) * mem2_len);
-    for (int x = 0; x < mem2_len; x++) {
+  Element** _matrix = (Element**) malloc(sizeof(Element*) * y_matrix_len);
+  for (int y = 0; y < y_matrix_len; y++) {
+    _matrix[y] = (Element*) malloc(sizeof(Element) * x_matrix_len);
+    for (int x = 0; x < x_matrix_len; x++) {
       Element* e = new ((void*) &_matrix[y][x]) Element(x, y);
       e->value = 0;
     }
@@ -64,22 +100,20 @@ char* diff(
   _matrix[0][0].value = 0;
   _matrix[0][0].traceback = Moves::ORIGIN;
 
-  for (int x = 1; x < mem2_len; x++) {
+  for (int x = 1; x < x_matrix_len; x++) {
     _matrix[0][x].value = Cost::GAP * _matrix[0][x].x;
     _matrix[0][x].traceback = Moves::LEFT;
   }
 
-  for (int y = 1; y < mem1_len; y++) {
+  for (int y = 1; y < y_matrix_len; y++) {
     _matrix[y][0].value = Cost::GAP * _matrix[y][0].y;
     _matrix[y][0].traceback = Moves::UP;
   }
 
-  print_matrix(_matrix, mem1_len, mem2_len);
-
   // Calculate subsolutions
-  for (int y = 1; y < mem1_len; y++) {
-    for (int x = 1; x < mem2_len; x++) {
-      int diag_cost = _matrix[y][x].value + (
+  for (int y = 1; y < y_matrix_len; y++) {
+    for (int x = 1; x < x_matrix_len; x++) {
+      int diag_cost = _matrix[y-1][x-1].value + (
           Cost::MATCH ? mem1[y-1] == mem2[x-1] : Cost::MISMATCH);
       int left_cost = _matrix[y][x-1].value + Cost::GAP;
       int up_cost = _matrix[y-1][x].value + Cost::GAP;
@@ -88,15 +122,12 @@ char* diff(
       arr[1] = left_cost;
       arr[2] = up_cost;
       int max_cost = *std::max_element(arr, arr+3);
-      fprintf(stderr, "Max cost = %d\n", max_cost);
       if (diag_cost == max_cost)
         _matrix[y][x].traceback = Moves::DIAG;
       else if (left_cost == max_cost)
         _matrix[y][x].traceback = Moves::LEFT;
       else if (up_cost == max_cost)
         _matrix[y][x].traceback = Moves::UP;
-      else
-        fprintf(stderr, "WTF|n");
       _matrix[y][x].value = max_cost;
     }
   }
@@ -106,55 +137,50 @@ char* diff(
   params[0] = mem1_len;
   params[1] = mem2_len;
   int longest = *std::max_element(params, params+2);
-  fprintf(stderr, "longest = %d\n", longest);
+
   char* mem1_alignment = (char*) malloc(sizeof(char) * longest + 1);
   char* mem2_alignment = (char*) malloc(sizeof(char) * longest + 1);
 
   memset(mem1_alignment, '?', longest);
   memset(mem2_alignment, '?', longest);
 
-  int _alignment_idx = longest - 1;
-  int _ty = mem1_len - 1;
-  int _tx = mem2_len - 1;
+  int _alignment_idx = longest;
+  int _ty = y_matrix_len - 1;
+  int _tx = x_matrix_len - 1;
 
-  //while (_ty > 0 || _tx > 0) {
-  while (_alignment_idx > -1) {
+  while (_alignment_idx >= 0) {
     if (_matrix[_ty][_tx].traceback == Moves::DIAG) {
-      fprintf(stderr, "DIAG\n");
       mem1_alignment[_alignment_idx] = mem1[_ty-1];
       mem2_alignment[_alignment_idx] = mem2[_tx-1];
       _ty--;
       _tx--;
     }
     else if (_matrix[_ty][_tx].traceback == Moves::LEFT) {
-      fprintf(stderr, "LEFT\n");
       mem1_alignment[_alignment_idx] = '-';
       mem2_alignment[_alignment_idx] = mem2[_tx-1];
       _tx--;
     }
     else if (_matrix[_ty][_tx].traceback == Moves::UP) {
-      fprintf(stderr, "UP\n");
       mem1_alignment[_alignment_idx] = mem1[_ty-1];
       mem2_alignment[_alignment_idx] = '-';
       _ty--;
     }
-    else {
-      fprintf(stderr, "UNKNOWN MOVE\n");
+    else if (_matrix[_ty][_tx].traceback == Moves::ORIGIN) {
+      mem1_alignment[_alignment_idx] = mem1[_ty];
+      mem2_alignment[_alignment_idx] = mem2[_tx];
     }
     _alignment_idx--;
   }
 
-  print_matrix(_matrix, mem1_len, mem2_len);
+#if 0
+  print_matrix(_matrix, y_matrix_len, x_matrix_len);
+#endif
 
-  fprintf(stderr, "Finished _ty = %d\n", _ty);
-  fprintf(stderr, "Finished _tx = %d\n", _tx);
-
-
+  // Terminate the strings so they can be printed
   mem1_alignment[longest] = 0;
   mem2_alignment[longest] = 0;
 
-  fprintf(stderr, "-> %s\n", mem1_alignment);
-  fprintf(stderr, "-> %s\n", mem2_alignment);
+  print_diff(mem1_alignment, longest + 1, mem2_alignment, longest + 1);
 
   // TODO: implement me! See the bio module!
   return NULL;
