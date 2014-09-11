@@ -12,7 +12,7 @@ volatile int anyThreadCreated = 0;
 
 
 // This is the main heap that we expose to the application.
-MainHeap heap;
+MainHeapType heap;
 
 
 // This is a secondary heap which draws all of its memory from a single pool

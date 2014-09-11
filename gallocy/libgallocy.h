@@ -7,10 +7,7 @@
 #include "heaplayers/heaptypes.h"
 
 
-class MainHeap: public MainHeapType {};
-
-
-extern MainHeap heap;
+extern MainHeapType heap;
 
 
 extern SingletonHeapType singletonHeap;
