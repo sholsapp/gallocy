@@ -21,8 +21,8 @@ public:
 class Cost {
 public:
   static const int MATCH = 1;
-  static const int MISMATCH = -1;
-  static const int GAP = -2;
+  static const int MISMATCH = -2;
+  static const int GAP = -1;
 };
 
 
@@ -37,8 +37,8 @@ public:
 
 
 void print_matrix(Element** matrix, size_t matrix_y, size_t matrix_x) {
-  fprintf(stderr, "y dim: %d\n", matrix_y);
-  fprintf(stderr, "x dim: %d\n", matrix_x);
+  fprintf(stderr, "y dim: %lu\n", matrix_y);
+  fprintf(stderr, "x dim: %lu\n", matrix_x);
   for (int y = 0; y < matrix_y; y++ ) {
     for (int x = 0; x < matrix_x; x++ ) {
       fprintf(stderr, "%d ", matrix[y][x].value);
@@ -79,9 +79,9 @@ void print_diff(const char* mem1, size_t mem1_len, const char* mem2, size_t mem2
 }
 
 
-char* diff(
-    const char* mem1, size_t mem1_len,
-    const char* mem2, size_t mem2_len) {
+int diff(
+    const char* mem1, size_t mem1_len, char*& mem1_alignment,
+    const char* mem2, size_t mem2_len, char*& mem2_alignment) {
 
   size_t y_matrix_len = mem1_len + 1;
   size_t x_matrix_len = mem2_len + 1;
@@ -133,22 +133,42 @@ char* diff(
   }
 
   // Trace an optimal solution back
-  int params[2] = {0};
-  params[0] = mem1_len;
-  params[1] = mem2_len;
-  int longest = *std::max_element(params, params+2);
+  int _ty = y_matrix_len - 1;
+  int _tx = x_matrix_len - 1;
 
-  char* mem1_alignment = (char*) malloc(sizeof(char) * longest + 1);
-  char* mem2_alignment = (char*) malloc(sizeof(char) * longest + 1);
+  // We need to figure out how big the diffable string is, which can be at
+  // most mem1_len * mem2_len, which is too much to allocate. So figure it
+  // out really quickly by tracing the matrix and counting how many
+  // characters we'll have.
+  int longest = 0;
+  while (_matrix[_ty][_tx].traceback != Moves::ORIGIN) {
+    if (_matrix[_ty][_tx].traceback == Moves::DIAG) {
+      _ty--;
+      _tx--;
+    }
+    else if (_matrix[_ty][_tx].traceback == Moves::LEFT) {
+      _tx--;
+    }
+    else if (_matrix[_ty][_tx].traceback == Moves::UP) {
+      _ty--;
+    }
+    longest++;
+  }
+
+  // Now we can proceed with building the output
+  mem1_alignment = (char*) malloc(sizeof(char) * longest);
+  mem2_alignment = (char*) malloc(sizeof(char) * longest);
 
   memset(mem1_alignment, '?', longest);
   memset(mem2_alignment, '?', longest);
 
-  int _alignment_idx = longest;
-  int _ty = y_matrix_len - 1;
-  int _tx = x_matrix_len - 1;
+  int _alignment_idx = longest - 1;
+  _ty = y_matrix_len - 1;
+  _tx = x_matrix_len - 1;
 
-  while (_alignment_idx >= 0) {
+  //while (_alignment_idx >= 0) {
+  while (_matrix[_ty][_tx].traceback != Moves::ORIGIN) {
+
     if (_matrix[_ty][_tx].traceback == Moves::DIAG) {
       mem1_alignment[_alignment_idx] = mem1[_ty-1];
       mem2_alignment[_alignment_idx] = mem2[_tx-1];
@@ -165,10 +185,10 @@ char* diff(
       mem2_alignment[_alignment_idx] = '-';
       _ty--;
     }
-    else if (_matrix[_ty][_tx].traceback == Moves::ORIGIN) {
-      mem1_alignment[_alignment_idx] = mem1[_ty];
-      mem2_alignment[_alignment_idx] = mem2[_tx];
-    }
+    //else if (_matrix[_ty][_tx].traceback == Moves::ORIGIN) {
+    //  mem1_alignment[_alignment_idx] = mem1[_ty];
+    //  mem2_alignment[_alignment_idx] = mem2[_tx];
+    //}
     _alignment_idx--;
   }
 
@@ -180,9 +200,6 @@ char* diff(
   mem1_alignment[longest] = 0;
   mem2_alignment[longest] = 0;
 
-  print_diff(mem1_alignment, longest + 1, mem2_alignment, longest + 1);
-
-  // TODO: implement me! See the bio module!
-  return NULL;
+  return 0;
 
 }
