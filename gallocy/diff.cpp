@@ -7,15 +7,16 @@
 #include "libgallocy.h"
 #include "diff.h"
 
+class Element;
 
 class Element {
 public:
   Element(int x, int y) :
-    x(x), y(y), value(-1), traceback(-1) {}
+    x(x), y(y), value(-1), traceback(NULL) {}
   int x;
   int y;
   int value;
-  int traceback;
+  Element* traceback;
 };
 
 
@@ -24,16 +25,6 @@ public:
   static const int MATCH = 1;
   static const int MISMATCH = -2;
   static const int GAP = -1;
-};
-
-
-class Moves {
-public:
-  static const int ORIGIN = 100;
-  static const int LEFT = 101;
-  static const int RIGHT = 102;
-  static const int UP = 103;
-  static const int DIAG = 104;
 };
 
 
@@ -99,16 +90,16 @@ int diff(
 
   // Initialize the matrices
   _matrix[0][0].value = 0;
-  _matrix[0][0].traceback = Moves::ORIGIN;
+  _matrix[0][0].traceback = NULL;
 
   for (int x = 1; x < x_matrix_len; x++) {
     _matrix[0][x].value = Cost::GAP * _matrix[0][x].x;
-    _matrix[0][x].traceback = Moves::LEFT;
+    _matrix[0][x].traceback = &_matrix[0][x-1];
   }
 
   for (int y = 1; y < y_matrix_len; y++) {
     _matrix[y][0].value = Cost::GAP * _matrix[y][0].y;
-    _matrix[y][0].traceback = Moves::UP;
+    _matrix[y][0].traceback = &_matrix[y-1][0];
   }
 
   // Calculate subsolutions
@@ -118,88 +109,57 @@ int diff(
           Cost::MATCH ? mem1[y-1] == mem2[x-1] : Cost::MISMATCH);
       int left_cost = _matrix[y][x-1].value + Cost::GAP;
       int up_cost = _matrix[y-1][x].value + Cost::GAP;
-      int arr[3] = {0};
-      arr[0] = diag_cost;
-      arr[1] = left_cost;
-      arr[2] = up_cost;
+
+      int arr[3] = {diag_cost, left_cost, up_cost};
       int max_cost = *std::max_element(arr, arr+3);
+
       if (diag_cost == max_cost)
-        _matrix[y][x].traceback = Moves::DIAG;
+        _matrix[y][x].traceback = &_matrix[y-1][x-1];
       else if (left_cost == max_cost)
-        _matrix[y][x].traceback = Moves::LEFT;
+        _matrix[y][x].traceback = &_matrix[y][x-1];
       else if (up_cost == max_cost)
-        _matrix[y][x].traceback = Moves::UP;
+        _matrix[y][x].traceback = &_matrix[y-1][x];
       _matrix[y][x].value = max_cost;
     }
   }
 
   // Trace an optimal solution back
-  int _ty = y_matrix_len - 1;
-  int _tx = x_matrix_len - 1;
 
-  // We need to figure out how big the diffable string is, which can be at
-  // most mem1_len * mem2_len, which is too much to allocate. So figure it
-  // out really quickly by tracing the matrix and counting how many
-  // characters we'll have.
   int longest = 0;
-  while (_matrix[_ty][_tx].traceback != Moves::ORIGIN) {
-    if (_matrix[_ty][_tx].traceback == Moves::DIAG) {
-      _ty--;
-      _tx--;
-    }
-    else if (_matrix[_ty][_tx].traceback == Moves::LEFT) {
-      _tx--;
-    }
-    else if (_matrix[_ty][_tx].traceback == Moves::UP) {
-      _ty--;
-    }
+  Element* cur = &_matrix[y_matrix_len-1][x_matrix_len-1];
+  while (cur->traceback != NULL) {
+    cur = cur->traceback;
     longest++;
   }
 
   // Now we can proceed with building the output
   mem1_alignment = (char*) singletonHeap.malloc(sizeof(char) * longest);
   mem2_alignment = (char*) singletonHeap.malloc(sizeof(char) * longest);
-
-  memset(mem1_alignment, '?', longest);
-  memset(mem2_alignment, '?', longest);
-
-  int _alignment_idx = longest - 1;
-  _ty = y_matrix_len - 1;
-  _tx = x_matrix_len - 1;
-
-  //while (_alignment_idx >= 0) {
-  while (_matrix[_ty][_tx].traceback != Moves::ORIGIN) {
-
-    if (_matrix[_ty][_tx].traceback == Moves::DIAG) {
-      mem1_alignment[_alignment_idx] = mem1[_ty-1];
-      mem2_alignment[_alignment_idx] = mem2[_tx-1];
-      _ty--;
-      _tx--;
-    }
-    else if (_matrix[_ty][_tx].traceback == Moves::LEFT) {
-      mem1_alignment[_alignment_idx] = '-';
-      mem2_alignment[_alignment_idx] = mem2[_tx-1];
-      _tx--;
-    }
-    else if (_matrix[_ty][_tx].traceback == Moves::UP) {
-      mem1_alignment[_alignment_idx] = mem1[_ty-1];
-      mem2_alignment[_alignment_idx] = '-';
-      _ty--;
-    }
-    //else if (_matrix[_ty][_tx].traceback == Moves::ORIGIN) {
-    //  mem1_alignment[_alignment_idx] = mem1[_ty];
-    //  mem2_alignment[_alignment_idx] = mem2[_tx];
-    //}
-    _alignment_idx--;
-  }
-
-#if 0
-  print_matrix(_matrix, y_matrix_len, x_matrix_len);
-#endif
-
-  // Terminate the strings so they can be printed
+  memset(mem1_alignment, 0, longest);
+  memset(mem2_alignment, 0, longest);
   mem1_alignment[longest] = 0;
   mem2_alignment[longest] = 0;
+
+  int _alignment_idx = longest - 1;
+
+  cur = &_matrix[y_matrix_len-1][x_matrix_len-1];
+  while (cur != NULL) {
+
+    if (_matrix[cur->y][cur->x].traceback == &_matrix[cur->y-1][cur->x-1]) {
+      mem1_alignment[_alignment_idx] = mem1[cur->y-1];
+      mem2_alignment[_alignment_idx] = mem2[cur->x-1];
+    }
+    else if (_matrix[cur->y][cur->x].traceback == &_matrix[cur->y][cur->x-1]) {
+      mem1_alignment[_alignment_idx] = '-';
+      mem2_alignment[_alignment_idx] = mem2[cur->x-1];
+    }
+    else if (_matrix[cur->y][cur->x].traceback == &_matrix[cur->y-1][cur->x]) {
+      mem1_alignment[_alignment_idx] = mem1[cur->y-1];
+      mem2_alignment[_alignment_idx] = '-';
+    }
+    _alignment_idx--;
+    cur = cur->traceback;
+  }
 
   // Free the matrices
   for (int y = 0; y < y_matrix_len; y++) {
@@ -208,5 +168,4 @@ int diff(
   singletonHeap.free(_matrix);
 
   return 0;
-
 }
