@@ -2,6 +2,8 @@
 #define _PAGETABLE_H
 
 
+#include <cstdio>
+#include <cstdlib>
 #include <map>
 #include <string>
 #include <pthread.h>

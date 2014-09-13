@@ -31,8 +31,8 @@ public:
 void print_matrix(Element** matrix, size_t matrix_y, size_t matrix_x) {
   fprintf(stderr, "y dim: %lu\n", matrix_y);
   fprintf(stderr, "x dim: %lu\n", matrix_x);
-  for (int y = 0; y < matrix_y; y++ ) {
-    for (int x = 0; x < matrix_x; x++ ) {
+  for (unsigned int y = 0; y < matrix_y; y++ ) {
+    for (unsigned int x = 0; x < matrix_x; x++ ) {
       fprintf(stderr, "%d ", matrix[y][x].value);
     }
     fprintf(stderr, "\n");
@@ -43,7 +43,7 @@ void print_matrix(Element** matrix, size_t matrix_y, size_t matrix_x) {
 void print_diff(const char* mem1, size_t mem1_len, const char* mem2, size_t mem2_len) {
   fprintf(stderr, "-> %s\n", mem1);
   fprintf(stderr, "-> %s\n", mem2);
-  for (int i = 0; i < mem1_len; i++) {
+  for (unsigned int i = 0; i < mem1_len; i++) {
     if (mem1[i] == mem2[i]) {
       // Don't print this, it's noise
     }
@@ -80,9 +80,9 @@ int diff(
 
   // Allocate the matrices
   Element** _matrix = (Element**) singletonHeap.malloc(sizeof(Element*) * y_matrix_len);
-  for (int y = 0; y < y_matrix_len; y++) {
+  for (unsigned int y = 0; y < y_matrix_len; y++) {
     _matrix[y] = (Element*) singletonHeap.malloc(sizeof(Element) * x_matrix_len);
-    for (int x = 0; x < x_matrix_len; x++) {
+    for (unsigned int x = 0; x < x_matrix_len; x++) {
       Element* e = new ((void*) &_matrix[y][x]) Element(x, y);
       e->value = 0;
     }
@@ -92,19 +92,19 @@ int diff(
   _matrix[0][0].value = 0;
   _matrix[0][0].traceback = NULL;
 
-  for (int x = 1; x < x_matrix_len; x++) {
+  for (unsigned int x = 1; x < x_matrix_len; x++) {
     _matrix[0][x].value = Cost::GAP * _matrix[0][x].x;
     _matrix[0][x].traceback = &_matrix[0][x-1];
   }
 
-  for (int y = 1; y < y_matrix_len; y++) {
+  for (unsigned int y = 1; y < y_matrix_len; y++) {
     _matrix[y][0].value = Cost::GAP * _matrix[y][0].y;
     _matrix[y][0].traceback = &_matrix[y-1][0];
   }
 
   // Calculate subsolutions
-  for (int y = 1; y < y_matrix_len; y++) {
-    for (int x = 1; x < x_matrix_len; x++) {
+  for (unsigned int y = 1; y < y_matrix_len; y++) {
+    for (unsigned int x = 1; x < x_matrix_len; x++) {
       int diag_cost = _matrix[y-1][x-1].value + (
           Cost::MATCH ? mem1[y-1] == mem2[x-1] : Cost::MISMATCH);
       int left_cost = _matrix[y][x-1].value + Cost::GAP;
@@ -162,7 +162,7 @@ int diff(
   }
 
   // Free the matrices
-  for (int y = 0; y < y_matrix_len; y++) {
+  for (unsigned int y = 0; y < y_matrix_len; y++) {
     singletonHeap.free(_matrix[y]);
   }
   singletonHeap.free(_matrix);
