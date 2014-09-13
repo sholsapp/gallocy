@@ -7,14 +7,22 @@
 #include "libgallocy.h"
 
 
-TEST(SingletonHeapTests, ZeroMalloc) {
+class SingletonHeapTests: public ::testing::Test {
+  protected:
+    virtual void TearDown() {
+      __reset_memory_allocator();
+    }
+};
+
+
+TEST_F(SingletonHeapTests, ZeroMalloc) {
   void* ptr = NULL;
   ptr = singletonHeap.malloc(0);
   ASSERT_NE(ptr, (void*) NULL);
 }
 
 
-TEST(SingletonHeapTests, SimpleMalloc) {
+TEST_F(SingletonHeapTests, SimpleMalloc) {
   char* ptr = (char*) singletonHeap.malloc(sizeof(char) * 16);
   ASSERT_NE(ptr, (void *) NULL);
   memset(ptr, 'A', 15);
@@ -24,7 +32,7 @@ TEST(SingletonHeapTests, SimpleMalloc) {
 }
 
 
-TEST(SingletonHeapTests, SmallMalloc) {
+TEST_F(SingletonHeapTests, SmallMalloc) {
   char* ptr = (char*) singletonHeap.malloc(1);
   ASSERT_TRUE(ptr != NULL);
   ptr[0] = 'A';
@@ -32,7 +40,7 @@ TEST(SingletonHeapTests, SmallMalloc) {
 }
 
 
-TEST(SingletonHeapTests, MediumMalloc) {
+TEST_F(SingletonHeapTests, MediumMalloc) {
   int sz = 4312;
   char* ptr = (char*) singletonHeap.malloc(sz);
   ASSERT_TRUE(ptr != NULL);
@@ -44,7 +52,7 @@ TEST(SingletonHeapTests, MediumMalloc) {
 }
 
 
-TEST(SingletonHeapTests, BigMalloc) {
+TEST_F(SingletonHeapTests, BigMalloc) {
   int sz =  4096 * 16;
   char* ptr = (char*) singletonHeap.malloc(sz);
   ASSERT_TRUE(ptr != NULL);
@@ -56,7 +64,7 @@ TEST(SingletonHeapTests, BigMalloc) {
 }
 
 
-TEST(SingletonHeapTests, ManyMalloc) {
+TEST_F(SingletonHeapTests, ManyMalloc) {
   char* ptr;
   for (int i = 0; i < 4096; i++) {
     ptr = (char*) singletonHeap.malloc(32);
@@ -70,11 +78,11 @@ TEST(SingletonHeapTests, ManyMalloc) {
 }
 
 
-TEST(SingletonHeapTests, ReuseAllocation) {
+TEST_F(SingletonHeapTests, ReuseAllocation) {
   char* ptr1 = NULL;
   char* ptr2 = NULL;
 
-  ptr1 = (char*) singletonHeap.malloc(128);
+  ptr1 = (char*) singletonHeap.malloc(64);
   memset(ptr1, 'A', 64);
   singletonHeap.free(ptr1);
 

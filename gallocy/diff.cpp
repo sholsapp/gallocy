@@ -4,6 +4,7 @@
 #include <cstring>
 
 
+#include "libgallocy.h"
 #include "diff.h"
 
 
@@ -87,9 +88,9 @@ int diff(
   size_t x_matrix_len = mem2_len + 1;
 
   // Allocate the matrices
-  Element** _matrix = (Element**) malloc(sizeof(Element*) * y_matrix_len);
+  Element** _matrix = (Element**) singletonHeap.malloc(sizeof(Element*) * y_matrix_len);
   for (int y = 0; y < y_matrix_len; y++) {
-    _matrix[y] = (Element*) malloc(sizeof(Element) * x_matrix_len);
+    _matrix[y] = (Element*) singletonHeap.malloc(sizeof(Element) * x_matrix_len);
     for (int x = 0; x < x_matrix_len; x++) {
       Element* e = new ((void*) &_matrix[y][x]) Element(x, y);
       e->value = 0;
@@ -156,8 +157,8 @@ int diff(
   }
 
   // Now we can proceed with building the output
-  mem1_alignment = (char*) malloc(sizeof(char) * longest);
-  mem2_alignment = (char*) malloc(sizeof(char) * longest);
+  mem1_alignment = (char*) singletonHeap.malloc(sizeof(char) * longest);
+  mem2_alignment = (char*) singletonHeap.malloc(sizeof(char) * longest);
 
   memset(mem1_alignment, '?', longest);
   memset(mem2_alignment, '?', longest);
@@ -199,6 +200,12 @@ int diff(
   // Terminate the strings so they can be printed
   mem1_alignment[longest] = 0;
   mem2_alignment[longest] = 0;
+
+  // Free the matrices
+  for (int y = 0; y < y_matrix_len; y++) {
+    singletonHeap.free(_matrix[y]);
+  }
+  singletonHeap.free(_matrix);
 
   return 0;
 

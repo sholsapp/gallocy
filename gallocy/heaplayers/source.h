@@ -14,7 +14,7 @@
 #include "heaptypes.h"
 
 
-#define ZONE_SZ   4096 * 4096
+#define ZONE_SZ   4096 * 4096 * 8
 #define MMAP_PROT PROT_READ|PROT_WRITE
 #define MMAP_FLAG MAP_ANON|MAP_SHARED
 
@@ -32,8 +32,10 @@ class SourceMmapHeap {
 
       if (!zone) {
 
-        if ((zone = mmap(NULL, ZONE_SZ, MMAP_PROT, MMAP_FLAG, -1, 0)) == MAP_FAILED)
+        if ((zone = mmap(NULL, ZONE_SZ, MMAP_PROT, MMAP_FLAG, -1, 0)) == MAP_FAILED) {
+          fprintf(stderr, "---ENONMEM---\n");
           abort();
+        }
 
         next = (char*) zone;
         bytes_left = ZONE_SZ;
@@ -47,6 +49,7 @@ class SourceMmapHeap {
         return mem;
       }
       else {
+        fprintf(stderr, "---ENONMEM---\n");
         abort();
       }
 
