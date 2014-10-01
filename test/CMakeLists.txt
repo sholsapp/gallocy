@@ -13,6 +13,7 @@ set(test_sources
   test_mmult.cpp
   test_singleton.cpp
   test_stlallocator.cpp
+  test_pagetable.cpp
   #test_hashmap.cpp
   #test_freesllist.cpp
 )

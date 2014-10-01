@@ -192,5 +192,22 @@ void PageTable::insert_page_table_entry(void* ptr, int ptr_sz) {
 }
 
 
+int PageTable::get_page_table_entry_count() {
+  const char* sql = "SELECT COUNT(*) FROM pagetable;";
+  sqlite3_stmt* stmt;
+  int rc;
+  rc = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
+  if (rc != SQLITE_OK) {
+    fprintf(stderr, "Failed to prepare statement!\n");
+    return -1;
+  }
+
+  while (sqlite3_step(stmt) == SQLITE_ROW) {
+    return sqlite3_column_int(stmt, 0);
+  }
+  return 0;
+}
+
+
 PageTable pt;
 //Scheduler s;

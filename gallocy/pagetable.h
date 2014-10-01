@@ -59,6 +59,7 @@ class PageTable {
     void open_database();
     void create_tables();
     void insert_page_table_entry(void* ptr, int ptr_sz);
+    int get_page_table_entry_count();
 
     static int noop_callback(void *not_used, int argc, char **argv, char **az_col_name);
     static int print_callback(void *not_used, int argc, char **argv, char **az_col_name);
