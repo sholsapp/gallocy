@@ -205,6 +205,9 @@ int PageTable::get_page_table_entry_count() {
   while (sqlite3_step(stmt) == SQLITE_ROW) {
     return sqlite3_column_int(stmt, 0);
   }
+
+  sqlite3_finalize(stmt);
+
   return 0;
 }
 
