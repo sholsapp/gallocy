@@ -145,21 +145,29 @@ void PageTable::open_database() {
 
 
 void PageTable::create_tables() {
-  char *zErrMsg = 0;
+  sqlite3_stmt* stmt;
   int  rc;
+
   const char *sql = \
         "CREATE TABLE pagetable (" \
         "id INT PRIMARY KEY     NOT NULL,    " \
         "address        INT     NOT NULL,    " \
         "size           INT     NOT NULL);   ";
-  rc = sqlite3_exec(db, sql, print_callback, 0, &zErrMsg);
-  if(rc != SQLITE_OK) {
-    fprintf(stderr, "SQL error: %s\n", zErrMsg);
-    sqlite3_free(zErrMsg);
-  } else {
-    fprintf(stdout, "Table created successfully\n");
+
+  rc = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
+  if (rc != SQLITE_OK) {
+    fprintf(stderr, "Failed to create table(s)!\n");
+    return;
   }
+
+  if (sqlite3_step(stmt) != SQLITE_DONE) {
+    fprintf(stderr, "Not dont creating table! Is this bad?\n");
+  }
+
+  sqlite3_finalize(stmt);
+
   return;
+
 }
 
 
@@ -196,6 +204,7 @@ int PageTable::get_page_table_entry_count() {
   const char* sql = "SELECT COUNT(*) FROM pagetable;";
   sqlite3_stmt* stmt;
   int rc;
+  int cnt = -1;
   rc = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
   if (rc != SQLITE_OK) {
     fprintf(stderr, "Failed to prepare statement!\n");
@@ -203,12 +212,10 @@ int PageTable::get_page_table_entry_count() {
   }
 
   while (sqlite3_step(stmt) == SQLITE_ROW) {
-    return sqlite3_column_int(stmt, 0);
+    cnt = sqlite3_column_int(stmt, 0);
   }
-
   sqlite3_finalize(stmt);
-
-  return 0;
+  return cnt;
 }
 
 
