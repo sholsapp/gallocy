@@ -172,12 +172,13 @@ void PageTable::create_tables() {
 
 
 void PageTable::insert_page_table_entry(void* ptr, int ptr_sz) {
-  static int unique_id = 0;
-  char *zErrMsg = 0;
+  static long unique_id = 0;
   int  rc;
 
+  sqlite3_stmt* stmt;
+
   // TODO: fix me, this scary.
-  char sql[512];
+  char sql[256];
 
   snprintf(
     sql,
@@ -191,11 +192,17 @@ void PageTable::insert_page_table_entry(void* ptr, int ptr_sz) {
   unique_id++;
 
   /* Execute SQL statement */
-  rc = sqlite3_exec(db, sql, print_callback, 0, &zErrMsg);
+  rc = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
   if(rc != SQLITE_OK) {
-     fprintf(stderr, "SQL error: %s\n", zErrMsg);
-     sqlite3_free(zErrMsg);
+     fprintf(stderr, "Failed to prepare insert!\n");
   }
+
+  if (sqlite3_step(stmt) != SQLITE_DONE) {
+    fprintf(stderr, "Failed to insert page table record!\n");
+  }
+
+  sqlite3_finalize(stmt);
+
   return;
 }
 

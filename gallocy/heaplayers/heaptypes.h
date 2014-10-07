@@ -31,7 +31,7 @@ typedef
     HL::SizeHeap<
       HL::ZoneHeap<
         HL::SourceMmapHeap,
-        16384 - 16> > >
+        DEFAULT_ZONE_SZ> > >
   SingletonHeapType;
 
 

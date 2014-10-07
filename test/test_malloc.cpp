@@ -56,7 +56,9 @@ TEST_F(MallocTests, MediumMalloc) {
 
 
 TEST_F(MallocTests, BigMalloc) {
-  int sz =  4096 * 16;
+  // A size allocated by the Python interpreter during compilation of Python
+  // 3.3 that causes weird deadlock
+  int sz =  91424;
   char* ptr = (char*) custom_malloc(sz);
   ASSERT_TRUE(ptr != NULL);
   for (int i = 0; i < sz; i++)
