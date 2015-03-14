@@ -29,5 +29,5 @@ target_link_libraries(gallocy-wrapper gallocy-core)
 install(TARGETS gallocy-wrapper DESTINATION lib)
 
 # The tinyhttp build
-add_library(httpd SHARED httpd.c)
+add_executable(httpd httpd.c)
 install(TARGETS httpd DESTINATION lib)
