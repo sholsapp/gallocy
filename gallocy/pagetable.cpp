@@ -184,7 +184,7 @@ void PageTable::insert_page_table_entry(void* ptr, int ptr_sz) {
     sql,
     256,
     "INSERT INTO pagetable (id,address,size)" \
-    "VALUES (%d, %ld, %d);",
+    "VALUES (%ld, %ld, %d);",
     unique_id,
     (intptr_t) ptr,
     ptr_sz);
