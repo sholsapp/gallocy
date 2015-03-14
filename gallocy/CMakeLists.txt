@@ -27,3 +27,7 @@ set (GALLOCY_WRAPPER_SOURCE
 add_library(gallocy-wrapper SHARED ${GALLOCY_WRAPPER_SOURCE})
 target_link_libraries(gallocy-wrapper gallocy-core)
 install(TARGETS gallocy-wrapper DESTINATION lib)
+
+# The tinyhttp build
+add_library(httpd SHARED httpd.c)
+install(TARGETS httpd DESTINATION lib)
