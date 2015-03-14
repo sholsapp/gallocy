@@ -32,3 +32,8 @@ install(TARGETS gallocy-wrapper DESTINATION lib)
 add_executable(httpd httpd.c)
 target_link_libraries(httpd pthread)
 install(TARGETS httpd DESTINATION lib)
+
+# The restclient-cpp build
+add_library(restclient SHARED external/restclient-cpp/restclient.cpp)
+target_link_libraries(restclient curl)
+install(TARGETS restclient DESTINATION lib)
