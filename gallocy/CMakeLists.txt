@@ -30,4 +30,5 @@ install(TARGETS gallocy-wrapper DESTINATION lib)
 
 # The tinyhttp build
 add_executable(httpd httpd.c)
+target_link_libraries(httpd pthread)
 install(TARGETS httpd DESTINATION lib)
