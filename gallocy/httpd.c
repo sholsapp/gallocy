@@ -38,6 +38,7 @@ void error_die(const char *);
 void execute_cgi(int, const char *, const char *, const char *);
 int get_line(int, char *, int);
 void headers(int, const char *);
+void add_header(int, const char *, const char *);
 void not_found(int);
 void serve_file(int, const char *);
 int startup(u_short *);
@@ -103,6 +104,7 @@ void *accept_request(void * arg)
     }
   }
 
+#if 0
   sprintf(path, "htdocs%s", url);
   if (path[strlen(path) - 1] == '/')
     strcat(path, "index.html");
@@ -124,6 +126,15 @@ void *accept_request(void * arg)
     else
       execute_cgi(client, path, method, query_string);
   }
+#endif
+
+  headers(client, NULL);
+  char json_buffer[512];
+  snprintf(json_buffer, 512,
+    "{\"foo\": \"bar\"}");
+  fprintf(stdout, "%s\n", json_buffer);
+
+  send(client, json_buffer, strlen(json_buffer), 0);
 
   close(client);
   return NULL;
@@ -350,9 +361,16 @@ void headers(int client, const char *filename)
   send(client, buf, strlen(buf), 0);
   strcpy(buf, SERVER_STRING);
   send(client, buf, strlen(buf), 0);
-  sprintf(buf, "Content-Type: text/html\r\n");
+  sprintf(buf, "Content-Type: application/json\r\n");
   send(client, buf, strlen(buf), 0);
   strcpy(buf, "\r\n");
+  send(client, buf, strlen(buf), 0);
+}
+
+void add_header(int client, const char *header, const char *value)
+{
+  char buf[1024];
+  snprintf(buf, 1024, "%s: %s\r\n", header, value);
   send(client, buf, strlen(buf), 0);
 }
 
