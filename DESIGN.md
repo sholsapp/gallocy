@@ -1,8 +1,8 @@
 # gallocy
 
-## design
-
 Building a distributed shared memory infrastructure is *easy*.
+
+## design
 
 At a high level, the thigns a distributed shared memory infrastructure
 architect cares about are:
@@ -70,19 +70,18 @@ Developers need to know about memory coherency models to write *correct*
 applications. The coherency model is how we expect memory to behave when we
 read and write it.
 
-Memory *coherency* and memory *consistency* often refer to the same things in the
-field of distributed shared memory systems. This document continues that trend.
+Memory *coherency* and memory *consistency* often refer to the same things in
+the field of distributed shared memory systems. This document continues that
+trend. Feel free to submit a PR if I'm completely wrong.
 
 There are lots of different types of memory coherency models:
 
-  - strict
-  - sequential
-  - processor
-  - weak
-  - eventual
-  - release
-  - lazy-release
-  - *and many, many more*
+  - [strict](http://en.wikipedia.org/wiki/Consistency_model#Strict_Consistency)
+  - [sequential](http://en.wikipedia.org/wiki/Consistency_model#Sequential_consistency)
+  - [processor](http://en.wikipedia.org/wiki/Consistency_model#Processor_Consistency)
+  - [release](http://en.wikipedia.org/wiki/Consistency_model#Release_Consistency)
+  - [lazy-release](http://en.wikipedia.org/wiki/Consistency_model#Release_Consistency)
+  - *[and many, many more...](http://en.wikipedia.org/wiki/Consistency_model)*
 
 Strong models often guarantee a more atomic model (i.e., a memory will read the
 value that was last written to it). Such strong guarantee come at the cost of
@@ -102,7 +101,12 @@ coherency models.
 Communication leads to coordination, and that's an important area in
 distributed systems.
 
+This section talks about the nuances of how a process running a shared
+application does things like:
+
   - join the group
   - leave the group
+  - create a thread
+  - join a thread
   - ask for a memory
   - give up a memory
