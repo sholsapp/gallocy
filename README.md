@@ -25,7 +25,7 @@ cmake -G "Unix Makefiles"
 make && make install
 ```
 
-This installs test binaries and libraryes into the build/ directory.
+This installs test binaries and libraries into the build/ directory.
 
 ### testing
 

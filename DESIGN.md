@@ -14,8 +14,8 @@ architect cares about are:
 
 ### memory
 
-There are fundamentally three different regions of memory that a dsm needs to
-consider:
+There are fundamentally three different regions of memory that a distributed
+shared memory system needs to consider:
 
   - local internal memory
   - a shared page table
@@ -61,8 +61,8 @@ is home to the shared application's *heap*.
 
 This region of memory must also be synchronized between processes running the
 shared application. This region of memory's *consistenty model* need not be the
-same as the model used to maintain the the *shared page table* from the
-previous section.
+same as the model used to maintain the *shared page table* from the previous
+section.
 
 ### coherency
 
@@ -87,7 +87,7 @@ Strong models often guarantee a more atomic model (i.e., a memory will read the
 value that was last written to it). Such strong guarantee come at the cost of
 *performance*.
 
-Weak models often take a more lax model (i.e., a memory will read teh value
+Weak models often take a more lax model (i.e., a memory will read the value
 that was last written to it *soon*). Such a weak guarantee better *performance*
 at the cost of *correctness*.
 
