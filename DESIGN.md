@@ -2,56 +2,107 @@
 
 ## design
 
-Building a distributed shared memory system is easy. This section goes over the
-major design blocks needed to understand how such systems work.
+Building a distributed shared memory infrastructure is *easy*.
 
-### definitions
+At a high level, the thigns a distributed shared memory infrastructure
+architect cares about are:
 
-_the game_ | An application running with gallocy as the memory allocator.
+  - memory
+  - coherency
+  - communication
+  - ...
 
 ### memory
 
 There are fundamentally three different regions of memory that a dsm needs to
-consider: i) a page table, ii) internal memory, iii) application memory.
+consider:
 
-#### page table
+  - local internal memory
+  - a shared page table
+  - shared application memory
 
-The page table must be maintained so that the properties of the application
-memory can be maintained. This page table can tell us things like what memory
-is currently mapped in the application, who owns this memory, or what the local
-permissions on that memory block currently are.
+Additionally, some type of arbiter needs to coordinate a common address space
+using a shared page table. In traditional operating systems, this would
+probably be called the ``virtual memory manager``.
+
+#### local internal memory
+
+The internal memory region can also be referred to as local internal memory.
+This region of memory is a good place to put local threads, process-specific
+data, and other things that are local to a specific process running the shared
+application.
+
+This is the *only* region of memory that is allowed to differ between local
+processes running the shared application, and it is:
+
+  - not included in the shared page table
+  - not shared with any other process running the shared application
+
+#### shared page table
+
+The page table must be maintained so that the properties of the shared
+application memory can be maintained. This page table can tell us things like
+what memory is currently mapped in the application, which process participating
+in running the shared application owns this memory, or what the local
+permissions on that memory block currently are (e.g., ``PROT_READ``,
+``PROT_WRITE``, ``PROT_EXEC``).
 
 This page table must be maintained in a dedicated memory region so that it may
-easily synchronized between participants in the game.
+easily synchronized between processes running the shared application. The most
+interesting part related to maintaining this shared data structure is how it is
+kept updated, referred to as the *consistency model*, because of its
+implications on *performance* and *correctness*.
 
-#### internal memory
-
-The internal memory region can also be referred to as local memory. This region
-of memory is a good place to put local threads, process-specific data, and
-other things of that nature.
-
-This is the only region of memory that is allowed to differ between
-participants in the game.
-
-#### application memory
+#### shared application memory
 
 The application memory is the region of memory that is managed by the page
-table and actually used by the application. Sometimes, I refer to the
-application as the game to make it easier to distinguish between the library
-that is running the dsm stack.
+table and actually used by the shared application, i.e., this region of memory
+is home to the shared application's *heap*.
 
-This region of memory must follow whatever coherency paradigm we implement in
-gallocy, be it strong consistency, eventual consistency, lazy consistency, or,
-lazy-release consistency.
+This region of memory must also be synchronized between processes running the
+shared application. This region of memory's *consistenty model* need not be the
+same as the model used to maintain the the *shared page table* from the
+previous section.
 
-### allocators
+### coherency
 
-We use a design paradigm called _Mixins_ -- see
-http://people.cs.umass.edu/~yannis/practical-fmtd.pdf for more detals.
+Developers need to know about memory coherency models to write *correct*
+applications. The coherency model is how we expect memory to behave when we
+read and write it.
 
-Each allocator mixin is required to implement the following methods:
+Memory *coherency* and memory *consistency* often refer to the same things in the
+field of distributed shared memory systems. This document continues that trend.
 
-- malloc
-- free
-- getSize
-- __reset
+There are lots of different types of memory coherency models:
+
+  - strict
+  - sequential
+  - processor
+  - weak
+  - eventual
+  - release
+  - lazy-release
+  - *and many, many more*
+
+Strong models often guarantee a more atomic model (i.e., a memory will read the
+value that was last written to it). Such strong guarantee come at the cost of
+*performance*.
+
+Weak models often take a more lax model (i.e., a memory will read teh value
+that was last written to it *soon*). Such a weak guarantee better *performance*
+at the cost of *correctness*.
+
+It doesn't take a rocket scientist to imagine why keeping memory strictly
+coherent in a distributed shared memory system running 100,000 nodes would be
+expensive. This is why distributed shared memory systems tend to use weaker
+coherency models.
+
+### communication
+
+Communication leads to coordination, and that's an important area in
+distributed systems.
+
+  - join the group
+  - leave the group
+  - ask for a memory
+  - give up a memory

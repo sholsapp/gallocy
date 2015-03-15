@@ -4,15 +4,14 @@
 <img src='https://secure.travis-ci.org/sholsapp/gallocy.png?branch=master'>
 </a>
 
+> I want to a program that uses ``1 exabyte`` of memory.
+
 The gallocy library is a custom memory allocator that enables processes to
 utilize memory on many machines. One could call gallocy a distributed shared
 memory allocator.
 
-It borrows a large amount of design philosphy from the Hoard
-(http://www.hoard.org/) memory allocator, and was originally prototyped as a
-thesis. The gallocy project is a complete rewrite of that prototype, that seeks
-to apply the many lessons and shortcomings discovered during those miserable
-few years.
+  - [DESIGN](./DESIGN.md)
+  - [IMPLEMENTATION](./IMPLEMENTATION.md)
 
 ## getting started
 
