@@ -24,6 +24,42 @@ SingletonHeapType singletonHeap;
 SingletonHeapType HL::SingletonHeap::heap = singletonHeap;
 
 
+/**
+ * Internal memory allocators
+ *
+ * These are used internally to maintain data structures, but could also be
+ * referenced using the ``singletonHeap`` object directly.
+ */
+extern "C" {
+
+  void *internal_malloc(size_t sz) {
+    return singletonHeap.malloc(sz);
+  }
+
+  void internal_free(void *ptr) {
+    singletonHeap.free(ptr);
+  }
+
+  void* internal_realloc(void* ptr, size_t sz) {
+    return singletonHeap.realloc(ptr, sz);
+  }
+
+  char *internal_strdup(const char *s1) {
+    return singletonHeap.strdup(s1);
+  }
+
+  void *internal_calloc(size_t count, size_t size) {
+    return singletonHeap.calloc(count, size);
+  }
+
+}
+
+
+/**
+ * Application memory allocators.
+ *
+ * These are used in conjunction with stdlib's malloc replacement hooks.
+ */
 extern "C" {
 
   void __reset_memory_allocator() {
