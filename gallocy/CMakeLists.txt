@@ -2,6 +2,7 @@
 set (GALLOCY_INCLUDE
   .
   heaplayers
+  external/restclient-cpp
   external/sqlite3)
 include_directories(${GALLOCY_INCLUDE})
 
@@ -29,14 +30,18 @@ target_link_libraries(gallocy-wrapper gallocy-core)
 install(TARGETS gallocy-wrapper DESTINATION lib)
 
 # The tinyhttp build
-add_executable(httpd httpd.c)
+add_executable(httpd httpd.cpp)
 target_link_libraries(httpd pthread)
 install(TARGETS httpd DESTINATION lib)
 
 # The restclient-cpp build
 add_library(restclient SHARED external/restclient-cpp/restclient.cpp)
-target_link_libraries(restclient curl)
+target_link_libraries(restclient gallocy-core curl)
 install(TARGETS restclient DESTINATION lib)
+
+add_executable(httpc rest.cpp)
+target_link_libraries(httpc restclient)
+install(TARGETS httpc DESTINATION lib)
 
 # The frozen json build
 add_library(json SHARED external/frozen/frozen.cpp)

@@ -49,9 +49,9 @@ void unimplemented(int);
  * return.  Process the request appropriately.
  * Parameters: the socket connected to the client */
 /**********************************************************************/
-void *accept_request(void * arg)
+void *accept_request(void *arg)
 {
-  int client = (int) arg;
+  long client = (long) arg;
   char buf[1024];
   int numchars;
   char method[255];
@@ -495,7 +495,7 @@ void unimplemented(int client)
 int main(void)
 {
   int server_sock = -1;
-  u_short port = 0;
+  u_short port = 8080;
   long client_sock = -1;
   struct sockaddr_in client_name;
   unsigned int client_name_len = sizeof(client_name);
