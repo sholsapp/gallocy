@@ -37,3 +37,8 @@ install(TARGETS httpd DESTINATION lib)
 add_library(restclient SHARED external/restclient-cpp/restclient.cpp)
 target_link_libraries(restclient curl)
 install(TARGETS restclient DESTINATION lib)
+
+# The frozen json build
+add_library(json SHARED external/frozen/frozen.cpp)
+target_link_libraries(json gallocy-core)
+install(TARGETS json DESTINATION lib)

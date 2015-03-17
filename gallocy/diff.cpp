@@ -3,7 +3,6 @@
 
 #include <cstring>
 
-
 #include "libgallocy.h"
 #include "diff.h"
 
