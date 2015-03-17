@@ -17,6 +17,7 @@
 #include "heaplayers/firstfitheap.h"
 #include "heaplayers/zoneheap.h"
 #include "heaplayers/stl.h"
+#include "heaplayers/stdlibheap.h"
 
 
 namespace HL {
@@ -27,11 +28,12 @@ class SourceMmapHeap;
 
 
 typedef
-  HL::FirstFitHeap<
-    HL::SizeHeap<
-      HL::ZoneHeap<
-        HL::SourceMmapHeap,
-        DEFAULT_ZONE_SZ> > >
+  HL::StdlibHeap<
+    HL::FirstFitHeap<
+      HL::SizeHeap<
+        HL::ZoneHeap<
+          HL::SourceMmapHeap,
+          DEFAULT_ZONE_SZ> > > >
   SingletonHeapType;
 
 
