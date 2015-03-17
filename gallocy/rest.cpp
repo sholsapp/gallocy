@@ -4,6 +4,7 @@
 
 #include <curl/curl.h>
 
+#include "frozen.h"
 #include "libgallocy.h"
 #include "restclient.h"
 
@@ -21,8 +22,16 @@ int main(void) {
 
   RestClient::response r = RestClient::post("http://localhost:8080/",
       "text/json", "{\"foo\": \"bla\"}");
-  fprintf(stdout, "CODE: %d\n", r.code);
-  fprintf(stdout, "BODY: %s\n", r.body.c_str());
+
+  struct json_token *arr, *tok;
+  arr = parse_json2(r.body.c_str(), strlen(r.body.c_str()));
+  tok = find_json_token(arr, "foo");
+
+  char buf[256] = {0};
+  if (r.code == 200 && tok) {
+    memcpy(buf, tok->ptr, tok->len);
+    fprintf(stderr, "JSON: %s -> %s\n", "foo", buf);
+  }
 
   return 0;
 
