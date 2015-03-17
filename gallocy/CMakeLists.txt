@@ -31,6 +31,9 @@ target_link_libraries(gallocy-wrapper gallocy-core)
 install(TARGETS gallocy-wrapper DESTINATION lib)
 
 
+# XXX: Wrap the following build blocks into a gallocy-net module that we can
+# move around at will.
+
 # The tinyhttp build
 add_executable(httpd httpd.cpp)
 target_link_libraries(httpd pthread)
