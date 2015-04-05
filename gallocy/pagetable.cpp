@@ -18,11 +18,20 @@ typedef
     xSizeMapType;
 
 
+/**
+ * This is a "page table" helper allocator that also is needed to coordinate
+ * global application memory. We keep it seperate from the sqlite allocator
+ * because of weird things the STL library does with memory.
+ */
 xSizeMapType xSizeMap;
 
 
 class SqliteHeap: public SqliteAllocatorHeapType {};
 
+/**
+ * This is the "page table" used to coodinate global application memory between
+ * nodes.
+ */
 SqliteHeap sqliteHeap;
 
 
