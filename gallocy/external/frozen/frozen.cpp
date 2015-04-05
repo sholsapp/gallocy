@@ -24,33 +24,12 @@
 #include <cstring>
 #include <stdarg.h>
 
-#include "libgallocy.h"
 #include "frozen.h"
 
 #ifdef _WIN32
 #define snprintf _snprintf
 #endif
 
-void* _frozen_realloc(void* ptr, size_t sz) {
-  if (ptr == NULL) {
-    return singletonHeap.malloc(sz);
-  }
-  size_t min_size = singletonHeap.getSize(ptr);
-  void* buf = singletonHeap.malloc(sz);
-  if (buf != NULL) {
-    memcpy(buf, ptr, min_size);
-    singletonHeap.free(ptr);
-  }
-  return buf;
-}
-
-#ifndef FROZEN_REALLOC
-#define FROZEN_REALLOC _frozen_realloc
-#endif
-
-#ifndef FROZEN_FREE
-#define FROZEN_FREE singletonHeap.free
-#endif
 
 struct frozen {
   const char *end;

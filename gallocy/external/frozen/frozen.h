@@ -26,6 +26,31 @@ extern "C" {
 
 #include <stdarg.h>
 
+struct frozen_allocator {
+  void* (*_realloc)(void*, size_t);
+  void (*_free)(void*);
+};
+
+frozen_allocator allocator = {
+  realloc,
+  free
+};
+
+/**
+ * START GALLOCY MODIFICATIONS
+ */
+
+#ifndef FROZEN_REALLOC
+#define FROZEN_REALLOC allocator._realloc
+#endif
+
+#ifndef FROZEN_FREE
+#define FROZEN_FREE allocator._free
+#endif
+
+/**
+ * END GALLOCY MODIFICATIONS
+ */
 enum json_type {
   JSON_TYPE_EOF     = 0,      /* End of parsed tokens marker */
   JSON_TYPE_STRING  = 1,
