@@ -1,7 +1,5 @@
 # gallocy
 
-![The whale, gallocy.](resources/gallocy.jpg)
-
 <a href="https://travis-ci.org/sholsapp/gallocy">
 <img src='https://secure.travis-ci.org/sholsapp/gallocy.png?branch=master'>
 </a>
