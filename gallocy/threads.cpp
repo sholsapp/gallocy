@@ -35,7 +35,8 @@ void* allocate_thread_stack(void* location, size_t stack_size) {
       -1, 0)) == MAP_FAILED) {
     perror("allocate_thread_stack's mmap");
   }
-  mprotect(raw, PAGE_SZ, PROT_NONE);
-  mprotect(raw + PAGE_SZ * 3, PAGE_SZ, PROT_NONE);
-  return (void*) (raw + PAGE_SZ);
+  mprotect(raw, PAGE_SZ - 1, PROT_NONE);
+  mprotect(raw + PAGE_SZ * (stack_size + 2 - 1) - 1, PAGE_SZ, PROT_NONE);
+  // Return the highest address because stacks grow downward
+  return (void*) (raw + PAGE_SZ * stack_size);
 }

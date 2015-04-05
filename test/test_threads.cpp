@@ -13,8 +13,9 @@ TEST(ThreadsTests, PageAlignmentTest) {
 
 
 TEST(ThreadsTests, ThreadsStackAllocationTest) {
-  void* stack = allocate_thread_stack(NULL, 2);
+  int stack_size = 16;
+  void* stack = allocate_thread_stack(NULL, stack_size);
   ASSERT_NE(stack, (void*) NULL);
   ASSERT_EQ(page_align_ptr(stack), stack);
-  memset(stack, 'A', 4096 * 2);
+  memset(stack, 'A', 4096 * stack_size);
 }
