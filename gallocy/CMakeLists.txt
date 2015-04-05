@@ -46,3 +46,9 @@ install(TARGETS httpd DESTINATION bin)
 add_executable(httpc bin/rest.cpp)
 target_link_libraries(httpc gallocy-net gallocy-core)
 install(TARGETS httpc DESTINATION bin)
+
+# XXX: refactor this into gallocy-threading or something. Or add it to
+# gallocy-core.
+add_library(threads SHARED threads.cpp)
+target_link_libraries(threads pthread)
+install(TARGETS threads DESTINATION lib)
