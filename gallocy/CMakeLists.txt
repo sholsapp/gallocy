@@ -1,5 +1,5 @@
 # The directories that must be included for build
-set (GALLOCY_INCLUDE
+set(GALLOCY_INCLUDE
   .
   heaplayers
   external/frozen
@@ -30,25 +30,19 @@ add_library(gallocy-wrapper SHARED ${GALLOCY_WRAPPER_SOURCE})
 target_link_libraries(gallocy-wrapper gallocy-core)
 install(TARGETS gallocy-wrapper DESTINATION lib)
 
+# The gallocy-net build
+set(GALLOCY_NET_SRC
+  httpd.cpp
+  external/restclient-cpp/restclient.cpp
+  external/frozen/frozen.cpp)
+add_library(gallocy-net SHARED ${GALLOCY_NET_SRC})
+target_link_libraries(gallocy-net curl)
+install(TARGETS gallocy-net DESTINATION lib)
 
-# XXX: Wrap the following build blocks into a gallocy-net module that we can
-# move around at will.
-
-# The tinyhttp build
-add_executable(httpd httpd.cpp)
-target_link_libraries(httpd pthread)
-install(TARGETS httpd DESTINATION lib)
-
-# The restclient-cpp build
-add_library(restclient SHARED external/restclient-cpp/restclient.cpp)
-target_link_libraries(restclient gallocy-core curl)
-install(TARGETS restclient DESTINATION lib)
-
-add_executable(httpc rest.cpp)
-target_link_libraries(httpc restclient json)
-install(TARGETS httpc DESTINATION lib)
-
-# The frozen json build
-add_library(json SHARED external/frozen/frozen.cpp)
-target_link_libraries(json gallocy-core)
-install(TARGETS json DESTINATION lib)
+# The tinyhttpd server and a test client
+add_executable(httpd bin/httpd.cpp)
+target_link_libraries(httpd pthread gallocy-net gallocy-core)
+install(TARGETS httpd DESTINATION bin)
+add_executable(httpc bin/rest.cpp)
+target_link_libraries(httpc gallocy-net gallocy-core)
+install(TARGETS httpc DESTINATION bin)
