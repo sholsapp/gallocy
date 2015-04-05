@@ -4,7 +4,7 @@
 <img src='https://secure.travis-ci.org/sholsapp/gallocy.png?branch=master'>
 </a>
 
-> I want to a program that uses ``1 exabyte`` of memory.
+> I want to a run program that uses ``1 exabyte`` of memory.
 
 The gallocy library is a custom memory allocator that enables processes to
 utilize memory on many machines. One could call gallocy a distributed shared
