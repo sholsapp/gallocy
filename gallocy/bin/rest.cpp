@@ -19,6 +19,8 @@ int main(void) {
     internal_strdup,
     internal_calloc
   );
+  allocator._realloc = internal_realloc;
+  allocator._free = internal_free;
 
   RestClient::response r = RestClient::post("http://localhost:8080/",
       "text/json", "{\"foo\": \"bla\"}");
