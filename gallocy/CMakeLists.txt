@@ -54,5 +54,5 @@ target_link_libraries(threads pthread)
 install(TARGETS threads DESTINATION lib)
 
 add_executable(stacks bin/pthread.cpp)
-target_link_libraries(stacks pthread gallocy-core threads)
+target_link_libraries(stacks pthread dl gallocy-core threads)
 install(TARGETS stacks DESTINATION bin)
