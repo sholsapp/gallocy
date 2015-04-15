@@ -57,6 +57,7 @@ void *accept_request(void *arg) {
 
   send(client, json_buffer, strlen(json_buffer), 0);
 
+  shutdown(client, SHUT_RDWR);
   close(client);
   return NULL;
 }
