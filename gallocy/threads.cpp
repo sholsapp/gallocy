@@ -13,10 +13,11 @@ void* page_align_ptr(void* p) {
 /**
  * Allocate a stack.
  *
- * Allocate a stack at ``location`` that is ``stack_size`` many pages large. In
- * addition to the actual stack, an addition two pages of memory are allocated
- * and used as guard pages before and after the region of memory returned by
- * this function.
+ * Allocate a stack at ``location`` that is ``stack_size`` many pages large.
+ *
+ * In addition to the actual stack, an addition two pages of memory are
+ * allocated and used as guard pages before and after the region of memory
+ * returned by this function.
  *
  * :param location: The location or allocate the stack at or ``NULL`` if glibc
  *   should pick.
@@ -35,8 +36,10 @@ void* allocate_thread_stack(void* location, size_t stack_size) {
       -1, 0)) == MAP_FAILED) {
     perror("allocate_thread_stack's mmap");
   }
+  memset(raw, 'G', PAGE_SZ);
   mprotect(raw, PAGE_SZ - 1, PROT_NONE);
-  mprotect(raw + PAGE_SZ * (stack_size + 2 - 1) - 1, PAGE_SZ, PROT_NONE);
+  memset(raw + PAGE_SZ * (stack_size + 1), 'G', PAGE_SZ);
+  mprotect(raw + PAGE_SZ * (stack_size + 1), PAGE_SZ, PROT_NONE);
   // Return the highest address because stacks grow downward
-  return (void*) (raw + PAGE_SZ * stack_size);
+  return (void*) (raw + PAGE_SZ * (stack_size + 1));
 }
