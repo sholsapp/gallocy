@@ -1,5 +1,22 @@
+#include <utility>
+
 #include "httpd.h"
 
+void admin(void*);
+
+typedef std::pair<const char*, void (*)(void*)> route_t;
+
+typedef struct routing_table_t {
+  route_t admin_page;
+} routing_table_t;
+
+routing_table_t foo = {
+  .admin_page = route_t("admin", admin)
+};
+
+void admin(void* arg) {
+  return
+}
 
 /**
  * Process a request.
