@@ -20,14 +20,10 @@ int get_line(int, char *, int);
 int startup(u_short *);
 void *accept_request(void *);
 void add_header(int, const char *, const char *);
-void bad_request(int);
-void cannot_execute(int);
 void cat(int, FILE *);
 void error_die(const char *);
 void headers(int, const char *);
-void not_found(int);
 void serve_file(int, const char *);
-void unimplemented(int);
 
 void init(void);
 void admin(void*);

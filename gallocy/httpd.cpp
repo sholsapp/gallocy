@@ -50,7 +50,6 @@ void *accept_request(void *arg) {
   method[i] = '\0';
 
   if (strcasecmp(method, "GET") && strcasecmp(method, "POST")) {
-    unimplemented(client);
     return NULL;
   }
 
@@ -119,26 +118,6 @@ void *accept_request(void *arg) {
 
 
 /**
- * Write a bad request error.
- *
- * :param client: The client socket.
- */
-void bad_request(int client) {
-  char buf[1024];
-  sprintf(buf, "HTTP/1.0 400 BAD REQUEST\r\n");
-  send(client, buf, sizeof(buf), 0);
-  sprintf(buf, "Content-type: text/html\r\n");
-  send(client, buf, sizeof(buf), 0);
-  sprintf(buf, "\r\n");
-  send(client, buf, sizeof(buf), 0);
-  sprintf(buf, "<P>Your browser sent a bad request, ");
-  send(client, buf, sizeof(buf), 0);
-  sprintf(buf, "such as a POST without a Content-Length.\r\n");
-  send(client, buf, sizeof(buf), 0);
-}
-
-
-/**
  * Cat the contents of a file to a socket.
  *
  * :param client: The client socket.
@@ -153,23 +132,6 @@ void cat(int client, FILE *resource) {
   }
 }
 
-
-/**
- * Write a internal server error.
- *
- * :param client: The client socket.
- */
-void cannot_execute(int client) {
-  char buf[1024];
-  sprintf(buf, "HTTP/1.0 500 Internal Server Error\r\n");
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, "Content-type: text/html\r\n");
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, "\r\n");
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, "<P>Error prohibited CGI execution.\r\n");
-  send(client, buf, strlen(buf), 0);
-}
 
 /**
  * Die.
@@ -251,34 +213,6 @@ void add_header(int client, const char *header, const char *value) {
 
 
 /**
- * Write a not found error.
- *
- * :param client: The client socket descriptor.
- */
-void not_found(int client) {
-  char buf[1024];
-  sprintf(buf, "HTTP/1.0 404 NOT FOUND\r\n");
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, SERVER_STRING);
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, "Content-Type: text/html\r\n");
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, "\r\n");
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, "<HTML><TITLE>Not Found</TITLE>\r\n");
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, "<BODY><P>The server could not fulfill\r\n");
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, "your request because the resource specified\r\n");
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, "is unavailable or nonexistent.\r\n");
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, "</BODY></HTML>\r\n");
-  send(client, buf, strlen(buf), 0);
-}
-
-
-/**
  * Write a file to a socket.
  *
  * :param client: The client socket descriptor.
@@ -295,7 +229,7 @@ void serve_file(int client, const char *filename) {
 
   resource = fopen(filename, "r");
   if (resource == NULL)
-    not_found(client);
+    return;
   else {
     headers(client, filename);
     cat(client, resource);
@@ -345,30 +279,4 @@ int startup(u_short *port) {
   if (listen(httpd, 5) < 0)
     error_die("listen");
   return(httpd);
-}
-
-
-/**
- * Write a not implemented error.
- *
- * :param client: The client socket descriptor.
- */
-void unimplemented(int client) {
-  char buf[1024];
-  sprintf(buf, "HTTP/1.0 501 Method Not Implemented\r\n");
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, SERVER_STRING);
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, "Content-Type: text/html\r\n");
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, "\r\n");
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, "<HTML><HEAD><TITLE>Method Not Implemented\r\n");
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, "</TITLE></HEAD>\r\n");
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, "<BODY><P>HTTP request method not supported.\r\n");
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, "</BODY></HTML>\r\n");
-  send(client, buf, strlen(buf), 0);
 }
