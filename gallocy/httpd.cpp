@@ -1,20 +1,32 @@
 #include <utility>
 
 #include "httpd.h"
+#include "libgallocy.h"
 
-void admin(void*);
+
+
 
 typedef std::pair<const char*, void (*)(void*)> route_t;
 
-typedef struct routing_table_t {
-  route_t admin_page;
-} routing_table_t;
+typedef
+  std::map<std::string, void (*)(void*),
+  std::less<std::string>,
+  STLAllocator<std::pair<std::string, void (*)(void*)>, SingletonHeapType> >
+    routing_table_t;
 
-routing_table_t foo = {
-  route_t("admin", admin)
-};
+
+routing_table_t routing_table;
+
+
+void init() {
+  routing_table["/admin"] = &admin;
+  fprintf(stderr, "/admin is at %p\n", &admin);
+  fprintf(stderr, "Done initializing routing_table. Size = %d.\n", routing_table.size());
+}
+
 
 void admin(void* arg) {
+  fprintf(stderr, "ADMIN\n");
   return;
 }
 
@@ -66,12 +78,37 @@ void *accept_request(void *arg) {
     }
   }
 
+  fprintf(stderr, "====================================\n");
+  fprintf(stderr, "> method = %s\n", method);
+  fprintf(stderr, "> url    = %s\n", url);
+  fprintf(stderr, "> path   = %s\n", path);
+  fprintf(stderr, "> query  = %s\n", query_string);
+  fprintf(stderr, "====================================\n");
+
+  fprintf(stderr, "Map size = %d\n", routing_table.size());
+
+  for (auto const &it : routing_table) {
+    //fprintf(stderr, "Key = %s, Size = %d\n", it.first, strlen(it.first));
+    //fprintf(stderr, "Compared to /admin: %d\n", strcmp(it.first, "/admin"));
+    fprintf(stderr, "WTF %p\n", it.second);
+    it.second(NULL);
+  }
+
+  void (*func)(void*) = routing_table[std::string(url)];
+
+  if (func)
+    func(NULL);
+
+  //void (*func)(void*) = routing_table[std::string(url).c_str()];
+  //fprintf(stderr, "What is length of %d\n", strlen(url));
+  //fprintf(stderr, "What is %p\n", func);
+  //func(NULL);
+
   headers(client, NULL);
+
   char json_buffer[512];
   snprintf(json_buffer, 512,
     "{\"foo\": \"bar\"}");
-  fprintf(stdout, "%s\n", json_buffer);
-
   send(client, json_buffer, strlen(json_buffer), 0);
 
   shutdown(client, SHUT_RDWR);
@@ -282,15 +319,20 @@ int startup(u_short *port) {
   httpd = socket(PF_INET, SOCK_STREAM, 0);
   if (httpd == -1)
     error_die("socket");
+
+  int optval = 1;
+  setsockopt(httpd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
+
   memset(&name, 0, sizeof(name));
   name.sin_family = AF_INET;
   name.sin_port = htons(*port);
   name.sin_addr.s_addr = htonl(INADDR_ANY);
-  if (bind(httpd, (struct sockaddr *)&name, sizeof(name)) < 0)
+
+  if (bind(httpd, (struct sockaddr *) &name, sizeof(name)) < 0)
     error_die("bind");
   if (*port == 0)  /* if dynamically allocating a port */ {
     unsigned int namelen = sizeof(name);
-    if (getsockname(httpd, (struct sockaddr *)&name, &namelen) == -1)
+    if (getsockname(httpd, (struct sockaddr *) &name, &namelen) == -1)
       error_die("getsockname");
     *port = ntohs(name.sin_port);
   }

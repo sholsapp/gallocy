@@ -1,8 +1,10 @@
 #include "httpd.h"
 
 
-int main(void)
-{
+int main(void) {
+
+  init();
+
   int server_sock = -1;
   u_short port = 8080;
   long client_sock = -1;
@@ -13,8 +15,7 @@ int main(void)
   server_sock = startup(&port);
   printf("httpd running on port %d\n", port);
 
-  while (1)
-  {
+  while (1) {
     client_sock = accept(server_sock,
         (struct sockaddr *)&client_name,
         &client_name_len);

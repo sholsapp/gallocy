@@ -28,3 +28,6 @@ void headers(int, const char *);
 void not_found(int);
 void serve_file(int, const char *);
 void unimplemented(int);
+
+void init(void);
+void admin(void*);
