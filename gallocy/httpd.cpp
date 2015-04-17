@@ -4,10 +4,6 @@
 #include "libgallocy.h"
 
 
-
-
-typedef std::pair<const char*, void (*)(void*)> route_t;
-
 typedef
   std::map<std::string, void (*)(void*),
   std::less<std::string>,
@@ -91,7 +87,7 @@ void *accept_request(void *arg) {
     //fprintf(stderr, "Key = %s, Size = %d\n", it.first, strlen(it.first));
     //fprintf(stderr, "Compared to /admin: %d\n", strcmp(it.first, "/admin"));
     fprintf(stderr, "WTF %p\n", it.second);
-    it.second(NULL);
+    //it.second(NULL);
   }
 
   void (*func)(void*) = routing_table[std::string(url)];
@@ -99,10 +95,16 @@ void *accept_request(void *arg) {
   if (func)
     func(NULL);
 
+
   //void (*func)(void*) = routing_table[std::string(url).c_str()];
   //fprintf(stderr, "What is length of %d\n", strlen(url));
   //fprintf(stderr, "What is %p\n", func);
   //func(NULL);
+  //
+  while ((numchars = get_line(client, buf, sizeof(buf))) > 2) {
+    fprintf(stderr, "%s", buf);
+  }
+
 
   headers(client, NULL);
 
