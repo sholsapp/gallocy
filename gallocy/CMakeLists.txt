@@ -10,7 +10,7 @@ include_directories(${GALLOCY_INCLUDE})
 
 # Custom compile flags for memory allocator
 set(CMAKE_CXX_FLAGS
-  "-g -Wall -fstack-protector-all -Wstack-protector -fno-omit-frame-pointer")
+  "-std=c++0x -g -Wall -fstack-protector-all -Wstack-protector -fno-omit-frame-pointer")
 
 
 # The gallocy-core build
