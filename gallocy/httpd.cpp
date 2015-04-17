@@ -11,7 +11,7 @@ typedef struct routing_table_t {
 } routing_table_t;
 
 routing_table_t foo = {
-  .admin_page = route_t("admin", admin)
+  route_t("admin", admin)
 };
 
 void admin(void* arg) {
