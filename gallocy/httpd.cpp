@@ -15,7 +15,7 @@ routing_table_t foo = {
 };
 
 void admin(void* arg) {
-  return
+  return;
 }
 
 /**
