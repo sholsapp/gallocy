@@ -17,7 +17,7 @@ TEST(ThreadsTests, MicroStackAllocationTest) {
   char* stack = (char*) allocate_thread_stack(NULL, stack_size);
   ASSERT_NE(stack, (void*) NULL);
   ASSERT_EQ(page_align_ptr(stack), stack);
-  memset(stack - PAGE_SZ * stack_size, 'A', PAGE_SZ * stack_size);
+  memset(stack, 'A', PAGE_SZ * stack_size);
 }
 
 
@@ -26,7 +26,7 @@ TEST(ThreadsTests, MediumStackAllocationTest) {
   char* stack = (char*) allocate_thread_stack(NULL, stack_size);
   ASSERT_NE(stack, (void*) NULL);
   ASSERT_EQ(page_align_ptr(stack), stack);
-  memset(stack - PAGE_SZ * stack_size, 'A', PAGE_SZ * stack_size);
+  memset(stack, 'A', PAGE_SZ * stack_size);
 }
 
 
@@ -35,7 +35,7 @@ TEST(ThreadsTests, LargeStackAllocationTest) {
   char* stack = (char*) allocate_thread_stack(NULL, stack_size);
   ASSERT_NE(stack, (void*) NULL);
   ASSERT_EQ(page_align_ptr(stack), stack);
-  memset(stack - PAGE_SZ * stack_size, 'A', PAGE_SZ * stack_size);
+  memset(stack, 'A', PAGE_SZ * stack_size);
 }
 
 TEST(ThreadsTest, HitTopGuardPage) {
@@ -43,7 +43,7 @@ TEST(ThreadsTest, HitTopGuardPage) {
   char* stack = (char*) allocate_thread_stack(NULL, stack_size);
   ASSERT_NE(stack, (void*) NULL);
   ASSERT_EQ(page_align_ptr(stack), stack);
-  ASSERT_DEATH({ memset(stack + 1, 'A', 1); }, ".*");
+  ASSERT_DEATH({ memset(stack - 1, 'A', 1); }, ".*");
 }
 
 TEST(ThreadsTest, HitBottomGuardPage) {

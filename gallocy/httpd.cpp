@@ -17,7 +17,6 @@ routing_table_t routing_table;
 void init() {
   routing_table["/admin"] = &admin;
   fprintf(stderr, "/admin is at %p\n", &admin);
-  fprintf(stderr, "Done initializing routing_table. Size = %d.\n", routing_table.size());
 }
 
 
@@ -83,12 +82,12 @@ void *accept_request(void *arg) {
 
   fprintf(stderr, "Map size = %d\n", routing_table.size());
 
-  for (auto const &it : routing_table) {
+  //for (auto const &it : routing_table) {
     //fprintf(stderr, "Key = %s, Size = %d\n", it.first, strlen(it.first));
     //fprintf(stderr, "Compared to /admin: %d\n", strcmp(it.first, "/admin"));
-    fprintf(stderr, "WTF %p\n", it.second);
+  //  fprintf(stderr, "WTF %p\n", it.second);
     //it.second(NULL);
-  }
+  //}
 
   void (*func)(void*) = routing_table[std::string(url)];
 
@@ -323,7 +322,12 @@ int startup(u_short *port) {
     error_die("socket");
 
   int optval = 1;
+
+#ifdef __APPLE__
   setsockopt(httpd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
+#else
+  setsockopt(httpd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+#endif
 
   memset(&name, 0, sizeof(name));
   name.sin_family = AF_INET;
