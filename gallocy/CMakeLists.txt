@@ -15,9 +15,10 @@ set(CMAKE_CXX_FLAGS
 
 # The gallocy-core build
 set(GALLOCY_CORE_SRC
+  config.cpp
+  diff.cpp
   libgallocy.cpp
   pagetable.cpp
-  diff.cpp
   external/sqlite3/sqlite3.c)
 add_library(gallocy-core SHARED ${GALLOCY_CORE_SRC})
 install(TARGETS gallocy-core DESTINATION lib)

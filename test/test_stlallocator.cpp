@@ -10,7 +10,7 @@ volatile int anyThreadCreated = 0;
 
 
 class STLTestHeap :
-  public HL::LockedHeap<HL::SpinLockType, HL::SingletonHeap> {};
+  public HL::SingletonHeap {};
 
 
 typedef
@@ -26,6 +26,15 @@ typedef
     MyList;
 
 
+typedef
+  std::basic_string<char,
+  std::char_traits<char>,
+  STLAllocator<
+    std::basic_string<char>,
+    STLTestHeap> >
+      MyString;
+
+
 TEST(STLTests, VectorTest) {
   int i = 0;
   MyList mylist;
@@ -34,6 +43,7 @@ TEST(STLTests, VectorTest) {
   for (int i = 0; i < mylist.size(); i++)
     ASSERT_EQ(mylist[i], i) << "Failed on iteration [" << i << "]";
   mylist.clear();
+  ASSERT_EQ(mylist.size(), 0);
 }
 
 
@@ -48,4 +58,26 @@ TEST(STLTests, MapTest) {
   ASSERT_EQ(mymap[4], 16);
   for (it = mymap.begin(); it != mymap.end(); it++)
     ASSERT_EQ((*it).second, mymap[(*it).first]);
+  mymap.clear();
+  ASSERT_EQ(mymap.size(), 0);
+}
+
+
+TEST(STLTests, StringTest) {
+  MyString s("abc123");
+  ASSERT_EQ(s, "abc123");
+  s.clear();
+  ASSERT_EQ(s, "");
+}
+
+
+TEST(STLTests, StringManipulationTest) {
+  MyString a("aaa");
+  MyString b("bbb");
+  ASSERT_EQ(a, "aaa");
+  ASSERT_EQ(b, "bbb");
+  ASSERT_EQ(a + b, "aaabbb");
+  ASSERT_EQ(a + b + "ccc", "aaabbbccc");
+  a.push_back('a');
+  ASSERT_EQ(a, "aaaa");
 }

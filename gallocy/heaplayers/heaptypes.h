@@ -28,12 +28,14 @@ class SourceMmapHeap;
 
 
 typedef
-  HL::StdlibHeap<
-    HL::FirstFitHeap<
-      HL::SizeHeap<
-        HL::ZoneHeap<
-          HL::SourceMmapHeap,
-          DEFAULT_ZONE_SZ> > > >
+  HL::LockedHeap<
+    HL::SpinLockType,
+    HL::StdlibHeap<
+      HL::FirstFitHeap<
+        HL::SizeHeap<
+          HL::ZoneHeap<
+            HL::SourceMmapHeap,
+            DEFAULT_ZONE_SZ> > > > >
   SingletonHeapType;
 
 

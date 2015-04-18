@@ -14,7 +14,7 @@
 #include "heaptypes.h"
 
 
-#define ZONE_SZ   4096 * 4096 * 8
+#define ZONE_SZ   4096 * 4096 * 16
 #define MMAP_PROT PROT_READ|PROT_WRITE
 #define MMAP_FLAG MAP_ANON|MAP_SHARED
 

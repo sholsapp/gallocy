@@ -8,9 +8,10 @@ include_directories(${gtest_SOURCE_DIR}/include)
 
 set(test_sources
   gtest.cpp
+  test_config.cpp
   test_diff.cpp
   test_free.cpp
-  test_json.cpp
+  #test_json.cpp
   test_malloc.cpp
   test_mmult.cpp
   test_pagetable.cpp
