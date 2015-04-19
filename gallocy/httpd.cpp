@@ -38,7 +38,6 @@ void *accept_request(void *arg) {
   char url[255];
   char path[512];
   size_t i, j;
-  struct stat st;
   char *query_string = NULL;
 
   numchars = get_line(client, buf, sizeof(buf));
@@ -79,7 +78,7 @@ void *accept_request(void *arg) {
   fprintf(stderr, "> query  = %s\n", query_string);
   fprintf(stderr, "====================================\n");
 
-  fprintf(stderr, "Map size = %d\n", routing_table.size());
+  fprintf(stderr, "Map size = %lu\n", routing_table.size());
 
   //for (auto const &it : routing_table) {
     //fprintf(stderr, "Key = %s, Size = %d\n", it.first, strlen(it.first));
