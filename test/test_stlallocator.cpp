@@ -12,14 +12,6 @@ volatile int anyThreadCreated = 0;
 class STLTestHeap :
   public HL::SingletonHeap {};
 
-
-typedef
-  std::map<int, int,
-  std::less<int>,
-  STLAllocator<std::pair<int, int>, STLTestHeap> >
-    MyMap;
-
-
 typedef
   std::vector<int,
   STLAllocator<int, STLTestHeap> >
@@ -48,8 +40,8 @@ TEST(STLTests, VectorTest) {
 
 
 TEST(STLTests, MapTest) {
-  MyMap mymap;
-  MyMap::iterator it;
+  gallocy::map<int, int> mymap;
+  gallocy::map<int, int>::iterator it;
   for (int i = 0; i < 4096; i++)
     mymap[i] = i * i;
   ASSERT_EQ(mymap[1], 1);

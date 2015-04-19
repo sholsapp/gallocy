@@ -22,21 +22,26 @@ extern SingletonHeapType singletonHeap;
 
 namespace gallocy {
 
+// XXX: I can't figure out why we actually need this class. All if does is
+// extends HL::SingletonHeap. Without it, the STLAllocator uses below fail.
+// With it, the STLAllocators work. Here be dragons.
+class __STLAllocator: public HL::SingletonHeap {};
+
 
 typedef std::basic_string<char,
   std::char_traits<char>,
-  STLAllocator<char, SingletonHeapType> > string;
+  STLAllocator<char, __STLAllocator> > string;
 
 
 template <class T>
 class vector : public std::vector
-               <T, STLAllocator<T, SingletonHeapType> > {};
+               <T, STLAllocator<T, __STLAllocator> > {};
 
 
 template <class K, class V>
 class map : public std::map
             <K, V, std::less<K>,
-            STLAllocator<std::pair<K, V>, SingletonHeapType> > {};
+            STLAllocator<std::pair<K, V>, __STLAllocator> > {};
 
 
 }
