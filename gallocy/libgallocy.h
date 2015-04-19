@@ -7,6 +7,9 @@
 #include "heaplayers/heaptypes.h"
 
 
+extern volatile int anyThreadCreated;
+
+
 extern MainHeapType heap;
 
 

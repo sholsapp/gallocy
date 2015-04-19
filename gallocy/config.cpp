@@ -10,6 +10,6 @@
 gallocy::string read_file(const char* path) {
   std::ifstream t(path, std::ifstream::in);
   gallocy::string s((std::istreambuf_iterator<char>(t)),
-               std::istreambuf_iterator<char>());
+                     std::istreambuf_iterator<char>());
   return s;
 }

@@ -6,8 +6,8 @@
 #include "libgallocy.h"
 
 
-// When we start handling multithreaded applications, this
-// must be set to `1` when a thread is created.
+// When we start handling multithreaded applications, this must be set to `1`
+// when a thread is created. This is for the HL::SpinLockType.
 volatile int anyThreadCreated = 0;
 
 

@@ -30,7 +30,7 @@ typedef
   std::basic_string<char,
   std::char_traits<char>,
   STLAllocator<
-    std::basic_string<char>,
+    char,
     STLTestHeap> >
       MyString;
 

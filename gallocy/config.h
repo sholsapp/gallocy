@@ -16,15 +16,22 @@
 // (viz.) the gallocy::string type works, but passing the SingletonHeapType
 // class directly does not.
 class STLHeap :
-  public HL::SingletonHeap {};
+  // XXX: Move anyThreadsCreated from
+  // libgallocy.cpp into a stand alone module that
+  // both gallocy-core and gallocy-net can depend
+  // on. If we move this into SingletonHeapType
+  // then everyone needs to depend on gallocy-core
+  // for the single variable.
+  public HL::LockedHeap<
+    HL::SpinLockType,
+    HL::SingletonHeap > {};
 
 namespace gallocy {
 
-typedef std::basic_string<
-  char,
+typedef std::basic_string<char,
   std::char_traits<char>,
   STLAllocator<
-    std::basic_string<char>,
+    char,
     STLHeap> > string;
 
 template <class T>
