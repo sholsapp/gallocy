@@ -5,8 +5,6 @@
 #include <iostream>
 #include <streambuf>
 #include <sstream>
-#include <string>
-#include <vector>
 
 #include "frozen.h"
 #include "libgallocy.h"
@@ -26,21 +24,10 @@ class STLHeap :
     HL::SpinLockType,
     HL::SingletonHeap > {};
 
-namespace gallocy {
-
-typedef std::basic_string<char,
-  std::char_traits<char>,
-  STLAllocator<
-    char,
-    STLHeap> > string;
-
-template <class T>
-class vector : public std::vector
-               <T, STLAllocator<T, SingletonHeapType> > {};
-}
-
 
 typedef gallocy::vector<gallocy::string> peer_list_t;
+
+typedef gallocy::map<int, int> foo;
 
 
 gallocy::string read_file(const char*);

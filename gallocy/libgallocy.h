@@ -1,6 +1,10 @@
 #ifndef _LIBGALLOCY_H
 #define _LIBGALLOCY_H
 
+#include <vector>
+#include <map>
+#include <string>
+
 #include "pagetable.h"
 #include "firstfitheap.h"
 
@@ -14,6 +18,28 @@ extern MainHeapType heap;
 
 
 extern SingletonHeapType singletonHeap;
+
+
+namespace gallocy {
+
+
+typedef std::basic_string<char,
+  std::char_traits<char>,
+  STLAllocator<char, SingletonHeapType> > string;
+
+
+template <class T>
+class vector : public std::vector
+               <T, STLAllocator<T, SingletonHeapType> > {};
+
+
+template <class K, class V>
+class map : public std::map
+            <K, V, std::less<K>,
+            STLAllocator<std::pair<K, V>, SingletonHeapType> > {};
+
+
+}
 
 
 extern "C" {
