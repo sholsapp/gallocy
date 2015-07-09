@@ -11,6 +11,27 @@ TEST(ConfigTests, ReadFileTest) {
   ASSERT_EQ(contents, "{\"foo\": \"bar\"}\n");
 }
 
+TEST(ConfigTests, Something) {
+  const int buf_sz = 256;
+  gallocy::string contents(read_file("test/data/gallocy-config.json"));
+  char buf[buf_sz] = {0};
+  struct json_token *arr, *tok;
+  arr = parse_json2(contents.c_str(), strlen(contents.c_str()));
+  tok = find_json_token(arr, "me");
+  memcpy(buf, tok->ptr, tok->len);
+  ASSERT_STREQ(buf, "0.0.0.0:8080");
+  memset(buf, 0, buf_sz);
+  tok = find_json_token(arr, "peer[0]");
+  memcpy(buf, tok->ptr, tok->len);
+  ASSERT_STREQ(buf, "0.0.0.0:8081");
+  memset(buf, 0, buf_sz);
+  tok = find_json_token(arr, "peer[1]");
+  memcpy(buf, tok->ptr, tok->len);
+  ASSERT_STREQ(buf, "0.0.0.0:8082");
+  memset(buf, 0, buf_sz);
+  ASSERT_EQ(find_json_token(arr, "peer[2]"), (void *) NULL);
+}
+
 TEST(JsonTests, SimpleJson) {
   static const char *json = "{foo:1,bar:2}";
   char buf[16] = {0};
