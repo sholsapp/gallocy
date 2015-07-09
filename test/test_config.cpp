@@ -30,6 +30,7 @@ TEST(ConfigTests, Something) {
   ASSERT_STREQ(buf, "0.0.0.0:8082");
   memset(buf, 0, buf_sz);
   ASSERT_EQ(find_json_token(arr, "peer[2]"), (void *) NULL);
+  free(arr);
 }
 
 TEST(JsonTests, SimpleJson) {
@@ -43,9 +44,7 @@ TEST(JsonTests, SimpleJson) {
   tok = find_json_token(arr, "bar");
   memcpy(buf, tok->ptr, tok->len);
   ASSERT_STREQ(buf, "2");
-  // XXX: This memory is leaked but it is because the singletonHeap
-  // allocator allocated the memory in the json library.
-  //free(arr);
+  free(arr);
 }
 
 TEST(JsonTests, NestedJson) {
@@ -65,6 +64,7 @@ TEST(JsonTests, NestedJson) {
   memcpy(buf, tok->ptr, tok->len);
   ASSERT_STREQ(buf, "2");
   memset(buf, 0, 16);
+  free(arr);
 }
 
 TEST(JsonTests, ListJson) {
@@ -91,4 +91,5 @@ TEST(JsonTests, ListJson) {
   tok = find_json_token(arr, "foo[3]");
   ASSERT_EQ(tok, (void *) NULL);
   memset(buf, 0, 16);
+  free(arr);
 }
