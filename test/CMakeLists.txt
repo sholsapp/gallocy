@@ -11,7 +11,6 @@ set(test_sources
   test_config.cpp
   test_diff.cpp
   test_free.cpp
-  #test_json.cpp
   test_malloc.cpp
   test_mmult.cpp
   test_pagetable.cpp
