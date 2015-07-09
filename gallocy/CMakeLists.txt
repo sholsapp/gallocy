@@ -12,6 +12,10 @@ include_directories(${GALLOCY_INCLUDE})
 set(CMAKE_CXX_FLAGS
   "-std=c++0x -g -Wall -fstack-protector-all -Wstack-protector -fno-omit-frame-pointer")
 
+set(GALLOCY_UTILS_SRC
+  external/frozen/frozen.cpp)
+add_library(gallocy-utils SHARED ${GALLOCY_UTILS_SRC})
+install(TARGETS gallocy-utils DESTINATION lib)
 
 # The gallocy-core build
 set(GALLOCY_CORE_SRC
@@ -21,8 +25,8 @@ set(GALLOCY_CORE_SRC
   pagetable.cpp
   external/sqlite3/sqlite3.c)
 add_library(gallocy-core SHARED ${GALLOCY_CORE_SRC})
+target_link_libraries(gallocy-core gallocy-utils)
 install(TARGETS gallocy-core DESTINATION lib)
-
 
 # The gallocy-wrapper build
 set (GALLOCY_WRAPPER_SOURCE
@@ -34,8 +38,7 @@ install(TARGETS gallocy-wrapper DESTINATION lib)
 # The gallocy-net build
 set(GALLOCY_NET_SRC
   httpd.cpp
-  external/restclient-cpp/restclient.cpp
-  external/frozen/frozen.cpp)
+  external/restclient-cpp/restclient.cpp)
 add_library(gallocy-net SHARED ${GALLOCY_NET_SRC})
 target_link_libraries(gallocy-net curl)
 install(TARGETS gallocy-net DESTINATION lib)
