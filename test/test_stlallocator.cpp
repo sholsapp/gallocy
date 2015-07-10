@@ -9,27 +9,9 @@ volatile int anyThreadCreated = 0;
 #include "heaplayers/stl.h"
 
 
-class STLTestHeap :
-  public HL::SingletonHeap {};
-
-typedef
-  std::vector<int,
-  STLAllocator<int, STLTestHeap> >
-    MyList;
-
-
-typedef
-  std::basic_string<char,
-  std::char_traits<char>,
-  STLAllocator<
-    char,
-    STLTestHeap> >
-      MyString;
-
-
 TEST(STLTests, VectorTest) {
   int i = 0;
-  MyList mylist;
+  gallocy::vector<int> mylist;
   for (int i = 0; i < 4096; i++)
     mylist.push_back(i);
   for (int i = 0; i < mylist.size(); i++)
@@ -56,7 +38,7 @@ TEST(STLTests, MapTest) {
 
 
 TEST(STLTests, StringTest) {
-  MyString s("abc123");
+  gallocy::string s("abc123");
   ASSERT_EQ(s, "abc123");
   s.clear();
   ASSERT_EQ(s, "");
@@ -64,12 +46,20 @@ TEST(STLTests, StringTest) {
 
 
 TEST(STLTests, StringManipulationTest) {
-  MyString a("aaa");
-  MyString b("bbb");
+  gallocy::string a("aaa");
+  gallocy::string b("bbb");
   ASSERT_EQ(a, "aaa");
   ASSERT_EQ(b, "bbb");
   ASSERT_EQ(a + b, "aaabbb");
   ASSERT_EQ(a + b + "ccc", "aaabbbccc");
   a.push_back('a');
   ASSERT_EQ(a, "aaaa");
+}
+
+
+TEST(STLTests, StringStreamTest) {
+  gallocy::stringstream stream;
+  stream << "aaa";
+  stream << "bbb";
+  ASSERT_EQ(stream.str(), "aaabbb");
 }
