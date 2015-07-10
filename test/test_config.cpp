@@ -19,17 +19,21 @@ TEST(ConfigTests, Something) {
   arr = parse_json2(contents.c_str(), strlen(contents.c_str()));
   tok = find_json_token(arr, "me");
   memcpy(buf, tok->ptr, tok->len);
-  ASSERT_STREQ(buf, "0.0.0.0:8080");
+  ASSERT_STREQ(buf, "http://0.0.0.0:8080");
   memset(buf, 0, buf_sz);
   tok = find_json_token(arr, "peer[0]");
   memcpy(buf, tok->ptr, tok->len);
-  ASSERT_STREQ(buf, "0.0.0.0:8081");
+  ASSERT_STREQ(buf, "http://0.0.0.0:8080");
   memset(buf, 0, buf_sz);
   tok = find_json_token(arr, "peer[1]");
   memcpy(buf, tok->ptr, tok->len);
-  ASSERT_STREQ(buf, "0.0.0.0:8082");
+  ASSERT_STREQ(buf, "http://0.0.0.0:8081");
   memset(buf, 0, buf_sz);
-  ASSERT_EQ(find_json_token(arr, "peer[2]"), (void *) NULL);
+  tok = find_json_token(arr, "peer[2]");
+  memcpy(buf, tok->ptr, tok->len);
+  ASSERT_STREQ(buf, "http://0.0.0.0:8082");
+  memset(buf, 0, buf_sz);
+  ASSERT_EQ(find_json_token(arr, "peer[3]"), (void *) NULL);
   free(arr);
 }
 
