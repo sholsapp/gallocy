@@ -1,9 +1,11 @@
 #ifndef _LIBGALLOCY_H
 #define _LIBGALLOCY_H
 
-#include <vector>
 #include <map>
+#include <sstream>
+#include <streambuf>
 #include <string>
+#include <vector>
 
 #include "pagetable.h"
 #include "firstfitheap.h"
@@ -33,6 +35,16 @@ typedef std::basic_string<char,
   STLAllocator<char, __STLAllocator> > string;
 
 
+//typedef std::basic_stringbuf<char,
+//  std::char_traits<char>,
+//  STLAllocator<char, __STLAllocator> > stringbuf;
+
+
+class stringstream: public std::basic_stringstream<char,
+                    std::char_traits<char>,
+                    STLAllocator<char, __STLAllocator> > {};
+
+
 template <class T>
 class vector : public std::vector
                <T, STLAllocator<T, __STLAllocator> > {};
@@ -42,7 +54,6 @@ template <class K, class V>
 class map : public std::map
             <K, V, std::less<K>,
             STLAllocator<std::pair<K, V>, __STLAllocator> > {};
-
 
 }
 
