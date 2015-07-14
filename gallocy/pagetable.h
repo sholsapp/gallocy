@@ -5,9 +5,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <map>
-#include <string>
 #include <pthread.h>
 #include <sqlite3.h>
+#include <string>
 
 
 void init_sqlite_memory();

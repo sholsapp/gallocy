@@ -4,8 +4,14 @@
 #include <sstream>
 #include <unistd.h>
 
-#include "pagetable.h"
 #include "heaplayers/heaptypes.h"
+/*
+ * TODO: we only need this import to get the types of the gallocy
+ * flavored STL containers. Once that is refactored, we can include that
+ * instead of the entire libgallocy.h.
+ */
+#include "libgallocy.h"
+#include "pagetable.h"
 
 
 class xSizeHeap: public SqlitexSizeHeapType {};
@@ -182,26 +188,18 @@ void PageTable::create_tables() {
 
 void PageTable::insert_page_table_entry(void* ptr, int ptr_sz) {
   static long unique_id = 0;
-  int  rc;
+  int rc;
+  gallocy::stringstream sql;
 
   sqlite3_stmt* stmt;
 
-  // TODO: fix me, this scary.
-  char sql[256];
-
-  snprintf(
-    sql,
-    256,
-    "INSERT INTO pagetable (id,address,size)" \
-    "VALUES (%ld, %ld, %d);",
-    unique_id,
-    (intptr_t) ptr,
-    ptr_sz);
+  sql << "INSERT INTO pagetable (id, address, size)"
+      << "VALUES (" << unique_id << ", " << (intptr_t) ptr << ", " << ptr_sz << ");";
 
   unique_id++;
 
   /* Execute SQL statement */
-  rc = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
+  rc = sqlite3_prepare_v2(db, sql.str().c_str(), sql.str().length, &stmt, NULL);
   if(rc != SQLITE_OK) {
      fprintf(stderr, "Failed to prepare insert!\n");
   }
