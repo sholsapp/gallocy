@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "config.h"
 #include "constants.h"
 #include "httpd.h"
@@ -16,7 +18,8 @@ int main(void) {
   read_config(host, port, me, peers);
 
   int server_sock = -1;
-  u_short _port = 8080;
+
+  u_short _port = (unsigned short) port;
   long client_sock = -1;
   struct sockaddr_in client_name;
   unsigned int client_name_len = sizeof(client_name);
