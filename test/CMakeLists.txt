@@ -21,6 +21,6 @@ set(test_sources
   #test_freesllist.cpp
 )
 add_executable(gallocy_tests ${test_sources})
-target_link_libraries(gallocy_tests gtest_main gallocy-core gallocy-net threads "dl")
+target_link_libraries(gallocy_tests gtest_main gallocy-core gallocy-net gallocy-runtime threads "dl")
 
 install(TARGETS gallocy_tests DESTINATION bin)

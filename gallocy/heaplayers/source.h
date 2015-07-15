@@ -13,6 +13,8 @@
 #include "sizeheap.h"
 #include "heaptypes.h"
 
+#include "constants.h"
+
 
 #define ZONE_SZ   4096 * 4096 * 16
 #define MMAP_PROT PROT_READ|PROT_WRITE
@@ -32,7 +34,7 @@ class SourceMmapHeap {
 
       if (!zone) {
 
-        if ((zone = mmap(NULL, ZONE_SZ, MMAP_PROT, MMAP_FLAG, -1, 0)) == MAP_FAILED) {
+        if ((zone = mmap(reinterpret_cast<void *>(global_base()), ZONE_SZ, MMAP_PROT, MMAP_FLAG, -1, 0)) == MAP_FAILED) {
           fprintf(stderr, "---ENONMEM---\n");
           abort();
         }

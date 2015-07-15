@@ -29,7 +29,7 @@ set(GALLOCY_CORE_SRC
   pagetable.cpp
   external/sqlite3/sqlite3.c)
 add_library(gallocy-core SHARED ${GALLOCY_CORE_SRC})
-target_link_libraries(gallocy-core gallocy-utils)
+target_link_libraries(gallocy-core gallocy-utils gallocy-runtime)
 install(TARGETS gallocy-core DESTINATION lib)
 
 # The gallocy-wrapper build
@@ -57,7 +57,7 @@ add_executable(httpd bin/httpd.cpp)
 target_link_libraries(httpd pthread gallocy-net gallocy-core gallocy-runtime)
 install(TARGETS httpd DESTINATION bin)
 add_executable(httpc bin/rest.cpp)
-target_link_libraries(httpc gallocy-net gallocy-core)
+target_link_libraries(httpc gallocy-net gallocy-core gallocy-runtime)
 install(TARGETS httpc DESTINATION bin)
 
 # XXX: refactor this into gallocy-threading or something. Or add it to
