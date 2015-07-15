@@ -25,6 +25,7 @@ int main(void) {
 
   gallocy::string me;
   peer_list_t peers;
+
   read_config(me, peers);
 
   for (auto peer : peers) {
@@ -32,12 +33,15 @@ int main(void) {
         "text/json", "{\"foo\": \"bla\"}");
     std::cout << "[" << r.code << "] " << peer << std::endl;
     if (r.code == 200) {
+      std::cout << "SUCCESS" << std::endl;
     } else {
+      std::cout << "FAIL" << std::endl;
     }
   }
 
   RestClient::response r = RestClient::post("http://localhost:8080/admin",
       "text/json", "{\"foo\": \"bla\"}");
+
   if (r.code == 200) {
     struct json_token *arr, *tok;
     arr = parse_json2(r.body.c_str(), strlen(r.body.c_str()));
