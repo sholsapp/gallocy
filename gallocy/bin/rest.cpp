@@ -23,10 +23,12 @@ int main(void) {
   allocator._realloc = internal_realloc;
   allocator._free = internal_free;
 
+  gallocy::string host;
+  int port;
   gallocy::string me;
   peer_list_t peers;
 
-  read_config(me, peers);
+  read_config(host, port, me, peers);
 
   for (auto peer : peers) {
     RestClient::response r = RestClient::post(peer.c_str(),
