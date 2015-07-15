@@ -199,7 +199,7 @@ void PageTable::insert_page_table_entry(void* ptr, int ptr_sz) {
   unique_id++;
 
   /* Execute SQL statement */
-  rc = sqlite3_prepare_v2(db, sql.str().c_str(), sql.str().length, &stmt, NULL);
+  rc = sqlite3_prepare_v2(db, sql.str().c_str(), sql.str().length(), &stmt, NULL);
   if(rc != SQLITE_OK) {
      fprintf(stderr, "Failed to prepare insert!\n");
   }

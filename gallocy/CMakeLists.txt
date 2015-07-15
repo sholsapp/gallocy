@@ -7,6 +7,10 @@ set(GALLOCY_INCLUDE
   external/sqlite3)
 include_directories(${GALLOCY_INCLUDE})
 
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -undefined dynamic_lookup")
+  endif()
+
 
 # Custom compile flags for memory allocator
 set(CMAKE_CXX_FLAGS
@@ -43,9 +47,14 @@ add_library(gallocy-net SHARED ${GALLOCY_NET_SRC})
 target_link_libraries(gallocy-net curl)
 install(TARGETS gallocy-net DESTINATION lib)
 
+set(GALLOCY_RUNTIME
+  constants.cpp)
+add_library(gallocy-runtime SHARED ${GALLOCY_RUNTIME})
+install(TARGETS gallocy-runtime DESTINATION lib)
+
 # The tinyhttpd server and a test client
 add_executable(httpd bin/httpd.cpp)
-target_link_libraries(httpd pthread gallocy-net gallocy-core)
+target_link_libraries(httpd pthread gallocy-net gallocy-core gallocy-runtime)
 install(TARGETS httpd DESTINATION bin)
 add_executable(httpc bin/rest.cpp)
 target_link_libraries(httpc gallocy-net gallocy-core)

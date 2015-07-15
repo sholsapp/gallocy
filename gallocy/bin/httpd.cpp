@@ -1,3 +1,4 @@
+#include "constants.h"
 #include "httpd.h"
 
 
@@ -13,6 +14,10 @@ int main(void) {
   pthread_t newthread;
 
   server_sock = startup(&port);
+
+  printf("main: %p\n", global_main());
+  printf("end: %p\n", global_end());
+  printf("base: %p\n", global_base());
   printf("httpd running on port %d\n", port);
 
   while (1) {
