@@ -18,7 +18,7 @@ gallocy::string read_file(const char* path) {
 /**
  *  Load a configuration file.
  */
-void read_config(gallocy::string &me, peer_list_t &peers) {
+void read_config(gallocy::string &host, int &port, gallocy::string &me, peer_list_t &peers) {
 
   const int buf_sz = 256;
 
@@ -29,13 +29,36 @@ void read_config(gallocy::string &me, peer_list_t &peers) {
 
   gallocy::string contents;
 
-  if (path == NULL)
+  if (path == NULL) {
+
+    // Try reading config.json
     contents = read_file("config.json");
-  else
+
+    // Fail if it doesn't exist
+    if (contents.length() == 0) {
+      fprintf(stderr, "The file ``config.json`` does not exist and the environment variable ``GALLOCY_CONFIG`` was not set.\n");
+      exit(1);
+    }
+  }
+  else {
+    // Read the config specified by the environment variable.
     contents = read_file(path);
+  }
 
   // Parse the configuration file
   arr = parse_json2(contents.c_str(), strlen(contents.c_str()));
+
+  // Extract the "host" value
+  tok = find_json_token(arr, "host");
+  memcpy(parser_buf, tok->ptr, tok->len);
+  host = parser_buf;
+  memset(parser_buf, 0, buf_sz);
+
+  // Extract the "port" value
+  tok = find_json_token(arr, "port");
+  memcpy(parser_buf, tok->ptr, tok->len);
+  port = (int) parser_buf;
+  memset(parser_buf, 0, buf_sz);
 
   // Extract the "me" value
   tok = find_json_token(arr, "me");
