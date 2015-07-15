@@ -1,3 +1,5 @@
+#include <string>
+
 #include "config.h"
 
 
@@ -57,7 +59,7 @@ void read_config(gallocy::string &host, int &port, gallocy::string &me, peer_lis
   // Extract the "port" value
   tok = find_json_token(arr, "port");
   memcpy(parser_buf, tok->ptr, tok->len);
-  port = (int) parser_buf;
+  port = (int) std::stoi(parser_buf);
   memset(parser_buf, 0, buf_sz);
 
   // Extract the "me" value
