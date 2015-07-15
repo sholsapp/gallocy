@@ -9,6 +9,8 @@ def main():
   nodes = 3
   for n in range(0, nodes):
     config = {
+      'host': '0.0.0.0',
+      'port': '8080',
       'me': '0.0.0.0:{0}'.format(8080 + n),
       'peer': [],
     }
