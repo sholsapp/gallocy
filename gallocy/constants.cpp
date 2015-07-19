@@ -3,7 +3,13 @@
 
 extern "C" {
 extern char* main;
+#ifdef __linux__
 extern char* _end;
+#elif __APPLE__
+// TODO: find a way to calculate this dynamically. This
+// is a hack for OS X only.
+char* _end = (char*) 0x800000000;
+#endif
 }
 
 
