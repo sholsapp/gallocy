@@ -6,19 +6,22 @@ set (GALLOCY_INCLUDE
 include_directories(${GALLOCY_INCLUDE})
 include_directories(${gtest_SOURCE_DIR}/include)
 
+# Custom compile flags for memory allocator
+set(CMAKE_CXX_FLAGS
+  "-std=c++0x -g -Wall -fstack-protector-all -Wstack-protector -fno-omit-frame-pointer")
+
 set(test_sources
   gtest.cpp
   test_config.cpp
   test_diff.cpp
   test_free.cpp
+  test_httpd.cpp
   test_malloc.cpp
   test_mmult.cpp
   test_pagetable.cpp
   test_singleton.cpp
   test_stlallocator.cpp
   test_threads.cpp
-  #test_hashmap.cpp
-  #test_freesllist.cpp
 )
 add_executable(gallocy_tests ${test_sources})
 target_link_libraries(gallocy_tests gtest_main gallocy-core gallocy-net gallocy-runtime threads "dl")
