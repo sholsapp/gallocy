@@ -1,12 +1,11 @@
+#include <errno.h>
+
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
-#include <errno.h>
 
 #if __linux__
-
 #include <malloc.h>
-
 #ifndef __MALLOC_HOOK_VOLATILE
 #define __MALLOC_HOOK_VOLATILE
 #endif
@@ -14,19 +13,19 @@
 extern "C" {
 
   // Declare symbols, but define them somewhere else
-  void* custom_malloc(size_t);
-  void custom_free(void*);
-  void* custom_realloc(void*, size_t);
+  void* custom_malloc(size_t sz);
+  void custom_free(void* ptr);
+  void* custom_realloc(void* ptr, size_t sz);
 
   // New hooks for allocation functions.
-  static void* my_malloc_hook(size_t, const void*);
-  static void my_free_hook(void*, const void*);
-  static void* my_realloc_hook(void*, size_t, const void*);
+  static void* my_malloc_hook(size_t sz, const void* ptr);
+  static void my_free_hook(void* ptr, const void*);
+  static void* my_realloc_hook(void* ptr, size_t sz, const void*);
 
   // Store the old hooks just in case.
-  static void* (*old_malloc_hook)(size_t, const void*);
-  static void (*old_free_hook)(void*, const void*);
-  static void* (*old_realloc_hook)(void*, size_t, const void*);
+  static void* (*old_malloc_hook)(size_t sz, const void*);
+  static void (*old_free_hook)(void* ptr, const void*);
+  static void* (*old_realloc_hook)(void* ptr, size_t sz, const void*);
 
   static void* my_malloc_hook(size_t size, const void*) {
     return custom_malloc(size);
@@ -40,21 +39,18 @@ extern "C" {
     return custom_realloc(ptr, sz);
   }
 
-  static void my_init_hook (void) {
-
+  static void my_init_hook(void) {
     // Store the old hooks.
     old_malloc_hook = __malloc_hook;
     old_free_hook = __free_hook;
     old_realloc_hook = __realloc_hook;
-
     // Point the hooks to the replacement functions.
     __malloc_hook = my_malloc_hook;
     __free_hook = my_free_hook;
     __realloc_hook = my_realloc_hook;
-
   }
 
-  void (*__MALLOC_HOOK_VOLATILE __malloc_initialize_hook) (void) = my_init_hook;
+  void (*__MALLOC_HOOK_VOLATILE __malloc_initialize_hook)(void) = my_init_hook;
 
 }
 #elif __APPLE__
@@ -66,17 +62,17 @@ extern "C" {
 
 extern "C" {
 
-  void* custom_malloc (size_t);
-  void custom_free (void*);
+  void* custom_malloc(size_t sz);
+  void custom_free(void* ptr);
 
   // Takes a pointer and returns how much space it holds.
-  size_t custom_malloc_usable_size (void*);
+  size_t custom_malloc_usable_size(void* ptr);
 
   // Locks the heap(s), used prior to any invocation of fork().
-  void custom_malloc_lock (void);
+  void custom_malloc_lock();
 
   // Unlocks the heap(s), after fork().
-  void custom_malloc_unlock (void);
+  void custom_malloc_unlock();
 
 }
 
@@ -87,10 +83,10 @@ typedef struct interpose_s {
 } interpose_t;
 
 
-#define MAC_INTERPOSE(newf,oldf) __attribute__((used)) \
+#define MAC_INTERPOSE(newf, oldf) __attribute__((used)) \
   static const interpose_t macinterpose##newf##oldf \
-  __attribute__ ((section("__DATA, __interpose"))) = \
-    { (void*) newf, (void*) oldf }
+  __attribute__((section("__DATA, __interpose"))) = \
+    { reinterpret_cast<void*>(newf), reinterpret_cast<void*>(oldf) }
 
 
 //////////
@@ -102,7 +98,7 @@ typedef struct interpose_s {
 
 extern "C" {
 
-  void* MACWRAPPER_PREFIX(malloc) (size_t sz) {
+  void* MACWRAPPER_PREFIX(malloc)(size_t sz) {
     // Mac OS ABI requires 16-byte alignment, so we round up the size
     // to the next multiple of 16.
     if (sz < 16) {
@@ -119,7 +115,7 @@ extern "C" {
     if (ptr == NULL) {
       return 0;
     }
-    size_t objSize = custom_malloc_usable_size (ptr);
+    size_t objSize = custom_malloc_usable_size(ptr);
     return objSize;
   }
 
@@ -127,7 +123,7 @@ extern "C" {
     custom_free(ptr);
   }
 
-  size_t MACWRAPPER_PREFIX(malloc_good_size) (size_t sz) {
+  size_t MACWRAPPER_PREFIX(malloc_good_size)(size_t sz) {
     void* ptr = MACWRAPPER_PREFIX(malloc)(sz);
     size_t objSize = MACWRAPPER_PREFIX(malloc_usable_size)(ptr);
     MACWRAPPER_PREFIX(free)(ptr);
@@ -157,7 +153,7 @@ extern "C" {
       return ptr;
     }
 
-    void* buf = MACWRAPPER_PREFIX(malloc)((size_t) (sz));
+    void* buf = MACWRAPPER_PREFIX(malloc)((size_t)(sz));
 
     if (buf != NULL) {
       // Successful malloc.
@@ -165,13 +161,12 @@ extern "C" {
       // up to the size of the new block.
       size_t minSize = (objSize < sz) ? objSize : sz;
       memcpy(buf, ptr, minSize);
-      MACWRAPPER_PREFIX(free) (ptr);
-    }
-    else {
+      MACWRAPPER_PREFIX(free)(ptr);
+    } else {
       if (isReallocf) {
         // Free the old block if the new allocation failed.
         // Specific behavior for Mac OS X reallocf().
-        MACWRAPPER_PREFIX(free) (ptr);
+        MACWRAPPER_PREFIX(free)(ptr);
       }
     }
 
@@ -194,7 +189,7 @@ extern "C" {
     }
     void* ptr = MACWRAPPER_PREFIX(malloc)(n);
     if (ptr) {
-      memset (ptr, 0, n);
+      memset(ptr, 0, n);
     }
     return ptr;
   }
@@ -203,7 +198,7 @@ extern "C" {
     char* newString = NULL;
     if (s != NULL) {
       int len = strlen(s) + 1;
-      if ((newString = (char*) MACWRAPPER_PREFIX(malloc)(len))) {
+      if ((newString = reinterpret_cast<char*>(MACWRAPPER_PREFIX(malloc)(len)))) {
         memcpy(newString, s, len);
       }
     }
@@ -229,7 +224,7 @@ extern "C" {
     // NOTE: this assumes that the underlying allocator will be able
     // to free the aligned object, or ignore the free request.
     void* buf = MACWRAPPER_PREFIX(malloc)(2 * alignment + size);
-    void* alignedPtr = (void*) (((size_t) buf + alignment - 1) & ~(alignment - 1));
+    void* alignedPtr = reinterpret_cast<void*>((((size_t) buf + alignment - 1) & ~(alignment - 1)));
     return alignedPtr;
   }
 
@@ -239,19 +234,18 @@ extern "C" {
       return EINVAL;
     }
 
-    void* ptr = MACWRAPPER_PREFIX(memalign) (alignment, size);
+    void* ptr = MACWRAPPER_PREFIX(memalign)(alignment, size);
     if (!ptr) {
       return ENOMEM;
-    }
-    else {
+    } else {
       *memptr = ptr;
       return 0;
     }
   }
 
-  void* MACWRAPPER_PREFIX(valloc) (size_t sz) {
+  void* MACWRAPPER_PREFIX(valloc)(size_t sz) {
     // Equivalent to memalign(pagesize, sz).
-    void* ptr = MACWRAPPER_PREFIX(memalign) (PAGE_SIZE, sz);
+    void* ptr = MACWRAPPER_PREFIX(memalign)(PAGE_SIZE, sz);
     return ptr;
   }
 
@@ -259,24 +253,25 @@ extern "C" {
 
 
 extern "C" {
+
   // operator new
-  void* _Znwm (unsigned long);
-  void* _Znam (unsigned long);
+  void* _Znwm(int64_t);
+  void* _Znam(int64_t);
 
   // operator delete
-  void _ZdlPv (void*);
-  void _ZdaPv (void*);
+  void _ZdlPv(void* ptr);
+  void _ZdaPv(void* ptr);
 
   // nothrow variants
   // operator new nothrow
-  void* _ZnwmRKSt9nothrow_t ();
-  void* _ZnamRKSt9nothrow_t ();
+  void* _ZnwmRKSt9nothrow_t();
+  void* _ZnamRKSt9nothrow_t();
   // operator delete nothrow
-  void _ZdaPvRKSt9nothrow_t (void*);
+  void _ZdaPvRKSt9nothrow_t(void* ptr);
 
-  void _malloc_fork_prepare (void);
-  void _malloc_fork_parent (void);
-  void _malloc_fork_child (void);
+  void _malloc_fork_prepare(void);
+  void _malloc_fork_parent(void);
+  void _malloc_fork_child(void);
 }
 
 static malloc_zone_t theDefaultZone;
@@ -330,58 +325,58 @@ extern "C" {
     return &theDefaultZone;
   }
 
-  void MACWRAPPER_PREFIX(malloc_destroy_zone) (malloc_zone_t*) {
+  void MACWRAPPER_PREFIX(malloc_destroy_zone)(malloc_zone_t*) {
     // Do nothing.
   }
 
-  malloc_zone_t* MACWRAPPER_PREFIX(malloc_zone_from_ptr) (const void*) {
+  malloc_zone_t* MACWRAPPER_PREFIX(malloc_zone_from_ptr)(const void*) {
     return NULL;
   }
 
-  void* MACWRAPPER_PREFIX(malloc_default_zone) (void) {
-    return (void*) &theDefaultZone;
+  void* MACWRAPPER_PREFIX(malloc_default_zone)(void) {
+    return reinterpret_cast<void*>(&theDefaultZone);
   }
 
-  void MACWRAPPER_PREFIX(malloc_zone_free_definite_size) (malloc_zone_t*, void* ptr, size_t) {
+  void MACWRAPPER_PREFIX(malloc_zone_free_definite_size)(malloc_zone_t*, void* ptr, size_t) {
     MACWRAPPER_PREFIX(free)(ptr);
   }
 
-  void MACWRAPPER_PREFIX(malloc_zone_register) (malloc_zone_t*) {
+  void MACWRAPPER_PREFIX(malloc_zone_register)(malloc_zone_t*) {
   }
 
-  void MACWRAPPER_PREFIX(malloc_zone_unregister) (malloc_zone_t*) {
+  void MACWRAPPER_PREFIX(malloc_zone_unregister)(malloc_zone_t*) {
   }
 
   int MACWRAPPER_PREFIX(malloc_jumpstart)(int) {
     return 1;
   }
 
-  void* MACWRAPPER_PREFIX(malloc_zone_malloc) (malloc_zone_t*, size_t size) {
-    return MACWRAPPER_PREFIX(malloc) (size);
+  void* MACWRAPPER_PREFIX(malloc_zone_malloc)(malloc_zone_t*, size_t size) {
+    return MACWRAPPER_PREFIX(malloc)(size);
   }
 
-  void* MACWRAPPER_PREFIX(malloc_zone_calloc) (malloc_zone_t*, size_t n, size_t size) {
-    return MACWRAPPER_PREFIX(calloc) (n, size);
+  void* MACWRAPPER_PREFIX(malloc_zone_calloc)(malloc_zone_t*, size_t n, size_t size) {
+    return MACWRAPPER_PREFIX(calloc)(n, size);
   }
 
-  void* MACWRAPPER_PREFIX(malloc_zone_valloc) (malloc_zone_t*, size_t size) {
-    return MACWRAPPER_PREFIX(valloc) (size);
+  void* MACWRAPPER_PREFIX(malloc_zone_valloc)(malloc_zone_t*, size_t size) {
+    return MACWRAPPER_PREFIX(valloc)(size);
   }
 
-  void* MACWRAPPER_PREFIX(malloc_zone_realloc) (malloc_zone_t*, void* ptr, size_t size) {
-    return MACWRAPPER_PREFIX(realloc) (ptr, size);
+  void* MACWRAPPER_PREFIX(malloc_zone_realloc)(malloc_zone_t*, void* ptr, size_t size) {
+    return MACWRAPPER_PREFIX(realloc)(ptr, size);
   }
 
-  void* MACWRAPPER_PREFIX(malloc_zone_memalign) (malloc_zone_t*, size_t alignment, size_t size) {
-    return MACWRAPPER_PREFIX(memalign) (alignment, size);
+  void* MACWRAPPER_PREFIX(malloc_zone_memalign)(malloc_zone_t*, size_t alignment, size_t size) {
+    return MACWRAPPER_PREFIX(memalign)(alignment, size);
   }
 
-  void MACWRAPPER_PREFIX(malloc_zone_free) (malloc_zone_t*, void* ptr) {
+  void MACWRAPPER_PREFIX(malloc_zone_free)(malloc_zone_t*, void* ptr) {
     MACWRAPPER_PREFIX(free)(ptr);
   }
 
-  size_t MACWRAPPER_PREFIX(internal_malloc_zone_size) (malloc_zone_t*, const void* ptr) {
-    return MACWRAPPER_PREFIX(malloc_usable_size)((void*) ptr);
+  size_t MACWRAPPER_PREFIX(internal_malloc_zone_size)(malloc_zone_t*, const void* ptr) {
+    return MACWRAPPER_PREFIX(malloc_usable_size)(reinterpret_cast<void*>(ptr));
   }
 
   void MACWRAPPER_PREFIX(_malloc_fork_prepare)(void) {
@@ -395,14 +390,18 @@ extern "C" {
   }
 
   void MACWRAPPER_PREFIX(_malloc_fork_child)(void) {
-    /* Called in the child process after a fork() to resume normal operation.  In the MTASK case we also have to change memory inheritance so that the child does not share memory with the parent. */
+    /*
+     * Called in the child process after a fork() to resume normal operation.
+     * In the MTASK case we also have to change memory inheritance so that the
+     * child does not share memory with the parent.
+     */
     custom_malloc_unlock();
   }
 
 }
 
-extern "C" void vfree (void*);
-extern "C" int malloc_jumpstart (int);
+extern "C" void vfree(void* ptr);
+extern "C" int malloc_jumpstart(int sz);
 
 // Now interpose everything.
 
@@ -472,41 +471,35 @@ __interpose_malloc_zone_print_ptr_info
 static const char* theOneTrueZoneName = "DefaultMallocZone";
 
 class initializeDefaultZone {
-public:
-  initializeDefaultZone() {
-    theDefaultZone.size = MACWRAPPER_PREFIX(internal_malloc_zone_size);
-    theDefaultZone.malloc = MACWRAPPER_PREFIX(malloc_zone_malloc);
-    theDefaultZone.calloc = MACWRAPPER_PREFIX(malloc_zone_calloc);
-    theDefaultZone.valloc = MACWRAPPER_PREFIX(malloc_zone_valloc);
-    theDefaultZone.free = MACWRAPPER_PREFIX(malloc_zone_free);
-    theDefaultZone.realloc = MACWRAPPER_PREFIX(malloc_zone_realloc);
-    theDefaultZone.destroy = MACWRAPPER_PREFIX(malloc_destroy_zone);
-    theDefaultZone.zone_name = theOneTrueZoneName;
-    theDefaultZone.batch_malloc = MACWRAPPER_PREFIX(malloc_zone_batch_malloc);
-    theDefaultZone.batch_free = MACWRAPPER_PREFIX(malloc_zone_batch_free);
-    theDefaultZone.introspect = NULL;
-    theDefaultZone.version = 1;
-    theDefaultZone.memalign = MACWRAPPER_PREFIX(malloc_zone_memalign);
-    theDefaultZone.free_definite_size = MACWRAPPER_PREFIX(malloc_zone_free_definite_size);
-    theDefaultZone.pressure_relief = NULL;
-    malloc_zone_register (&theDefaultZone);
-
-    // Glorious hack to make OSX memory allocator override work from
-    // http://google-perftools.googlecode.com/svn/tags/google-perftools-1.8/src/libc_override_osx.h
-    malloc_zone_t* default_zone = malloc_default_zone();
-    malloc_zone_unregister(default_zone);
-    malloc_zone_register(default_zone);
-
-  }
+ public:
+    initializeDefaultZone() {
+      theDefaultZone.size = MACWRAPPER_PREFIX(internal_malloc_zone_size);
+      theDefaultZone.malloc = MACWRAPPER_PREFIX(malloc_zone_malloc);
+      theDefaultZone.calloc = MACWRAPPER_PREFIX(malloc_zone_calloc);
+      theDefaultZone.valloc = MACWRAPPER_PREFIX(malloc_zone_valloc);
+      theDefaultZone.free = MACWRAPPER_PREFIX(malloc_zone_free);
+      theDefaultZone.realloc = MACWRAPPER_PREFIX(malloc_zone_realloc);
+      theDefaultZone.destroy = MACWRAPPER_PREFIX(malloc_destroy_zone);
+      theDefaultZone.zone_name = theOneTrueZoneName;
+      theDefaultZone.batch_malloc = MACWRAPPER_PREFIX(malloc_zone_batch_malloc);
+      theDefaultZone.batch_free = MACWRAPPER_PREFIX(malloc_zone_batch_free);
+      theDefaultZone.introspect = NULL;
+      theDefaultZone.version = 1;
+      theDefaultZone.memalign = MACWRAPPER_PREFIX(malloc_zone_memalign);
+      theDefaultZone.free_definite_size = MACWRAPPER_PREFIX(malloc_zone_free_definite_size);
+      theDefaultZone.pressure_relief = NULL;
+      malloc_zone_register(&theDefaultZone);
+      // Glorious hack to make OSX memory allocator override work from
+      // http://google-perftools.googlecode.com/svn/tags/google-perftools-1.8/src/libc_override_osx.h
+      malloc_zone_t* default_zone = malloc_default_zone();
+      malloc_zone_unregister(default_zone);
+      malloc_zone_register(default_zone);
+    }
 };
 
 // Force initialization of the default zone.
-
 static initializeDefaultZone initMe;
 
-
 #else
-
 #error "Unsupported platform!"
-
 #endif
