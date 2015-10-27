@@ -1,6 +1,9 @@
 #ifndef _STDLIBHEAP_H_
 #define _STDLIBHEAP_H_
 
+#include <cstring>
+#include <cstdlib>
+
 
 namespace HL {
 
