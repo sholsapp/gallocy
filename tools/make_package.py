@@ -59,7 +59,9 @@ def main():
     with open(os.path.join(tmp, 'run'), 'w') as fh:
       fh.writelines([
         '#!/bin/bash\n',
-        'LD_LIBRARY_PATH=lib GALLOCY_CONFIG=config.json ./bin/httpd\n'
+        'LD_LIBRARY_PATH=lib   \\ \n',
+        'DYLD_LIBRARY_PATH=lib \\ \n',
+        'GALLOCY_CONFIG=config.json ./bin/httpd\n'
       ])
       os.fchmod(fh.fileno(), 0755)
 
