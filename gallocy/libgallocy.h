@@ -12,6 +12,8 @@
 
 #include "heaplayers/heaptypes.h"
 
+#include "external/json.hpp"
+
 
 extern volatile int anyThreadCreated;
 
@@ -52,10 +54,14 @@ using vector = std::vector<T, ContainerAllocator<T> >;
 template <typename K, typename V>
 using map = std::map<K, V, std::less<K>, ContainerAllocator<std::pair<K, V> > >;
 
-template <class K, class V>
-class map : public std::map
-            <K, V, std::less<K>,
-            STLAllocator<std::pair<K, V>, __STLAllocator> > {};
+using json = nlohmann::basic_json<
+  std::map,
+  std::vector,
+  std::string,
+  bool,
+  int64_t,
+  double,
+  ContainerAllocator>;
 
 }
 
