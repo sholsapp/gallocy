@@ -30,25 +30,27 @@ namespace gallocy {
 class __STLAllocator: public HL::SingletonHeap {};
 
 
-typedef std::basic_string<char,
-  std::char_traits<char>,
-  STLAllocator<char, __STLAllocator> > string;
+/**
+ * Use a C++11 alias declaration here, as opposed to inheritance, so that the
+ * the new declaration need not reimplement constructors.
+ */
+template <typename T>
+using ContainerAllocator = STLAllocator<T, __STLAllocator>;
 
 
-//typedef std::basic_stringbuf<char,
-//  std::char_traits<char>,
-//  STLAllocator<char, __STLAllocator> > stringbuf;
+using string = std::basic_string<char,
+      std::char_traits<char>,
+      ContainerAllocator<char> >;
 
+using stringstream = std::basic_stringstream<char,
+      std::char_traits<char>,
+      ContainerAllocator<char> >;
 
-class stringstream: public std::basic_stringstream<char,
-                    std::char_traits<char>,
-                    STLAllocator<char, __STLAllocator> > {};
+template <typename T>
+using vector = std::vector<T, ContainerAllocator<T> >;
 
-
-template <class T>
-class vector : public std::vector
-               <T, STLAllocator<T, __STLAllocator> > {};
-
+template <typename K, typename V>
+using map = std::map<K, V, std::less<K>, ContainerAllocator<std::pair<K, V> > >;
 
 template <class K, class V>
 class map : public std::map
