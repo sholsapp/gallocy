@@ -42,9 +42,11 @@ install(TARGETS gallocy-wrapper DESTINATION lib)
 # The gallocy-net build
 set(GALLOCY_NET_SRC
   httpd.cpp
+  request.cpp
+  stringutils.cpp
   external/restclient-cpp/restclient.cpp)
 add_library(gallocy-net SHARED ${GALLOCY_NET_SRC})
-target_link_libraries(gallocy-net curl)
+target_link_libraries(gallocy-net gallocy-core curl)
 install(TARGETS gallocy-net DESTINATION lib)
 
 set(GALLOCY_RUNTIME
