@@ -20,6 +20,25 @@ TEST(STLTests, VectorTest) {
   ASSERT_EQ(mylist.size(), 0);
 }
 
+TEST(STLTests, VectorCopyTest) {
+  int i = 0;
+  gallocy::vector<int> mylist;
+  for (int i = 0; i < 4096; i++)
+    mylist.push_back(i);
+  for (int i = 0; i < mylist.size(); i++)
+    ASSERT_EQ(mylist[i], i) << "Failed on iteration [" << i << "]";
+  gallocy::vector<int> mylist2 = mylist;
+  ASSERT_NE(&mylist2, &mylist);
+  for (int i = 0; i < mylist.size(); i++)
+    ASSERT_EQ(mylist2[i], i) << "Failed on iteration [" << i << "]";
+  ASSERT_EQ(mylist.size(), 4096);
+  mylist.clear();
+  ASSERT_EQ(mylist.size(), 0);
+  ASSERT_EQ(mylist2.size(), 4096);
+  mylist2.clear();
+  ASSERT_EQ(mylist2.size(), 0);
+}
+
 
 TEST(STLTests, MapTest) {
   gallocy::map<int, int> mymap;
