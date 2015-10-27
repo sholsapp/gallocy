@@ -375,8 +375,8 @@ extern "C" {
     MACWRAPPER_PREFIX(free)(ptr);
   }
 
-  size_t MACWRAPPER_PREFIX(internal_malloc_zone_size)(malloc_zone_t*, const void* ptr) {
-    return MACWRAPPER_PREFIX(malloc_usable_size)(reinterpret_cast<const void*>(ptr));
+  size_t MACWRAPPER_PREFIX(internal_malloc_zone_size)(malloc_zone_t*, void* ptr) {
+    return MACWRAPPER_PREFIX(malloc_usable_size)(reinterpret_cast<void*>(ptr));
   }
 
   void MACWRAPPER_PREFIX(_malloc_fork_prepare)(void) {
