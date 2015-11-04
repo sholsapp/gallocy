@@ -29,7 +29,7 @@ set(GALLOCY_CORE_SRC
   pagetable.cpp
   external/sqlite3/sqlite3.c)
 add_library(gallocy-core SHARED ${GALLOCY_CORE_SRC})
-target_link_libraries(gallocy-core gallocy-utils gallocy-runtime)
+target_link_libraries(gallocy-core gallocy-utils)
 install(TARGETS gallocy-core DESTINATION lib)
 
 # The gallocy-wrapper build
