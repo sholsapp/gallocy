@@ -4,9 +4,9 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "config.h"
-#include "libgallocy.h"
-#include "restclient.h"
+#include "./config.h"
+#include "./libgallocy.h"
+#include "./restclient.h"
 
 
 int main(void) {
@@ -16,8 +16,18 @@ int main(void) {
     internal_free,
     internal_realloc,
     internal_strdup,
-    internal_calloc
-  );
+    internal_calloc);
+
+  gallocy::string peer = "http://localhost:8080";
+
+  RestClient::response r = RestClient::post(peer.c_str(),
+      "text/json", "{\"foo\": \"bla\"}");
+  std::cout << "[" << r.code << "] " << peer << std::endl;
+  if (r.code == 200) {
+    std::cout << "SUCCESS" << std::endl;
+  } else {
+    std::cout << "FAIL" << std::endl;
+  }
 
 #if 0
   gallocy::string host;

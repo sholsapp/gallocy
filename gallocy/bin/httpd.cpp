@@ -1,26 +1,20 @@
 #include <iostream>
 
-#include "config.h"
-#include "constants.h"
-#include "httpd.h"
-#include "libgallocy.h"
+#include "./config.h"
+#include "./constants.h"
+#include "./httpd.h"
+#include "./libgallocy.h"
 
 
 int main(void) {
-
   init();
 
-  gallocy::string host = "0.0.0.0";
-  int port = 8080;
-  gallocy::string me = "http://0.0.0.0:8080";
-
-
-  int server_sock = -1;
-
-  u_short _port = (unsigned short) port;
-  long client_sock = -1;
+  uint16_t port = 8080;
+  uint64_t server_sock = -1;
+  uint16_t _port = reinterpret_cast<uint16_t>(port);
+  uint64_t client_sock = -1;
   struct sockaddr_in client_name;
-  unsigned int client_name_len = sizeof(client_name);
+  uint64_t client_name_len = sizeof(client_name);
   pthread_t newthread;
 
   server_sock = startup(&_port);
@@ -32,16 +26,14 @@ int main(void) {
 
   while (1) {
     client_sock = accept(server_sock,
-        (struct sockaddr *)&client_name,
-        &client_name_len);
+        reinterpret_cast<struct sockaddr *>(&client_name),
+        reinterpret_cast<socklen_t*>(&client_name_len));
     if (client_sock == -1)
       error_die("accept");
-    /* accept_request(client_sock); */
-    if (pthread_create(&newthread , NULL, accept_request, (void *) client_sock) != 0)
+    if (pthread_create(&newthread , NULL, accept_request, reinterpret_cast<void *>(client_sock)) != 0)
       perror("pthread_create");
   }
 
   close(server_sock);
-
   return(0);
 }
