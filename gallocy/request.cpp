@@ -9,7 +9,10 @@
  *
  * :param raw: The raw request string.
  */
-Request::Request(gallocy::string raw) : raw(raw) {
+Request::Request(gallocy::string raw)
+  : raw(raw),
+    json(gallocy::json(nullptr)),
+    params(Request::Parameters()) {
   // Parse the raw request into lines
   gallocy::vector<gallocy::string> lines;
   utils::split(raw, '\n', lines);
@@ -18,7 +21,7 @@ Request::Request(gallocy::string raw) : raw(raw) {
   gallocy::vector<gallocy::string> request_line;
   utils::split(lines[0], ' ', request_line);
   method = utils::trim(request_line[0]);
-  path = utils::trim(request_line[1]);
+  uri = utils::trim(request_line[1]);
   protocol = utils::trim(request_line[2]);
 
   // Track the line each parser leaves off.
@@ -36,10 +39,44 @@ Request::Request(gallocy::string raw) : raw(raw) {
   // Skip the '\r' character that indicated end of request head
   line_idx++;
 
-  // TODO(sholsapp): parse the body, if any.
   for (auto it = std::begin(lines) + line_idx; it != std::end(lines); ++it) {
     if ((*it).compare("\r") == 0)
       break;
     raw_body = utils::trim(*it);
   }
+}
+
+
+/**
+ * The JSON body if present.
+ *
+ * :returns: The JSON body.
+ */
+gallocy::json &Request::get_json() {
+  if (json == gallocy::json(nullptr)
+      && headers.count("Content-Type")
+      && headers["Content-Type"] == "application/json") {
+    json = gallocy::json::parse(raw_body.c_str());
+  }
+  return json;
+}
+
+
+/**
+ * The request parameters if present.
+ *
+ * :returns: The request parameters.
+ */
+Request::Parameters &Request::get_params() {
+  if (uri.find("?") == std::string::npos)
+    return params;
+  gallocy::string param_string = uri.substr(uri.find("?") + 1, uri.length());
+  gallocy::vector<gallocy::string> param_parts;
+  utils::split(param_string, '&', param_parts);
+  for (auto it = std::begin(param_parts); it != std::end(param_parts); ++it) {
+    gallocy::vector<gallocy::string> kv;
+    utils::split(*it, '=', kv);
+    params[kv[0]] = kv[1];
+  }
+  return params;
 }

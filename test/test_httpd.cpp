@@ -38,7 +38,7 @@ gallocy::string POST_REQUEST(
 TEST(RequestTests, SimpleGetRequest) {
   Request request(GET_REQUEST);
   ASSERT_EQ(request.method, "GET");
-  ASSERT_EQ(request.path, "/get");
+  ASSERT_EQ(request.uri, "/get");
   ASSERT_EQ(request.protocol, "HTTP/1.1");
   ASSERT_EQ(request.headers.size(), static_cast<uint64_t>(2));
   ASSERT_EQ(request.headers["Host"], "127.0.0.1");
@@ -49,20 +49,19 @@ TEST(RequestTests, SimpleGetRequest) {
 TEST(RequestTests, SimpleGetRequestQuery) {
   Request request(GET_REQUEST_QUERY);
   ASSERT_EQ(request.method, "GET");
-  ASSERT_EQ(request.path, "/get?query=1");
+  ASSERT_EQ(request.uri, "/get?query=1");
   ASSERT_EQ(request.protocol, "HTTP/1.1");
   ASSERT_EQ(request.headers.size(), static_cast<uint64_t>(2));
   ASSERT_EQ(request.headers["Host"], "127.0.0.1");
   ASSERT_EQ(request.headers["User-Agent"], "gallocy");
-  // TODO(sholsapp): Add functionality to parse the query string and inspect it
-  // here.
+  ASSERT_EQ(request.get_params()["query"], "1");
 }
 
 
 TEST(RequestTests, SimplePostRequest) {
   Request request(POST_REQUEST);
   ASSERT_EQ(request.method, "POST");
-  ASSERT_EQ(request.path, "/post");
+  ASSERT_EQ(request.uri, "/post");
   ASSERT_EQ(request.protocol, "HTTP/1.1");
   ASSERT_EQ(request.headers.size(), static_cast<uint64_t>(5));
   ASSERT_EQ(request.headers["Host"], "127.0.0.1");
@@ -71,4 +70,5 @@ TEST(RequestTests, SimplePostRequest) {
   ASSERT_EQ(request.headers["Content-Type"], "application/json");
   ASSERT_EQ(request.headers["User-Agent"], "gallocy");
   ASSERT_EQ(request.raw_body, "{\"foo\": \"bar\"}");
+  ASSERT_EQ(request.get_json()["foo"], "bar");
 }
