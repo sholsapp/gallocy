@@ -1,0 +1,20 @@
+#!/bin/bash -x
+
+if [ ! -f "Makefile" ]; then
+        cmake -G "Unix Makefiles"
+fi
+
+make
+make install
+
+
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+	LIBRARY_PATH="LD_LIBRARY_PATH"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+	LIBRARY_PATH="DYLD_LIBRARY_PATH"
+fi
+
+INSTALL_PATH="$(pwd)/install"
+
+export ${LIBRARY_PATH}="${INSTALL_PATH}/lib"
+${INSTALL_PATH}/bin/gallocy_tests
