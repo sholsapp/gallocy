@@ -1,5 +1,5 @@
-#ifndef __STL_H__
-#define __STL_H__
+#ifndef GALLOCY_HEAPLAYERS_STL_H_
+#define GALLOCY_HEAPLAYERS_STL_H_
 
 #include <limits>
 #include <memory>
@@ -9,8 +9,7 @@
  */
 template <class T, class Allocator>
 class STLAllocator : public Allocator {
-
-  public:
+ public:
     typedef T value_type;
     typedef T* pointer;
     typedef const T* const_pointer;
@@ -33,7 +32,7 @@ class STLAllocator : public Allocator {
     /**
      * Constructor with size.
      */
-    STLAllocator(size_type size) noexcept {}
+    explicit STLAllocator(size_type size) noexcept {}
 
     /**
      * Copy constructor.
@@ -67,6 +66,7 @@ class STLAllocator : public Allocator {
       return *this;
     }
 
+#if 0
     /**
      * Move constructor.
      */
@@ -79,6 +79,7 @@ class STLAllocator : public Allocator {
       this->_alloc = other._alloc;
       return *this;
     }
+#endif
 
     /**
      * Rebind allocator to other type ``U``.
@@ -112,23 +113,23 @@ class STLAllocator : public Allocator {
      * Allocate but don't initialize num elements of type T.
      */
     pointer allocate(size_type num, const void* = 0) {
-      pointer ret = (pointer)(Allocator::malloc(num*sizeof(T)));
+      pointer ret = reinterpret_cast<pointer>(Allocator::malloc(num * sizeof(T)));
       return ret;
     }
 
     /**
      * Construct elements of allocated storage p with value value.
      */
-    void construct(pointer p, const T& value) {
-      new ((void*) p) T(value);
+    void construct(pointer p, const T &value) {
+      new (reinterpret_cast<void *>(p)) T(value);
     }
 
     /**
      * Construct element of allocated storage p with no value.
      */
     template<typename U, typename... Args>
-    void construct(U* p, Args&&... args) {
-      new ((void*)p) U(std::forward<Args>(args)...);
+    void construct(U *p, Args&&... args) {
+      new (reinterpret_cast<void *>(p)) U(std::forward<Args>(args)...);
     }
 
     /**
@@ -142,7 +143,7 @@ class STLAllocator : public Allocator {
      * Destroy elements of initialized storage p.
      */
     template<typename U>
-    void destroy(U* p) {
+    void destroy(U *p) {
         p->~U();
     }
 
@@ -150,11 +151,10 @@ class STLAllocator : public Allocator {
      * Deallocate storage p of deleted elements.
      */
     void deallocate(pointer p, size_type num) {
-      Allocator::free((void*)p);
+      Allocator::free(reinterpret_cast<void *>(p));
     }
 
-  private:
-
+ private:
     Allocator _alloc;
 };
 
@@ -170,4 +170,4 @@ bool operator!= (const STLAllocator<T1, A1>&,
   return false;
 }
 
-#endif
+#endif  // GALLOCY_HEAPLAYERS_STL_H_
