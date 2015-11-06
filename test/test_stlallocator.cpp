@@ -10,49 +10,47 @@ volatile int anyThreadCreated = 0;
 
 
 TEST(STLTests, VectorTest) {
-  int i = 0;
-  gallocy::vector<int> mylist;
-  for (int i = 0; i < 4096; i++)
+  gallocy::vector<uint64_t> mylist;
+  for (uint64_t i = 0; i < 4096; i++)
     mylist.push_back(i);
-  for (int i = 0; i < mylist.size(); i++)
+  for (uint64_t i = 0; i < mylist.size(); i++)
     ASSERT_EQ(mylist[i], i) << "Failed on iteration [" << i << "]";
   mylist.clear();
-  ASSERT_EQ(mylist.size(), 0);
+  ASSERT_EQ(mylist.size(), static_cast<size_t>(0));
 }
 
 TEST(STLTests, VectorCopyTest) {
-  int i = 0;
-  gallocy::vector<int> mylist;
-  for (int i = 0; i < 4096; i++)
+  gallocy::vector<uint64_t> mylist;
+  for (uint64_t i = 0; i < 4096; i++)
     mylist.push_back(i);
-  for (int i = 0; i < mylist.size(); i++)
+  for (uint64_t i = 0; i < mylist.size(); i++)
     ASSERT_EQ(mylist[i], i) << "Failed on iteration [" << i << "]";
-  gallocy::vector<int> mylist2 = mylist;
+  gallocy::vector<uint64_t> mylist2 = mylist;
   ASSERT_NE(&mylist2, &mylist);
-  for (int i = 0; i < mylist.size(); i++)
+  for (uint64_t i = 0; i < mylist.size(); i++)
     ASSERT_EQ(mylist2[i], i) << "Failed on iteration [" << i << "]";
-  ASSERT_EQ(mylist.size(), 4096);
+  ASSERT_EQ(mylist.size(), static_cast<size_t>(4096));
   mylist.clear();
-  ASSERT_EQ(mylist.size(), 0);
-  ASSERT_EQ(mylist2.size(), 4096);
+  ASSERT_EQ(mylist.size(), static_cast<size_t>(0));
+  ASSERT_EQ(mylist2.size(), static_cast<size_t>(4096));
   mylist2.clear();
-  ASSERT_EQ(mylist2.size(), 0);
+  ASSERT_EQ(mylist2.size(), static_cast<size_t>(0));
 }
 
 
 TEST(STLTests, MapTest) {
-  gallocy::map<int, int> mymap;
-  gallocy::map<int, int>::iterator it;
-  for (int i = 0; i < 4096; i++)
+  gallocy::map<uint64_t, uint64_t> mymap;
+  gallocy::map<uint64_t, uint64_t>::iterator it;
+  for (uint64_t i = 0; i < 4096; i++)
     mymap[i] = i * i;
-  ASSERT_EQ(mymap[1], 1);
-  ASSERT_EQ(mymap[2], 4);
-  ASSERT_EQ(mymap[3], 9);
-  ASSERT_EQ(mymap[4], 16);
+  ASSERT_EQ(mymap[1], static_cast<size_t>(1));
+  ASSERT_EQ(mymap[2], static_cast<size_t>(4));
+  ASSERT_EQ(mymap[3], static_cast<size_t>(9));
+  ASSERT_EQ(mymap[4], static_cast<size_t>(16));
   for (it = mymap.begin(); it != mymap.end(); it++)
     ASSERT_EQ((*it).second, mymap[(*it).first]);
   mymap.clear();
-  ASSERT_EQ(mymap.size(), 0);
+  ASSERT_EQ(mymap.size(), static_cast<size_t>(0));
 }
 
 

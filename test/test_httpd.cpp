@@ -18,7 +18,7 @@ TEST(RequestTests, SimpleGetRequest) {
   ASSERT_EQ(request.method, "GET");
   ASSERT_EQ(request.path, "/foo");
   ASSERT_EQ(request.protocol, "HTTP/1.1");
-  ASSERT_EQ(request.headers.size(), 2);
+  ASSERT_EQ(request.headers.size(), static_cast<uint64_t>(2));
   ASSERT_EQ(request.headers["Host"], "127.0.0.1");
   ASSERT_EQ(request.headers["User-Agent"], "gallocy");
 }

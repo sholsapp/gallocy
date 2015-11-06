@@ -266,7 +266,7 @@ void HTTPServer::start() {
     error_die("listen");
   }
 
-  uint64_t client_sock = -1;
+  int64_t client_sock = -1;
   struct sockaddr_in client_name;
   uint64_t client_name_len = sizeof(client_name);
   pthread_t newthread;

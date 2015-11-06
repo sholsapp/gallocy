@@ -19,7 +19,7 @@ TEST(JsonTests, BasicTest) {
   ASSERT_EQ(j["int"], gallocy::json(1));
   ASSERT_EQ(j["float"], gallocy::json(3.141));
   ASSERT_EQ(j["bool"], gallocy::json(true));
-  ASSERT_EQ(j["list"].size(), 3);
+  ASSERT_EQ(j["list"].size(), static_cast<uint64_t>(3));
   ASSERT_EQ(j["list"][0], "foo");
   ASSERT_EQ(j["list"][1], "bar");
   ASSERT_EQ(j["list"][2], "baz");
@@ -31,7 +31,7 @@ TEST(JsonTests, ParseTest) {
   gallocy::json j = gallocy::json::parse("{\"happy\":true,\"list\":[\"a\",\"b\"],\"pi\":3.141}");
   ASSERT_EQ(j["happy"], gallocy::json(true));
   ASSERT_EQ(j["pi"], gallocy::json(3.141));
-  ASSERT_EQ(j["list"].size(), 2);
+  ASSERT_EQ(j["list"].size(), static_cast<uint64_t>(2));
   ASSERT_EQ(j["list"][0], "a");
   ASSERT_EQ(j["list"][1], "b");
 }
