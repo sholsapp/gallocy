@@ -15,6 +15,12 @@ memory allocator.
 
 ## getting started
 
+To get started right away, run the `build` helper script.
+
+```bash
+build
+```
+
 ### building
 
 We use cmake to build gallocy. Use the following commands on a Unix-style host
@@ -36,18 +42,4 @@ to run the test binary.
 export DYLD_LIBRARY_PATH=`pwd`/build/lib
 export LD_LIBRARY_PATH=`pwd`/build/lib
 ./build/bin/sample_tests
-```
-
-#### python
-
-One fun integration test that we've been using this far is if we can run Python
-using the gallocy memory allocator. To do this, you have to compile cpython
-from source like the following.
-
-On OSX:
-
-```bash
-
-export DYLD_LIBRARY_PATH=../gallocy/build/lib/
-./configure --without-pymalloc LDFLAGS="-L$GALLOCY_HOME/gallocy/build/lib" LIBS="-lgallocy-wrapper -lgallocy-core"
 ```
