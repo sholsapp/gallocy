@@ -1,4 +1,7 @@
-#include "stringutils.h"
+#include "./stringutils.h"
+
+#include <functional>
+#include <vector>
 
 
 namespace utils {
@@ -49,9 +52,9 @@ namespace utils {
    */
   gallocy::vector<gallocy::string> &split(const gallocy::string &s, char delim, gallocy::vector<gallocy::string> &elems) {
       gallocy::stringstream ss;
-      // TODO: Why can't we use the initialization constructor? Compiler
-      // complains that it is missing even though std::basic_stringstream is the
-      // parent class.
+      // TODO(sholsapp): Why can't we use the initialization constructor?
+      // Compiler complains that it is missing even though
+      // std::basic_stringstream is the parent class.
       ss << s;
       gallocy::string item;
       while (std::getline(ss, item, delim)) {
@@ -60,4 +63,4 @@ namespace utils {
       return elems;
   }
 
-}
+}  // namespace utils
