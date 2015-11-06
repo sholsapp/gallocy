@@ -1,11 +1,11 @@
 #!/bin/bash -x
 
 if [ ! -f "Makefile" ]; then
-        cmake -G "Unix Makefiles"
+        cmake -G "Unix Makefiles" || exit 1
 fi
 
-make
-make install
+make || exit 1
+make install || exit 1
 
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
