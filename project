@@ -1,0 +1,68 @@
+#!/bin/bash
+
+
+PROGRAM=$(basename $0)
+
+
+sub_help() {
+  echo "Usage: ${PROGRAM} <subcommand> [options]\n"
+  echo "Subcommands:"
+  echo "    build - invoke cmake/make to build the code"
+  echo "    test - run the unit test suite"
+  echo "    stylecheck - run the style checker"
+}
+
+
+sub_build() {
+  if [ ! -f "Makefile" ]; then
+    cmake -G "Unix Makefiles" || exit 1
+  fi
+  make || exit 1
+  make install || exit 1
+  sub_test
+}
+
+
+sub_test() {
+  if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    LIBRARY_PATH="LD_LIBRARY_PATH"
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    LIBRARY_PATH="DYLD_LIBRARY_PATH"
+  fi
+
+  INSTALL_PATH="$(pwd)/install"
+
+  export ${LIBRARY_PATH}="${INSTALL_PATH}/lib"
+  ${INSTALL_PATH}/bin/gallocy_tests
+}
+
+
+sub_stylecheck() {
+  LINT_ARGS=(
+    "--linelength=160"
+    "--filter=-legal/copyright"
+    )
+  if [ "$1" = "" ]; then
+    find gallocy \
+      -path gallocy/external -prune -o \
+      -type f -regex ".*\.\(cpp\|h\)$" -print \
+      -exec ./tools/cpplint.py ${LINT_ARGS[*]} {} \;
+  else
+    ./tools/cpplint.py ${LINT_ARGS[*]} $1
+  fi
+}
+
+SUBCOMMAND=$1
+case $SUBCOMMAND in
+  "" | "-h" | "--help")
+    sub_help
+    ;;
+  *)
+    shift
+    sub_${SUBCOMMAND} $@
+    if [ $? = 127 ]; then
+      echo "Error: '$SUBCOMMAND' is not a known subcommand." >&2
+      exit 1
+    fi
+    ;;
+esac
