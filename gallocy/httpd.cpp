@@ -102,7 +102,6 @@ void *accept_request(void *arg) {
     fprintf(stderr, "%s", buf);
   }
 
-
   headers(client, NULL);
 
   char json_buffer[512];
@@ -164,21 +163,20 @@ int get_line(int sock, char *buf, int size) {
   int n;
   while ((i < size - 1) && (c != '\n')) {
     n = recv(sock, &c, 1, 0);
-    /* DEBUG printf("%02X\n", c); */
     if (n > 0) {
       if (c == '\r') {
         n = recv(sock, &c, 1, MSG_PEEK);
-        /* DEBUG printf("%02X\n", c); */
-        if ((n > 0) && (c == '\n'))
+        if ((n > 0) && (c == '\n')) {
           recv(sock, &c, 1, 0);
-        else
+        } else {
           c = '\n';
+        }
       }
       buf[i] = c;
       i++;
-    }
-    else
+    } else {
       c = '\n';
+    }
   }
   buf[i] = '\0';
   return(i);
@@ -201,12 +199,6 @@ void headers(int client, const char *filename) {
   sprintf(buf, "Content-Type: application/json\r\n");
   send(client, buf, strlen(buf), 0);
   strcpy(buf, "\r\n");
-  send(client, buf, strlen(buf), 0);
-}
-
-void add_header(int client, const char *header, const char *value) {
-  char buf[1024];
-  snprintf(buf, 1024, "%s: %s\r\n", header, value);
   send(client, buf, strlen(buf), 0);
 }
 
@@ -238,44 +230,108 @@ void serve_file(int client, const char *filename) {
 
 
 /**
- * Start the server.
+ * Start the HTTP server.
  *
- * If the port is 0, then dynamically allocate a port and modify the original
- * port variable to reflect the actual port.
- *
- * :param port: The port to start the server on.
- * :returns: The socket descriptor.
+ * Starting the HTTP server binds to the socket, begins listening on the bound
+ * socket, then enters the HTTP server's main event loop.
  */
-int startup(u_short *port) {
-  int httpd = 0;
+void HTTPServer::start() {
+
+  std::cout << "Starting the HTTP sever..." << std::endl;
+
   struct sockaddr_in name;
-
-  httpd = socket(PF_INET, SOCK_STREAM, 0);
-  if (httpd == -1)
-    error_die("socket");
-
   int optval = 1;
 
+  server_socket = socket(PF_INET, SOCK_STREAM, 0);
+  if (server_socket == -1) {
+    error_die("socket");
+  }
+
 #ifdef __APPLE__
-  setsockopt(httpd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
+  setsockopt(server_socket, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
 #else
-  setsockopt(httpd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+  setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 #endif
 
   memset(&name, 0, sizeof(name));
   name.sin_family = AF_INET;
-  name.sin_port = htons(*port);
+  name.sin_port = htons(port);
   name.sin_addr.s_addr = htonl(INADDR_ANY);
 
-  if (bind(httpd, (struct sockaddr *) &name, sizeof(name)) < 0)
+  if (bind(server_socket, (struct sockaddr *) &name, sizeof(name)) < 0) {
     error_die("bind");
-  if (*port == 0)  /* if dynamically allocating a port */ {
-    unsigned int namelen = sizeof(name);
-    if (getsockname(httpd, (struct sockaddr *) &name, &namelen) == -1)
-      error_die("getsockname");
-    *port = ntohs(name.sin_port);
   }
-  if (listen(httpd, 5) < 0)
+
+  if (listen(server_socket, 5) < 0) {
     error_die("listen");
-  return(httpd);
+  }
+
+  uint64_t client_sock = -1;
+  struct sockaddr_in client_name;
+  uint64_t client_name_len = sizeof(client_name);
+  pthread_t newthread;
+
+  while (alive) {
+
+    client_sock = accept(server_socket,
+        reinterpret_cast<struct sockaddr *>(&client_name),
+        reinterpret_cast<socklen_t *>(&client_name_len));
+
+    if (client_sock == -1) {
+      error_die("accept");
+    }
+
+    struct RequestContext *ctx =
+      new (internal_malloc(sizeof(struct RequestContext))) struct RequestContext;
+    ctx->server = this;
+    ctx->client_socket = client_sock;
+
+    if (pthread_create(&newthread, NULL, handle_entry, reinterpret_cast<void *>(ctx)) != 0) {
+      perror("pthread_create1");
+    }
+
+  }
+
+  close(server_socket);
+
+  return;
+}
+
+
+/**
+ * A static helper for handling requests.
+ *
+ * This static helper is for use with pthreads and extracts a
+ * :class:`RequestContext` pointer from the void pointer argument. When the
+ * request is done being handled, the :class:``RequestContext`` should be
+ * freed.
+ *
+ * :param arg: A heap``RequestContext`` argument.
+ * :returns: A null pointer.
+ */
+void *HTTPServer::handle_entry(void *arg) {
+  struct RequestContext *ctx = reinterpret_cast<struct RequestContext *>(arg);
+  void *ret = ctx->server->handle(ctx->client_socket);
+  internal_free(ctx);
+  return ret;
+}
+
+
+/**
+ * Handle a HTTP request.
+ *
+ * The handling of the HTTP request is done in a threaded context. Access to
+ * the server resources is available, but must be synchronized.
+ *
+ * :param client_socket: The client's socket id.
+ * :returns: A null pointer.
+ */
+void *HTTPServer::handle(int client_socket) {
+  std::cout << "Server (" << this
+            << ") is servering client on " << client_socket
+            << std::endl;
+  // TODO(sholsapp): This just shells out to the old C-style way of handling
+  // the request. Once we done picking and choosing what we're moving into the
+  // server, fix this call.
+  return accept_request(reinterpret_cast<void *>(client_socket));
 }
