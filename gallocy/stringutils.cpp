@@ -1,6 +1,10 @@
 #include "./stringutils.h"
 
+#include <fstream>
 #include <functional>
+#include <iostream>
+#include <sstream>
+#include <streambuf>
 #include <vector>
 
 
@@ -57,6 +61,20 @@ namespace utils {
           elems.push_back(item);
       }
       return elems;
+  }
+
+
+  /**
+   * Read the file at path.
+   *
+   * :param path: The path to the file to read.
+   * :return: The entire file as a string.
+   */
+  gallocy::string read_file(const char *path) {
+    std::ifstream t(path, std::ifstream::in);
+    gallocy::string s((std::istreambuf_iterator<char>(t)),
+                       std::istreambuf_iterator<char>());
+    return s;
   }
 
 }  // namespace utils

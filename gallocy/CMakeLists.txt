@@ -2,7 +2,6 @@
 set(GALLOCY_INCLUDE
   .
   heaplayers
-  external/frozen
   external/restclient-cpp
   external/sqlite3)
 include_directories(${GALLOCY_INCLUDE})
@@ -16,20 +15,16 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 set(CMAKE_CXX_FLAGS
   "-std=c++0x -g -Wall -fstack-protector-all -Wstack-protector -fno-omit-frame-pointer")
 
-set(GALLOCY_UTILS_SRC
-  external/frozen/frozen.cpp)
-add_library(gallocy-utils SHARED ${GALLOCY_UTILS_SRC})
-install(TARGETS gallocy-utils DESTINATION lib)
-
 # The gallocy-core build
 set(GALLOCY_CORE_SRC
   config.cpp
   diff.cpp
   libgallocy.cpp
   pagetable.cpp
+  stringutils.cpp
   external/sqlite3/sqlite3.c)
 add_library(gallocy-core SHARED ${GALLOCY_CORE_SRC})
-target_link_libraries(gallocy-core gallocy-utils gallocy-runtime)
+target_link_libraries(gallocy-core gallocy-runtime)
 install(TARGETS gallocy-core DESTINATION lib)
 
 # The gallocy-wrapper build
@@ -43,7 +38,6 @@ install(TARGETS gallocy-wrapper DESTINATION lib)
 set(GALLOCY_NET_SRC
   httpd.cpp
   request.cpp
-  stringutils.cpp
   external/restclient-cpp/restclient.cpp)
 add_library(gallocy-net SHARED ${GALLOCY_NET_SRC})
 target_link_libraries(gallocy-net gallocy-core curl)

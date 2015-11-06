@@ -10,12 +10,10 @@ int main(void) {
 
   init();
 
-  gallocy::string host;
-  int port;
-  gallocy::string me;
-  peer_list_t peers;
+  gallocy::string host = "0.0.0.0";
+  int port = 8080;
+  gallocy::string me = "http://0.0.0.0:8080";
 
-  read_config(host, port, me, peers);
 
   int server_sock = -1;
 

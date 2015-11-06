@@ -1,24 +1,13 @@
-#ifndef _CONFIG_H
-#define _CONFIG_H
+#ifndef GALLOCY_CONFIG_H_
+#define GALLOCY_CONFIG_H_
 
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <fstream>
-#include <iostream>
-#include <streambuf>
-#include <sstream>
 
-#include "frozen.h"
 #include "libgallocy.h"
 
 
-typedef gallocy::vector<gallocy::string> peer_list_t;
+gallocy::json load_config(const gallocy::string &);
 
-
-gallocy::string read_file(const char*);
-void read_config(gallocy::string &, int &, gallocy::string &, peer_list_t &);
-gallocy::string get_me(void);
-peer_list_t get_peers(void);
-
-#endif
+#endif  // GALLOCY_CONFIG_H_
