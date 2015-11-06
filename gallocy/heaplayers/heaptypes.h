@@ -1,5 +1,5 @@
-#ifndef _HEAPTYPES_H
-#define _HEAPTYPES_H
+#ifndef GALLOCY_HEAPLAYERS_HEAPTYPES_H_
+#define GALLOCY_HEAPLAYERS_HEAPTYPES_H_
 
 
 // FIX ME: 16 = size of ZoneHeap header.
@@ -70,4 +70,4 @@ typedef
   SqliteAllocatorHeapType;
 
 
-#endif
+#endif  // GALLOCY_HEAPLAYERS_HEAPTYPES_H_

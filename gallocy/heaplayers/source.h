@@ -1,19 +1,18 @@
-#ifndef _SOURCE_H
-#define _SOURCE_H
-
+#ifndef GALLOCY_HEAPLAYERS_SOURCE_H_
+#define GALLOCY_HEAPLAYERS_SOURCE_H_
 
 #include <sys/mman.h>
 
-#include "myhashmap.h"
-#include "spinlock.h"
-#include "lockedheap.h"
-#include "freelistheap.h"
-#include "firstfitheap.h"
-#include "zoneheap.h"
-#include "sizeheap.h"
-#include "heaptypes.h"
+#include "heaplayers/myhashmap.h"
+#include "heaplayers/spinlock.h"
+#include "heaplayers/lockedheap.h"
+#include "heaplayers/freelistheap.h"
+#include "heaplayers/firstfitheap.h"
+#include "heaplayers/zoneheap.h"
+#include "heaplayers/sizeheap.h"
+#include "heaplayers/heaptypes.h"
 
-#include "constants.h"
+#include "../constants.h"
 
 
 #define ZONE_SZ   4096 * 4096 * 16
@@ -25,152 +24,84 @@ namespace HL {
 
 
 class SourceMmapHeap {
-
-  public:
-
-    inline void* malloc(size_t sz) {
-
-      void* mem = NULL;
-
-      if (!zone) {
-
-        if ((zone = mmap(reinterpret_cast<void *>(global_base()), ZONE_SZ, MMAP_PROT, MMAP_FLAG, -1, 0)) == MAP_FAILED) {
-          fprintf(stderr, "---ENONMEM---\n");
-          abort();
-        }
-
-        next = (char*) zone;
-        bytes_left = ZONE_SZ;
-
-      }
-
-      if (bytes_left > sz) {
-        mem  = (void*) next;
-        next = next + sz;
-        bytes_left -= sz;
-        return mem;
-      }
-      else {
+ public:
+  inline void* malloc(size_t sz) {
+    void* mem = NULL;
+    if (!zone) {
+      if ((zone = mmap(reinterpret_cast<void *>(global_base()), ZONE_SZ, MMAP_PROT, MMAP_FLAG, -1, 0)) == MAP_FAILED) {
         fprintf(stderr, "---ENONMEM---\n");
         abort();
       }
-
+      next = reinterpret_cast<char*>(zone);
+      bytes_left = ZONE_SZ;
     }
-
-    inline void free(void* ptr) {
-      //munmap(reinterpret_cast<char*>(ptr), getSize(ptr));
-      return;
+    if (bytes_left > sz) {
+      mem  = reinterpret_cast<void*>(next);
+      next = next + sz;
+      bytes_left -= sz;
+      return mem;
+    } else {
+      fprintf(stderr, "---ENONMEM---\n");
+      abort();
     }
+  }
 
-    inline void free(void* ptr, size_t sz) {
-      //munmap(reinterpret_cast<char*>(ptr), getSize(ptr));
-      return;
-    }
+  inline void free(void* ptr) {
+    // TODO(sholsapp): This needs to be re-added or cleaned up.
+    // munmap(reinterpret_cast<char*>(ptr), getSize(ptr));
+    return;
+  }
 
-    inline size_t getSize(void* ptr) {
-      return -1;
-    }
+  inline void free(void* ptr, size_t sz) {
+    // TODO(sholsapp): This needs to be re-added or cleaned up.
+    // munmap(reinterpret_cast<char*>(ptr), getSize(ptr));
+    return;
+  }
 
-    inline void __reset() {
-      zone = NULL;
-      next = NULL;
-      bytes_left = 0;
-    }
+  inline size_t getSize(void* ptr) {
+    return -1;
+  }
 
-  private:
-    void* zone;
-    char* next;
-    unsigned long bytes_left;
+  inline void __reset() {
+    zone = NULL;
+    next = NULL;
+    bytes_left = 0;
+  }
+
+ private:
+  void *zone;
+  char *next;
+  uint64_t bytes_left;
 };
-
-#if 0
-typedef
-  HL::LockedHeap<
-    HL::SpinLockType,
-    HL::FirstFitHeap<
-      HL::SizeHeap<
-        HL::ZoneHeap<
-          SourceMmapHeap,
-          16384 - 16> > > >
-  InternalSourceHeapType;
-
-
-class SourceHeap: public SourceMmapHeap {
-  public:
-    inline void* malloc(size_t sz) {
-      void* ptr = SourceMmapHeap::malloc(sz);
-      MyMapLock.lock();
-      MyMap.set (ptr, sz);
-      MyMapLock.unlock();
-      //assert (reinterpret_cast<size_t>(ptr) % 4096 == 0);
-      return const_cast<void*>(ptr);
-    }
-
-    inline size_t getSize(void* ptr) {
-      MyMapLock.lock();
-      size_t sz = MyMap.get(ptr);
-      MyMapLock.unlock();
-      return sz;
-    }
-
-    // WORKAROUND: apparent gcc bug.
-    void free(void* ptr, size_t sz) {
-      SourceMmapHeap::free (ptr, sz);
-    }
-
-    inline void free(void* ptr) {
-      //assert (reinterpret_cast<size_t>(ptr) % 4096 == 0);
-      MyMapLock.lock();
-      size_t sz = MyMap.get(ptr);
-      SourceMmapHeap::free(ptr, sz);
-      MyMap.erase(ptr);
-      MyMapLock.unlock();
-    }
-
-  private:
-
-    class MyHeap : public InternalSourceHeapType {};
-    typedef HL::MyHashMap<void*, size_t, MyHeap> mapType;
-
-  protected:
-
-    mapType MyMap;
-
-    HL::SpinLockType MyMapLock;
-
-};
-#endif
 
 
 class SingletonHeap {
-  public:
-    static SingletonHeap& getInstance() {
-      static SingletonHeap instance;
-      return instance;
-    }
+ public:
+  static SingletonHeap& getInstance() {
+    static SingletonHeap instance;
+    return instance;
+  }
 
-    static void* malloc(size_t sz) {
-      return heap.malloc(sz);
-    }
+  static void* malloc(size_t sz) {
+    return heap.malloc(sz);
+  }
 
-    static void free(void* ptr) {
-      heap.free(ptr);
-    }
+  static void free(void* ptr) {
+    heap.free(ptr);
+  }
 
-    static void __reset() {
-      heap.__reset();
-    }
+  static void __reset() {
+    heap.__reset();
+  }
 
-  private:
-    static SingletonHeapType heap;
-
-    // Need public for STL allocators.
-    //
-    //SingletonHeap() {};
-    //SingletonHeap(SingletonHeap const&);
-    //void operator=(SingletonHeap const&);
+ private:
+  static SingletonHeapType heap;
+  // Need public for STL allocators.
+  // SingletonHeap() {};
+  // SingletonHeap(SingletonHeap const&);
+  // void operator=(SingletonHeap const&);
 };
 
-}
+}  // namespace HL
 
-#endif
+#endif  // GALLOCY_HEAPLAYERS_SOURCE_H_

@@ -1,5 +1,5 @@
-#ifndef _STDLIBHEAP_H_
-#define _STDLIBHEAP_H_
+#ifndef GALLOCY_HEAPLAYERS_STDLIBHEAP_H_
+#define GALLOCY_HEAPLAYERS_STDLIBHEAP_H_
 
 #include <cstring>
 #include <cstdlib>
@@ -9,9 +9,7 @@ namespace HL {
 
 template <class Super>
 class StdlibHeap : public Super {
-
-public:
-
+ public:
   void *malloc(size_t sz) {
     return Super::malloc(sz);
   }
@@ -34,7 +32,7 @@ public:
   }
 
   char *strdup(const char *s1) {
-    char *s2 = (char *) Super::malloc(sizeof(char) * strlen(s1) + 1);
+    char *s2 = reinterpret_cast<char *>(Super::malloc(sizeof(char) * strlen(s1) + 1));
     memcpy(s2, s1, strlen(s1) + 1);
     return s2;
   }
@@ -44,9 +42,8 @@ public:
     memset(ptr, 0, count * size);
     return ptr;
   }
-
 };
 
-}
+}  // namespace HL
 
-#endif
+#endif  // GALLOCY_HEAPLAYERS_STDLIBHEAP_H_
