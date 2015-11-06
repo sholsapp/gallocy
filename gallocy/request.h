@@ -22,7 +22,7 @@ class Request {
   gallocy::string path;
   gallocy::string protocol;
   Headers headers;
-  int body;
+  gallocy::string raw_body;
 
  private:
   gallocy::string raw;

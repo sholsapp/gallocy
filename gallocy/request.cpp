@@ -21,6 +21,9 @@ Request::Request(gallocy::string raw) : raw(raw) {
   path = utils::trim(request_line[1]);
   protocol = utils::trim(request_line[2]);
 
+  // Track the line each parser leaves off.
+  uint64_t line_idx = 1;
+
   // Parse the headers
   for (auto it = std::begin(lines) + 1; it != std::end(lines); ++it) {
     if ((*it).compare("\r") == 0)
@@ -28,7 +31,15 @@ Request::Request(gallocy::string raw) : raw(raw) {
     gallocy::vector<gallocy::string> header_parts;
     utils::split(*it, ':', header_parts);
     headers[utils::trim(header_parts[0])] = utils::trim(header_parts[1]);
+    line_idx++;
   }
+  // Skip the '\r' character that indicated end of request head
+  line_idx++;
 
   // TODO(sholsapp): parse the body, if any.
+  for (auto it = std::begin(lines) + line_idx; it != std::end(lines); ++it) {
+    if ((*it).compare("\r") == 0)
+      break;
+    raw_body = utils::trim(*it);
+  }
 }
