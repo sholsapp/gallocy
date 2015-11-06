@@ -1,9 +1,10 @@
+#include "./libgallocy.h"
+
+#include <sys/mman.h>
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <sys/mman.h>
-
-#include "libgallocy.h"
 
 
 // When we start handling multithreaded applications, this must be set to `1`

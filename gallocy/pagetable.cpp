@@ -1,17 +1,16 @@
-#include <cstdio>
-#include <cstring>
-#include <string>
-#include <sstream>
 #include <unistd.h>
 
+#include <cstdio>
+#include <cstring>
+#include <functional>
+#include <map>
+#include <sstream>
+#include <string>
+#include <utility>
+
+#include "./libgallocy.h"
+#include "./pagetable.h"
 #include "heaplayers/heaptypes.h"
-/*
- * TODO: we only need this import to get the types of the gallocy
- * flavored STL containers. Once that is refactored, we can include that
- * instead of the entire libgallocy.h.
- */
-#include "libgallocy.h"
-#include "pagetable.h"
 
 
 class xSizeHeap: public SqlitexSizeHeapType {};
@@ -47,13 +46,11 @@ void* xMalloc(int sz) {
   }
   void* ptr = sqliteHeap.malloc(sz);
   xSizeMap.insert(std::pair<void*, int>(ptr, sz));
-  //fprintf(stderr, "%p = xMalloc(%d)\n", ptr, sz);
   return ptr;
 }
 
 
 void xFree(void* ptr) {
-  //fprintf(stderr, "xFree(%p)\n", ptr);
   xSizeMap.erase(ptr);
   sqliteHeap.free(ptr);
   return;
@@ -71,20 +68,17 @@ void* xRealloc(void* ptr, int sz) {
     sqliteHeap.free(ptr);
   }
   xSizeMap.insert(std::pair<void*, int>(buf, sz));
-  //fprintf(stderr, "%p = xRealloc(%p, %d)\n", buf, ptr, sz);
   return buf;
 }
 
 
 int xSize(void* ptr) {
   int sz = xSizeMap[ptr];
-  //fprintf(stderr, "%d = xSize(%p)\n", sz, ptr);
   return sz;
 }
 
 
 int xRoundup(int sz) {
-  //fprintf(stderr, "xRoundup(%d)\n", sz);
   return sz;
 }
 
@@ -124,13 +118,12 @@ void init_sqlite_memory() {
 
 
 int PageTable::noop_callback(void *not_used, int argc, char **argv, char **az_col_name) {
-   return 0;
+  return 0;
 }
 
 
 int PageTable::print_callback(void *not_used, int argc, char **argv, char **az_col_name) {
-  int i;
-  for(i=0; i<argc; i++) {
+  for (int i = 0; i < argc; i++) {
     printf("%s = %s\n", az_col_name[i], argv[i] ? argv[i] : "NULL");
   }
   printf("\n");
@@ -139,7 +132,7 @@ int PageTable::print_callback(void *not_used, int argc, char **argv, char **az_c
 
 
 int PageTable::condition_callback(void *cond_param, int argc, char **argv, char **az_col_name) {
-  condition_callback_param *param = (condition_callback_param *) cond_param;
+  condition_callback_param *param = reinterpret_cast<condition_callback_param *>(cond_param);
   pthread_mutex_lock(param->mutex);
   pthread_cond_signal(param->cv);
   pthread_mutex_unlock(param->mutex);
@@ -150,7 +143,7 @@ int PageTable::condition_callback(void *cond_param, int argc, char **argv, char 
 void PageTable::open_database() {
   int  rc;
   rc = sqlite3_open(database_path, &db);
-  if(rc) {
+  if (rc) {
      fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
      exit(0);
   } else {
@@ -182,12 +175,11 @@ void PageTable::create_tables() {
   sqlite3_finalize(stmt);
 
   return;
-
 }
 
 
 void PageTable::insert_page_table_entry(void* ptr, int ptr_sz) {
-  static long unique_id = 0;
+  static int64_t unique_id = 0;
   int rc;
   gallocy::stringstream sql;
 
@@ -200,7 +192,7 @@ void PageTable::insert_page_table_entry(void* ptr, int ptr_sz) {
 
   /* Execute SQL statement */
   rc = sqlite3_prepare_v2(db, sql.str().c_str(), sql.str().length(), &stmt, NULL);
-  if(rc != SQLITE_OK) {
+  if (rc != SQLITE_OK) {
      fprintf(stderr, "Failed to prepare insert!\n");
   }
 
@@ -234,4 +226,3 @@ int PageTable::get_page_table_entry_count() {
 
 
 PageTable pt;
-//Scheduler s;
