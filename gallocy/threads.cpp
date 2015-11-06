@@ -1,4 +1,9 @@
-#include "threads.h"
+#include "./threads.h"
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
 
 /**
  * Page align a pointer.
@@ -7,7 +12,7 @@
  * :returns: The pointer aligned to the lower page boundary.
  */
 void* page_align_ptr(void* p) {
-  return (unsigned char*) (((intptr_t) p) & ~(PAGE_SZ-1));
+  return reinterpret_cast<unsigned char*>((((intptr_t) p) & ~(PAGE_SZ-1)));
 }
 
 
@@ -27,15 +32,14 @@ void* page_align_ptr(void* p) {
  */
 void* allocate_thread_stack(void* location, size_t stack_size) {
   char* raw = NULL;
-  if ((raw = (char*) mmap(location,
+  if ((raw = reinterpret_cast<char *>(mmap(location,
       (stack_size + 2) * PAGE_SZ,
       PROT_READ | PROT_WRITE,
       MAP_SHARED | MAP_ANON,
-      // XXX: When we can actually pick where to allocate stacks we
-      // can use the ``MAP_FIXED`` flag. Until then, we'll let
-      // glibc pick.
-      //MAP_SHARED | MAP_ANON | MAP_FIXED,
-      -1, 0)) == MAP_FAILED) {
+      // TODO(sholsapp): When we can actually pick where to allocate stacks we
+      // can use the ``MAP_FIXED`` flag. Until then, we'll let glibc pick.
+      //  MAP_SHARED | MAP_ANON | MAP_FIXED,
+      -1, 0))) == MAP_FAILED) {
     perror("allocate_thread_stack's mmap");
   }
   memset(raw, 'G', PAGE_SZ);
@@ -46,5 +50,5 @@ void* allocate_thread_stack(void* location, size_t stack_size) {
     perror("Failed to set top guard page.");
   // Even though stacks grow downward, return the lowest addressable byte
   // because that's what the pthread API uses.
-  return (void*) (raw + PAGE_SZ);
+  return reinterpret_cast<void *>(raw + PAGE_SZ);
 }
