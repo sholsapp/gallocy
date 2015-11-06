@@ -1,5 +1,7 @@
-#include "request.h"
-#include "stringutils.h"
+#include <vector>
+
+#include "./request.h"
+#include "./stringutils.h"
 
 
 /**
@@ -8,7 +10,6 @@
  * :param raw: The raw request string.
  */
 Request::Request(gallocy::string raw) : raw(raw) {
-
   // Parse the raw request into lines
   gallocy::vector<gallocy::string> lines;
   utils::split(raw, '\n', lines);
@@ -29,7 +30,5 @@ Request::Request(gallocy::string raw) : raw(raw) {
     headers[utils::trim(header_parts[0])] = utils::trim(header_parts[1]);
   }
 
-  // Parse the body
-  // TODO
-
-};
+  // TODO(sholsapp): parse the body, if any.
+}
