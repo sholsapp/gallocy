@@ -39,6 +39,7 @@ sub_test() {
 
 sub_stylecheck() {
   LINT_ARGS=(
+    "--root=gallocy"
     "--linelength=160"
     "--filter=-legal/copyright"
     )

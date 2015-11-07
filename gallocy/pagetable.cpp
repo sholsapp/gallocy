@@ -8,8 +8,8 @@
 #include <string>
 #include <utility>
 
-#include "./libgallocy.h"
-#include "./pagetable.h"
+#include "gallocy/libgallocy.h"
+#include "gallocy/pagetable.h"
 #include "heaplayers/heaptypes.h"
 
 

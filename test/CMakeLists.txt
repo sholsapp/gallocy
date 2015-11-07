@@ -1,5 +1,6 @@
 set (GALLOCY_INCLUDE
   ../gallocy
+  ../gallocy/gallocy
   ../gallocy/heaplayers
   ../gallocy/external/frozen
   ../gallocy/external/sqlite3)

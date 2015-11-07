@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "./stringutils.h"
 #include "external/json.hpp"
+#include "gallocy/stringutils.h"
 
 
 gallocy::json load_config(const gallocy::string &path) {

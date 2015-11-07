@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "libgallocy.h"
+#include "gallocy/libgallocy.h"
 
 
 gallocy::json load_config(const gallocy::string &);

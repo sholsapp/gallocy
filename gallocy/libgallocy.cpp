@@ -1,4 +1,4 @@
-#include "./libgallocy.h"
+#include "gallocy/libgallocy.h"
 
 #include <sys/mman.h>
 

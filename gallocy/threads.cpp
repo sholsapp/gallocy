@@ -1,4 +1,4 @@
-#include "./threads.h"
+#include "gallocy/threads.h"
 
 #include <cstdio>
 #include <cstdlib>

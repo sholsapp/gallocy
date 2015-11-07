@@ -1,6 +1,7 @@
 # The directories that must be included for build
 set(GALLOCY_INCLUDE
   .
+  gallocy
   heaplayers
   external/restclient-cpp
   external/sqlite3)

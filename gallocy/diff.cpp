@@ -1,15 +1,14 @@
 #include <algorithm>
+#include <cstring>
 #include <new>
 
-#include <cstring>
-
-#include "libgallocy.h"
-#include "diff.h"
+#include "gallocy/libgallocy.h"
+#include "gallocy/diff.h"
 
 class Element;
 
 class Element {
-public:
+ public:
   Element(int x, int y) :
     x(x), y(y), value(-1), traceback(NULL) {}
   int x;
@@ -20,18 +19,18 @@ public:
 
 
 class Cost {
-public:
+ public:
   static const int MATCH = 1;
   static const int MISMATCH = -2;
   static const int GAP = -1;
 };
 
 
-void print_matrix(Element** matrix, size_t matrix_y, size_t matrix_x) {
+void print_matrix(Element **matrix, size_t matrix_y, size_t matrix_x) {
   fprintf(stderr, "y dim: %lu\n", matrix_y);
   fprintf(stderr, "x dim: %lu\n", matrix_x);
-  for (unsigned int y = 0; y < matrix_y; y++ ) {
-    for (unsigned int x = 0; x < matrix_x; x++ ) {
+  for (unsigned int y = 0; y < matrix_y; y++) {
+    for (unsigned int x = 0; x < matrix_x; x++) {
       fprintf(stderr, "%d ", matrix[y][x].value);
     }
     fprintf(stderr, "\n");
@@ -39,26 +38,23 @@ void print_matrix(Element** matrix, size_t matrix_y, size_t matrix_x) {
 }
 
 
-void print_diff(const char* mem1, size_t mem1_len, const char* mem2, size_t mem2_len) {
+void print_diff(const char *mem1, size_t mem1_len, const char* mem2, size_t mem2_len) {
   fprintf(stderr, "-> %s\n", mem1);
   fprintf(stderr, "-> %s\n", mem2);
   for (unsigned int i = 0; i < mem1_len; i++) {
     if (mem1[i] == mem2[i]) {
       // Don't print this, it's noise
-    }
-    else if (mem1[i] == '-') {
+    } else if (mem1[i] == '-') {
       fprintf(stderr, "@%d: ", i);
       fprintf(stderr, "+");
       fprintf(stderr, "%c", mem2[i]);
       fprintf(stderr, "\n");
-    }
-    else if (mem2[i] == '-') {
+    } else if (mem2[i] == '-') {
       fprintf(stderr, "@%d: ", i);
       fprintf(stderr, "-");
       fprintf(stderr, "%c", mem1[i]);
       fprintf(stderr, "\n");
-    }
-    else if (mem1[i] != mem2[i]) {
+    } else if (mem1[i] != mem2[i]) {
       fprintf(stderr, "@%d: ", i);
       fprintf(stderr, "-");
       fprintf(stderr, "%c", mem1[i]);
@@ -78,11 +74,11 @@ int diff(
   size_t x_matrix_len = mem2_len + 1;
 
   // Allocate the matrices
-  Element** _matrix = (Element**) singletonHeap.malloc(sizeof(Element*) * y_matrix_len);
+  Element **_matrix = reinterpret_cast<Element** >(singletonHeap.malloc(sizeof(Element *) * y_matrix_len));
   for (unsigned int y = 0; y < y_matrix_len; y++) {
-    _matrix[y] = (Element*) singletonHeap.malloc(sizeof(Element) * x_matrix_len);
+    _matrix[y] = reinterpret_cast<Element *>(singletonHeap.malloc(sizeof(Element) * x_matrix_len));
     for (unsigned int x = 0; x < x_matrix_len; x++) {
-      Element* e = new ((void*) &_matrix[y][x]) Element(x, y);
+      Element* e = new (reinterpret_cast<void *>(&_matrix[y][x])) Element(x, y);
       e->value = 0;
     }
   }
@@ -132,8 +128,8 @@ int diff(
   }
 
   // Now we can proceed with building the output
-  mem1_alignment = (char*) singletonHeap.malloc(sizeof(char) * longest);
-  mem2_alignment = (char*) singletonHeap.malloc(sizeof(char) * longest);
+  mem1_alignment = reinterpret_cast<char *>(singletonHeap.malloc(sizeof(char) * longest));
+  mem2_alignment = reinterpret_cast<char *>(singletonHeap.malloc(sizeof(char) * longest));
   memset(mem1_alignment, 0, longest);
   memset(mem2_alignment, 0, longest);
   mem1_alignment[longest] = 0;
@@ -143,16 +139,13 @@ int diff(
 
   cur = &_matrix[y_matrix_len-1][x_matrix_len-1];
   while (cur != NULL) {
-
     if (_matrix[cur->y][cur->x].traceback == &_matrix[cur->y-1][cur->x-1]) {
       mem1_alignment[_alignment_idx] = mem1[cur->y-1];
       mem2_alignment[_alignment_idx] = mem2[cur->x-1];
-    }
-    else if (_matrix[cur->y][cur->x].traceback == &_matrix[cur->y][cur->x-1]) {
+    } else if (_matrix[cur->y][cur->x].traceback == &_matrix[cur->y][cur->x-1]) {
       mem1_alignment[_alignment_idx] = '-';
       mem2_alignment[_alignment_idx] = mem2[cur->x-1];
-    }
-    else if (_matrix[cur->y][cur->x].traceback == &_matrix[cur->y-1][cur->x]) {
+    } else if (_matrix[cur->y][cur->x].traceback == &_matrix[cur->y-1][cur->x]) {
       mem1_alignment[_alignment_idx] = mem1[cur->y-1];
       mem2_alignment[_alignment_idx] = '-';
     }

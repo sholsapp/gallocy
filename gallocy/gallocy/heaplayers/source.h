@@ -12,7 +12,7 @@
 #include "heaplayers/sizeheap.h"
 #include "heaplayers/heaptypes.h"
 
-#include "../constants.h"
+#include "gallocy/constants.h"
 
 
 #define ZONE_SZ   4096 * 4096 * 16

@@ -1,7 +1,7 @@
 #include <vector>
 
-#include "./request.h"
-#include "./stringutils.h"
+#include "gallocy/request.h"
+#include "gallocy/stringutils.h"
 
 
 /**
