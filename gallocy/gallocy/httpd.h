@@ -42,6 +42,7 @@ class HTTPServer {
   void start();
   static void *handle_entry(void *arg);
   void *handle(int client);
+  void *test(int client_socket);
  private:
   gallocy::string read_request();
  private:

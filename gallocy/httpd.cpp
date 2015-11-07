@@ -1,7 +1,8 @@
 #include <utility>
 
-#include "httpd.h"
-#include "libgallocy.h"
+#include "gallocy/httpd.h"
+#include "gallocy/libgallocy.h"
+#include "gallocy/request.h"
 
 
 typedef
@@ -333,5 +334,23 @@ void *HTTPServer::handle(int client_socket) {
   // TODO(sholsapp): This just shells out to the old C-style way of handling
   // the request. Once we done picking and choosing what we're moving into the
   // server, fix this call.
-  return accept_request(reinterpret_cast<void *>(client_socket));
+  //return accept_request(reinterpret_cast<void *>(client_socket));
+  return test(client_socket);
+}
+
+
+void *HTTPServer::test(int client_socket) {
+  char buf[1024];
+  int numchars;
+  gallocy::stringstream stream;
+  while ((numchars = get_line(client_socket, buf, sizeof(buf))) > 2) {
+    stream << buf;
+  }
+  stream << buf;
+
+  Request req(stream.str());
+
+  req.pretty_print();
+
+  return nullptr;
 }
