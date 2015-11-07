@@ -2,6 +2,8 @@
 #define GALLOCY_OBJUTILS_H_
 
 #include <iostream>
+#include <map>
+#include <vector>
 
 #include "gallocy/libgallocy.h"
 
