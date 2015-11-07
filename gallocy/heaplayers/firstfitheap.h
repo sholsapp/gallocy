@@ -1,123 +1,104 @@
-#ifndef _FIRSTFITHEAP_H_
-#define _FIRSTFITHEAP_H_
+#ifndef GALLOCY_HEAPLAYERS_FIRSTFITHEAP_H_
+#define GALLOCY_HEAPLAYERS_FIRSTFITHEAP_H_
 
 #include <cstdio>
-#include <assert.h>
 
 namespace HL {
 
 template <class Super>
 class FirstFitHeap : public Super {
-  public:
+ public:
+  FirstFitHeap(void)
+    : myFreeList(NULL), nObjects(0) {
+  }
 
-    FirstFitHeap (void)
-      : myFreeList (NULL), nObjects (0)
-    {
-      assert (classInvariant());
-    }
+  ~FirstFitHeap(void) {
+    __reset();
+  }
 
-    ~FirstFitHeap (void) {
-      __reset();
-    }
-
-    inline void * malloc (size_t sz) {
-      // Check the free list first.
-      assert (classInvariant());
-      void * ptr = myFreeList;
-      if (ptr == NULL) {
-        assert (nObjects == 0);
-        ptr = Super::malloc (sz);
-      } else {
-        assert (nObjects > 0);
-        freeObject * p = myFreeList;
-        freeObject * prev = NULL;
-        while ((p != NULL) && (Super::getSize((void *) p) < sz)) {
-          prev = p;
-          p = p->next;
-        }
-        if (p == NULL) {
-          ptr = Super::malloc (sz);
-        } else {
-          assert (Super::getSize((void *) p) >= sz);
-          if (prev == NULL) {
-            myFreeList = p->next;
-          } else {
-            assert (prev->next == p);
-            prev->next = p->next;
-          }
-          nObjects--;
-          ptr = p;
-        }
-      }
-      assert (classInvariant());
-      return ptr;
-    }
-
-    inline void free (void * ptr) {
-
-      if (!ptr)
-        return;
-
-      for (unsigned int i = 0; i < Super::getSize((void*) ptr); i++) {
-        ((unsigned char*) ptr)[i] = 0xED;
-      }
-
-      // Add this object to the free list.
-      assert (ptr != NULL);
-      assert (classInvariant());
-      nObjects++;
-      freeObject * p = myFreeList;
-      freeObject * prev = NULL;
-      // Insert the object "in order".
-#if 1
-      while ((p != NULL) & (p <= ptr)) {
+  inline void *malloc(size_t sz) {
+    // Check the free list first.
+    void * ptr = myFreeList;
+    if (ptr == NULL) {
+      ptr = Super::malloc(sz);
+    } else {
+      freeObject *p = myFreeList;
+      freeObject *prev = NULL;
+      while ((p != NULL) && (Super::getSize(reinterpret_cast<void *>(p)) < sz)) {
         prev = p;
         p = p->next;
       }
-#endif
-      if (prev == NULL) {
-        ((freeObject *) ptr)->next = myFreeList;
-        myFreeList = (freeObject *) ptr;
+      if (p == NULL) {
+        ptr = Super::malloc(sz);
       } else {
-        ((freeObject *) ptr)->next = prev->next;
-        prev->next = (freeObject *) ptr;
+        if (prev == NULL) {
+          myFreeList = p->next;
+        } else {
+          prev->next = p->next;
+        }
+        nObjects--;
+        ptr = p;
       }
-      assert (classInvariant());
+    }
+    return ptr;
+  }
+
+  inline void free(void *ptr) {
+    if (!ptr)
+      return;
+
+    for (unsigned int i = 0; i < Super::getSize(reinterpret_cast<void *>(ptr)); i++) {
+      reinterpret_cast<unsigned char *>(ptr)[i] = 0xED;
     }
 
-    inline void __reset() {
-      // Delete everything on the free list.
-      void * ptr = myFreeList;
-      while (ptr != NULL) {
-        // assert (nObjects > 0);
-        assert (ptr != NULL);
-        void * oldptr = ptr;
-        ptr = (void *) ((freeObject *) ptr)->next;
-        Super::free (oldptr);
-        --nObjects;
-      }
-      myFreeList = NULL;
-      nObjects = 0;
-      Super::__reset();
+    // Add this object to the free list.
+    nObjects++;
+    freeObject *p = myFreeList;
+    freeObject *prev = NULL;
+    // Insert the object "in order".
+#if 1
+    while ((p != NULL) & (p <= ptr)) {
+      prev = p;
+      p = p->next;
     }
-
-  private:
-
-    int classInvariant (void) {
-      return (((myFreeList == NULL) && (nObjects == 0))
-          || ((myFreeList != NULL) && (nObjects > 0)));
+#endif
+    if (prev == NULL) {
+      (reinterpret_cast<freeObject *>(ptr))->next = myFreeList;
+      myFreeList = reinterpret_cast<freeObject *>(ptr);
+    } else {
+      (reinterpret_cast<freeObject *>(ptr))->next = prev->next;
+      prev->next = reinterpret_cast<freeObject *>(ptr);
     }
+  }
 
-    class freeObject {
-      public:
-        freeObject * next;
-    };
+  inline void __reset() {
+    void *ptr = myFreeList;
+    while (ptr != NULL) {
+      void *oldptr = ptr;
+      ptr = reinterpret_cast<void *>((reinterpret_cast<freeObject *>(ptr))->next);
+      Super::free(oldptr);
+      --nObjects;
+    }
+    myFreeList = NULL;
+    nObjects = 0;
+    Super::__reset();
+  }
 
-    freeObject * myFreeList;
-    int nObjects;
+ private:
+  int classInvariant() {
+    return (((myFreeList == NULL) && (nObjects == 0))
+        || ((myFreeList != NULL) && (nObjects > 0)));
+  }
 
+  class freeObject {
+   public:
+    freeObject * next;
+  };
+
+  freeObject *myFreeList;
+  int nObjects;
 };
 
-}
+}  // namespace HL
 
-#endif
+#endif  // GALLOCY_HEAPLAYERS_FIRSTFITHEAP_H_
