@@ -3,16 +3,14 @@
 
 #include <map>
 
-#include "./libgallocy.h"
+#include "gallocy/libgallocy.h"
 
 /**
  * A HTTP request.
  */
 class Request {
  public:
-  /**
-   * HTTP headers are a simple string to string map.
-   */
+  // Types
   typedef gallocy::map<
     gallocy::string, gallocy::string>
     Headers;
@@ -21,8 +19,11 @@ class Request {
     gallocy::string, gallocy::string>
     Parameters;
 
-  Headers headers;
+  // Constructors
   explicit Request(gallocy::string);
+
+  // Members
+  Headers headers;
   gallocy::json &get_json();
   Parameters &get_params();
   gallocy::string method;
@@ -35,6 +36,30 @@ class Request {
   gallocy::string raw;
   gallocy::json json;
   Parameters params;
+};
+
+
+/**
+ * A HTTP response.
+ */
+class Response {
+ public:
+  // Types
+  typedef gallocy::map<
+    gallocy::string, gallocy::string>
+    Headers;
+
+  // Constructors
+  Response();
+
+  // Members
+  Headers headers;
+  gallocy::string protocol;
+  uint64_t status_code;
+  gallocy::string body;
+
+  gallocy::string str();
+  uint64_t size();
 };
 
 #endif  // GALLOCY_REQUEST_H_

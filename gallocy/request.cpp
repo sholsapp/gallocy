@@ -4,6 +4,7 @@
 #include "gallocy/request.h"
 #include "gallocy/stringutils.h"
 
+
 /**
  * Create a HTTP request object from the raw request.
  *
@@ -89,13 +90,53 @@ Request::Parameters &Request::get_params() {
  */
 void Request::pretty_print() {
   std::cout << "Request (" << this << ")" << std::endl
-    << "  " << method
-    << " " << uri
-    << " " << protocol
-    << std::endl;
+            << "  " << method
+            << " " << uri
+            << " " << protocol
+            << std::endl;
   for (auto &it : headers) {
     std::cout << "  " << it.first
-      << ": " << it.second
-      << std::endl;
+              << ": " << it.second
+              << std::endl;
   }
+}
+
+
+/**
+ * Create a response.
+ */
+Response::Response() {
+  protocol = "HTTP/1.0";
+}
+
+
+/**
+ * The response as a string.
+ *
+ * The rseponse as a string, which is appropriate for sending over the wire to
+ * an HTTP client.
+ *
+ * :returns: The response as a string.
+ */
+gallocy::string Response::str() {
+  gallocy::stringstream out;
+  out << protocol << " " << status_code << " " << "OK" << "\r\n";
+  for (auto it : headers) {
+    out << it.first << ": " << it.second << "\r\n";
+  }
+  out << "\r\n" << body << "\r\n\r\n";
+  return out.str();
+}
+
+
+/**
+ * The size of the response.
+ *
+ * The size of the response, which is appropriate for use when the response's
+ * size is needed to send over the wire.
+ *
+ * :returns: The size of the response in bytes.
+ */
+uint64_t Response::size() {
+  return str().size();
 }
