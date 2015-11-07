@@ -47,7 +47,7 @@ sub_stylecheck() {
     find gallocy \
       -path gallocy/external -prune -o \
       -type f -regex ".*\.\(cpp\|h\)$" -print \
-      -exec ./tools/cpplint.py ${LINT_ARGS[*]} {} \;
+      -exec ./tools/cpplint.py ${LINT_ARGS[*]} {} +
   else
     ./tools/cpplint.py ${LINT_ARGS[*]} $1
   fi
