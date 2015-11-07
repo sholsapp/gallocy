@@ -42,6 +42,7 @@ sub_stylecheck() {
     "--linelength=160"
     "--filter=-legal/copyright"
     )
+  echo "Using http://google.github.io/styleguide/cppguide.html as guide..."
   if [ "$1" = "" ]; then
     find gallocy \
       -path gallocy/external -prune -o \
