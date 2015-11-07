@@ -12,6 +12,7 @@ namespace utils {
   gallocy::string &trim(gallocy::string &);
   gallocy::string read_file(const char *);
   gallocy::vector<gallocy::string> &split(const gallocy::string &, char, gallocy::vector<gallocy::string> &);
+  gallocy::string string_to_hex(const gallocy::string &input);
 }
 
 #endif  // GALLOCY_STRINGUTILS_H_

@@ -77,4 +77,24 @@ namespace utils {
     return s;
   }
 
+
+  /**
+   * Convert a string to hex.
+   *
+   * :param input: The string to convert to hex.
+   * :return: The hex representation of the string.
+   */
+  gallocy::string string_to_hex(const gallocy::string &input) {
+      static const char* const lut = "0123456789ABCDEF";
+      size_t len = input.length();
+      gallocy::string output;
+      output.reserve(2 * len);
+      for (size_t i = 0; i < len; ++i) {
+          const unsigned char c = input[i];
+          output.push_back(lut[c >> 4]);
+          output.push_back(lut[c & 15]);
+      }
+      return output;
+  }
+
 }  // namespace utils
