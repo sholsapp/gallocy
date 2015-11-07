@@ -2,29 +2,37 @@
 
 
 setup() {
-  echo "FOO"
+  echo "SETUP"
+  BIN=install/bin
 }
 
 
 teardown() {
-  echo "BAR"
+  echo "TEARDOWN"
 }
 
 
 @test "http server binary exists" {
-  BIN=install/bin
   run ls "${BIN}/httpd"
   [ $status -eq 0 ]
 }
 
 
 @test "http server starts" {
-  BIN=install/bin
+  ${BIN}/httpd &
+  PID=$!
+  run kill -s 0 $PID
+  kill -9 $PID
+  [ "$status" -eq 0 ]
+}
+
+
+@test "http server responds on /admin" {
   ${BIN}/httpd &
   PID=$!
   echo "Started server on ${PID}"
   run curl --max-time 1 http://localhost:8080/admin
-  echo "Killing ${PID}"
+  echo "RESULTS $status $result"
   kill -9 $PID
-  [ "$result" = "{\"foo\": \"bar\"}" ]
+  [ "$status" -eq 0 ]
 }
