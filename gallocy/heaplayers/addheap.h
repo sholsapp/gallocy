@@ -1,36 +1,37 @@
-#ifndef _ADDHEAP_H_
-#define _ADDHEAP_H_
+#ifndef GALLOCY_HEAPLAYERS_ADDHEAP_H_
+#define GALLOCY_HEAPLAYERS_ADDHEAP_H_
 
-// Reserve space for a class in the head of every allocated object.
 
 namespace HL {
 
+/**
+ * Reserve space for a class in the head of every allocated object.
+ */
 template <class Add, class Super>
 class AddHeap : public Super {
-public:
-
-  inline void * malloc (size_t sz) {
-    void * ptr = Super::malloc (sz + align(sizeof(Add)));
-    void * newPtr = (void *) align ((size_t) ((Add *) ptr + 1));
+ public:
+  inline void *malloc(size_t sz) {
+    void *ptr = Super::malloc(sz + align(sizeof(Add)));
+    void *newPtr = reinterpret_cast<void *>(align(reinterpret_cast<size_t>(reinterpret_cast<Add *>(ptr) + 1)));
     return newPtr;
   }
 
-  inline void free (void * ptr) {
-    void * origPtr = (void *) ((Add *) ptr - 1);
-    Super::free (origPtr);
+  inline void free(void *ptr) {
+    void *origPtr = reinterpret_cast<void *>(reinterpret_cast<Add *>(ptr) - 1);
+    Super::free(origPtr);
   }
 
-  inline size_t getSize (void * ptr) {
-    void * origPtr = (void *) ((Add *) ptr - 1);
-    return Super::getSize (origPtr);
+  inline size_t getSize(void *ptr) {
+    void *origPtr = reinterpret_cast<void *>(reinterpret_cast<Add *>(ptr) - 1);
+    return Super::getSize(origPtr);
   }
 
-private:
-  static inline size_t align (size_t sz) {
+ private:
+  static inline size_t align(size_t sz) {
     return (sz + (sizeof(double) - 1)) & ~(sizeof(double) - 1);
   }
-
 };
 
-};
-#endif
+}  // namespace HL
+
+#endif  // GALLOCY_HEAPLAYERS_ADDHEAP_H_
