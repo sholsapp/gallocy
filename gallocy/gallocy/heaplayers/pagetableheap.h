@@ -1,7 +1,7 @@
 #ifndef GALLOCY_HEAPLAYERS_PAGETABLEHEAP_H_
 #define GALLOCY_HEAPLAYERS_PAGETABLEHEAP_H_
 
-#include "heaplayers/pagetable.h"
+#include "gallocy/pagetable.h"
 
 
 namespace HL {

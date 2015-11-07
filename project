@@ -37,6 +37,22 @@ sub_test() {
 }
 
 
+sub_integration() {
+  BATS=./tools/bats/bin/bats
+
+  if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    LIBRARY_PATH="LD_LIBRARY_PATH"
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    LIBRARY_PATH="DYLD_LIBRARY_PATH"
+  fi
+
+  INSTALL_PATH="$(pwd)/install"
+
+  export ${LIBRARY_PATH}="${INSTALL_PATH}/lib"
+  ${BATS} ./integration/test.sh
+}
+
+
 sub_stylecheck() {
   LINT_ARGS=(
     "--root=gallocy"

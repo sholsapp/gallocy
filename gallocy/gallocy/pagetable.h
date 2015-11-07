@@ -8,8 +8,8 @@
 #include <cstdlib>
 
 
-
 void init_sqlite_memory();
+
 
 typedef struct condition_callback_param {
   pthread_mutex_t *mutex;
