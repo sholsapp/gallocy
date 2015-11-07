@@ -1,5 +1,5 @@
-#ifndef _PAGETABLEHEAP_H_
-#define _PAGETABLEHEAP_H_
+#ifndef GALLOCY_HEAPLAYERS_PAGETABLEHEAP_H_
+#define GALLOCY_HEAPLAYERS_PAGETABLEHEAP_H_
 
 #include "pagetable.h"
 
@@ -8,15 +8,14 @@ namespace HL {
 
 template <class Super>
 class PageTableHeap : public Super {
-public:
-
+ public:
   PageTableHeap() {
     sum = 0;
   }
 
-  inline void * malloc (size_t sz) {
+  inline void *malloc(size_t sz) {
     void *ptr;
-    ptr = Super::malloc (sz);
+    ptr = Super::malloc(sz);
     if (ptr) {
       pt.insert_page_table_entry(ptr, sz);
       sum += sz;
@@ -24,7 +23,7 @@ public:
     return ptr;
   }
 
-  inline void free (void *ptr) {
+  inline void free(void *ptr) {
     Super::free(ptr);
   }
 
@@ -32,11 +31,10 @@ public:
     Super::__reset();
   }
 
-private:
-  long int sum;
-
+ private:
+  uint64_t sum;
 };
 
-}
+}  // namespace HL
 
-#endif
+#endif  // GALLOCY_HEAPLAYERS_PAGETABLEHEAP_H_
