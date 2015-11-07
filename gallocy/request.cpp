@@ -4,7 +4,6 @@
 #include "gallocy/request.h"
 #include "gallocy/stringutils.h"
 
-
 /**
  * Create a HTTP request object from the raw request.
  *
@@ -30,7 +29,7 @@ Request::Request(gallocy::string raw)
 
   // Parse the headers
   for (auto it = std::begin(lines) + 1; it != std::end(lines); ++it) {
-    if ((*it).compare("\r") == 0)
+    if ((*it).compare("\r") == 0 || (*it).compare("") == 0)
       break;
     gallocy::vector<gallocy::string> header_parts;
     utils::split(*it, ':', header_parts);
@@ -41,7 +40,7 @@ Request::Request(gallocy::string raw)
   line_idx++;
 
   for (auto it = std::begin(lines) + line_idx; it != std::end(lines); ++it) {
-    if ((*it).compare("\r") == 0)
+    if ((*it).compare("\r") == 0 || (*it).compare("") == 0)
       break;
     raw_body = utils::trim(*it);
   }
@@ -80,4 +79,23 @@ Request::Parameters &Request::get_params() {
     params[kv[0]] = kv[1];
   }
   return params;
+}
+
+
+/**
+ * Pretty print a request.
+ *
+ * Prints directly to standard output.
+ */
+void Request::pretty_print() {
+  std::cout << "Request (" << this << ")" << std::endl
+    << "  " << method
+    << " " << uri
+    << " " << protocol
+    << std::endl;
+  for (auto &it : headers) {
+    std::cout << "  " << it.first
+      << ": " << it.second
+      << std::endl;
+  }
 }

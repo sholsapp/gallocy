@@ -29,6 +29,7 @@ class Request {
   gallocy::string uri;
   gallocy::string protocol;
   gallocy::string raw_body;
+  void pretty_print();
 
  private:
   gallocy::string raw;
