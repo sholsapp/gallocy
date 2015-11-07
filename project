@@ -41,13 +41,13 @@ sub_stylecheck() {
   LINT_ARGS=(
     "--root=gallocy"
     "--linelength=160"
-    "--filter=-legal/copyright"
+    "--filter=-legal/copyright,-runtime/references"
     )
   echo "Using http://google.github.io/styleguide/cppguide.html as guide..."
   if [ "$1" = "" ]; then
     find gallocy \
       -path gallocy/external -prune -o \
-      -type f -regex ".*\.\(cpp\|h\)$" -print \
+      -type f -regex ".*\.\(cpp\|h\)$" \
       -exec ./tools/cpplint.py ${LINT_ARGS[*]} {} +
   else
     ./tools/cpplint.py ${LINT_ARGS[*]} $1
