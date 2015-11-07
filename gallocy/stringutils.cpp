@@ -97,4 +97,30 @@ namespace utils {
       return output;
   }
 
+
+  /**
+   * Check if a string starts with another.
+   *
+   * :param haystack: The reference string.
+   * :param needle: The prefix to look for in the reference string.
+   * :returns: True if the reference string starts with the prefix.
+   */
+  bool startswith(gallocy::string haystack, gallocy::string needle) {
+    return needle.length() <= haystack.length()
+      && std::equal(needle.begin(), needle.end(), haystack.begin());
+  }
+
+
+  /**
+   * Check if a string ends with another.
+   *
+   * :param haystack: The reference string.
+   * :param needle: The postfix to look for in the reference string.
+   * :returns: True if the reference string ends with the postfix.
+   */
+  bool endswith(gallocy::string haystack, gallocy::string needle) {
+    return needle.length() <= haystack.length()
+      && std::equal(needle.begin(), needle.end(), haystack.end() - needle.size());
+  }
+
 }  // namespace utils

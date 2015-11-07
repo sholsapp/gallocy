@@ -6,6 +6,7 @@
 #include "gallocy/httpd.h"
 #include "gallocy/libgallocy.h"
 #include "gallocy/request.h"
+#include "gallocy/stringutils.h"
 
 
 typedef

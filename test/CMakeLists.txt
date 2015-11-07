@@ -16,13 +16,14 @@ set(test_sources
   test_config.cpp
   test_diff.cpp
   test_free.cpp
-  test_json.cpp
   test_httpd.cpp
+  test_json.cpp
   test_malloc.cpp
   test_mmult.cpp
   test_pagetable.cpp
   test_singleton.cpp
   test_stlallocator.cpp
+  test_stringutils.cpp
   test_threads.cpp
 )
 add_executable(gallocy_tests ${test_sources})

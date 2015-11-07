@@ -1,6 +1,8 @@
 #include "gtest/gtest.h"
 
 
+#include "gallocy/httpd.h"
+#include "gallocy/http_router.h"
 #include "gallocy/request.h"
 
 
@@ -119,4 +121,29 @@ TEST(ResponseTests, SimpleResponse) {
   // gallocy::string... we should fix this.
   response.body = j.dump().c_str();
   ASSERT_EQ(response.str().c_str(), RESPONSE);
+}
+
+
+TEST(RoutingTableTests, Sanity) {
+  RoutingTable<int> t;
+  t.register_handler("/foo", 1);
+  t.register_handler("/foo/<x>", 2);
+  t.register_handler("/foo/<x>/bar", 3);
+  t.register_handler("/foo/<x>/bar/<y>", 4);
+  t.register_handler("/foo/<x>/baz", 5);
+  t.register_handler("/foo/<x>/baz/<y>", 6);
+  //t.dump_table();
+  ASSERT_EQ(t.match("/foo"), 1);
+  ASSERT_EQ(t.match("/foo/arg1"), 2);
+  ASSERT_EQ(t.match("/foo/arg1/bar"), 3);
+  ASSERT_EQ(t.match("/foo/arg1/bar/arg2"), 4);
+  ASSERT_EQ(t.match("/foo/arg1/baz"), 5);
+  ASSERT_EQ(t.match("/foo/arg1/baz/arg2"), 6);
+}
+
+
+TEST(RoutingTableTests, Functors) {
+  RoutingTable<std::function<int()> > t;
+  t.register_handler("/foo", []() { return 1; });
+  ASSERT_EQ(t.match("/foo")(), 1);
 }

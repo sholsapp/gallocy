@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "./libgallocy.h"
+#include "gallocy/libgallocy.h"
 
 
 namespace utils {
@@ -13,6 +13,8 @@ namespace utils {
   gallocy::string read_file(const char *);
   gallocy::vector<gallocy::string> &split(const gallocy::string &, char, gallocy::vector<gallocy::string> &);
   gallocy::string string_to_hex(const gallocy::string &input);
+  bool startswith(gallocy::string hackstack, gallocy::string needle);
+  bool endswith(gallocy::string hackstack, gallocy::string needle);
 }
 
 #endif  // GALLOCY_STRINGUTILS_H_

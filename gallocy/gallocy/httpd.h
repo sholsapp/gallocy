@@ -11,6 +11,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <functional>
+
 #include "gallocy/libgallocy.h"
 #include "gallocy/request.h"
 
