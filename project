@@ -5,7 +5,7 @@ PROGRAM=$(basename $0)
 
 
 sub_help() {
-  echo "Usage: ${PROGRAM} <subcommand> [options]\n"
+  echo "Usage: ${PROGRAM} <subcommand> [options]"
   echo "Subcommands:"
   echo "    build - invoke cmake/make to build the code"
   echo "    clean - clean things up"

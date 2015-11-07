@@ -29,7 +29,7 @@ long time.
 Get started right away with the `project` helper.
 
 ```
-Usage: project <subcommand> [options]\n
+Usage: project <subcommand> [options]
 Subcommands:
     build - invoke cmake/make to build the code
     clean - clean things up
