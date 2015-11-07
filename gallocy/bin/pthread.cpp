@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "threads.h"
+#include "gallocy/threads.h"
 
 
 void* func(void* args) {
@@ -15,7 +15,6 @@ void* func(void* args) {
 
 
 int main(int argc, char* argv[]) {
-
   pthread_attr_t tattr;
   pthread_t tid;
 
@@ -25,7 +24,7 @@ int main(int argc, char* argv[]) {
   int pages = 4;
   int size = 4096 * pages;
 
-  //stackbase = (void *) malloc(size);
+  // stackbase = (void *) malloc(size);
   stackbase = allocate_thread_stack(nullptr, pages);
 
   /* initialized with default attributes */

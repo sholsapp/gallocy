@@ -1,7 +1,7 @@
 #ifndef GALLOCY_HEAPLAYERS_LOCKEDHEAP_H_
 #define GALLOCY_HEAPLAYERS_LOCKEDHEAP_H_
 
-#include "guard.h"
+#include "heaplayers/guard.h"
 
 namespace HL {
 

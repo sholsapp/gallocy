@@ -1,7 +1,7 @@
 #ifndef GALLOCY_HEAPLAYERS_SIZEHEAP_H_
 #define GALLOCY_HEAPLAYERS_SIZEHEAP_H_
 
-#include "addheap.h"
+#include "heaplayers/addheap.h"
 
 
 namespace HL {

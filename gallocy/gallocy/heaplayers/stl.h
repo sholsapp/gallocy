@@ -69,12 +69,12 @@ class STLAllocator : public Allocator {
     /**
      * Move constructor.
      */
-    STLAllocator(STLAllocator&&) noexcept {}
+    STLAllocator(STLAllocator&&) noexcept {}  // NOLINT
 
     /**
      * Move.
      */
-    STLAllocator& operator=(STLAllocator&& other) noexcept {
+    STLAllocator& operator=(STLAllocator&& other) noexcept {  // NOLINT
       this->_alloc = other._alloc;
       return *this;
     }
@@ -122,8 +122,8 @@ class STLAllocator : public Allocator {
       // TODO(sholsapp): Clang compiler doesn't like the following line because
       // it removes const qualifiers. We'll need to implement an ``unconst``
       // function here to make this work without using C-style casts.
-      //new (reinterpret_cast<void *>(p)) T(value);
-      new ((void *) p) T(value);
+      // new (reinterpret_cast<void *>(p)) T(value);
+      new ((void *) p) T(value);  // NOLINT
     }
 
     /**
@@ -135,7 +135,7 @@ class STLAllocator : public Allocator {
       // it removes const qualifiers. We'll need to implement an ``unconst``
       // function here to make this work without using C-style casts.
       // new (reinterpret_cast<void *>(unconst(p))) U(std::forward<Args>(args)...);
-      new ((void *) p) U(std::forward<Args>(args)...);
+      new ((void *) p) U(std::forward<Args>(args)...);  // NOLINT
     }
 
     /**

@@ -2,7 +2,8 @@
 #define GALLOCY_HEAPLAYERS_MYHASHMAP_H_
 
 #include <cstdio>
-#include "hash.h"
+
+#include "heaplayers/hash.h"
 
 namespace HL {
 

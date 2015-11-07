@@ -1,4 +1,4 @@
-#include "config.h"
+#include "gallocy/config.h"
 
 #include <string>
 

@@ -1,5 +1,5 @@
-#ifndef _HLDEFINES_H_
-#define _HLDEFINES_H_
+#ifndef GALLOCY_HEAPLAYERS_HLDEFINES_H_
+#define GALLOCY_HEAPLAYERS_HLDEFINES_H_
 
 // Define HL_EXECUTABLE_HEAP as 1 if you want that (i.e., you're doing
 // dynamic code generation).
@@ -26,4 +26,4 @@
 
 #endif
 
-#endif
+#endif  // GALLOCY_HEAPLAYERS_HLDEFINES_H_
