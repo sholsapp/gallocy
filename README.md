@@ -28,7 +28,7 @@ long time.
 
 Get started right away with the `project` helper.
 
-```bash
+```
 Usage: project <subcommand> [options]\n
 Subcommands:
     build - invoke cmake/make to build the code
