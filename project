@@ -8,8 +8,11 @@ sub_help() {
   echo "Usage: ${PROGRAM} <subcommand> [options]\n"
   echo "Subcommands:"
   echo "    build - invoke cmake/make to build the code"
-  echo "    test - run the unit test suite"
+  echo "    clean - clean things up"
+  echo "    fuckit - seriously, clean everything up"
+  echo "    integration - run the system test suite"
   echo "    stylecheck - run the style checker"
+  echo "    test - run the unit test suite"
 }
 
 
@@ -20,6 +23,16 @@ sub_build() {
   make || exit 1
   make install || exit 1
   sub_test
+}
+
+
+sub_clean() {
+  make clean
+}
+
+
+sub_fuckit() {
+  git clean -fxd
 }
 
 

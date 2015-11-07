@@ -26,7 +26,20 @@ long time.
 
 ## getting started
 
-Get started run away with the `project` helper.
+Get started right away with the `project` helper.
+
+```bash
+Usage: project <subcommand> [options]\n
+Subcommands:
+    build - invoke cmake/make to build the code
+    clean - clean things up
+    fuckit - seriously, clean everything up
+    integration - run the system test suite
+    stylecheck - run the style checker
+    test - run the unit test suite
+```
+
+Building is enough to get you started.
 
 ```bash
 ./project build
