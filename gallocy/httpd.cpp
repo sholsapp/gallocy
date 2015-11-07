@@ -1,3 +1,6 @@
+#include <functional>
+#include <map>
+#include <string>
 #include <utility>
 
 #include "gallocy/httpd.h"
@@ -17,120 +20,12 @@ routing_table_t routing_table;
 
 void init() {
   routing_table["/admin"] = &admin;
-  fprintf(stderr, "/admin is at %p\n", &admin);
 }
 
 
 void admin(void* arg) {
-  fprintf(stderr, "ADMIN\n");
-  return;
+  std::cout << "ADMIN" << std::endl;
 }
-
-/**
- * Process a request.
- *
- * :param arg: The socket connected to the client.
- */
-void *accept_request(void *arg) {
-  long client = (long) arg;
-  char buf[1024];
-  int numchars;
-  char method[255];
-  char url[255];
-  char path[512];
-  size_t i, j;
-  char *query_string = NULL;
-
-  numchars = get_line(client, buf, sizeof(buf));
-  i = 0; j = 0;
-  while (!ISspace(buf[j]) && (i < sizeof(method) - 1)) {
-    method[i] = buf[j];
-    i++; j++;
-  }
-  method[i] = '\0';
-
-  if (strcasecmp(method, "GET") && strcasecmp(method, "POST")) {
-    return NULL;
-  }
-
-  i = 0;
-  while (ISspace(buf[j]) && (j < sizeof(buf)))
-    j++;
-  while (!ISspace(buf[j]) && (i < sizeof(url) - 1) && (j < sizeof(buf))) {
-    url[i] = buf[j];
-    i++; j++;
-  }
-  url[i] = '\0';
-
-  if (strcasecmp(method, "GET") == 0) {
-    query_string = url;
-    while ((*query_string != '?') && (*query_string != '\0'))
-      query_string++;
-    if (*query_string == '?') {
-      *query_string = '\0';
-      query_string++;
-    }
-  }
-
-  fprintf(stderr, "====================================\n");
-  fprintf(stderr, "> method = %s\n", method);
-  fprintf(stderr, "> url    = %s\n", url);
-  fprintf(stderr, "> path   = %s\n", path);
-  fprintf(stderr, "> query  = %s\n", query_string);
-  fprintf(stderr, "====================================\n");
-
-  fprintf(stderr, "Map size = %lu\n", routing_table.size());
-
-  //for (auto const &it : routing_table) {
-    //fprintf(stderr, "Key = %s, Size = %d\n", it.first, strlen(it.first));
-    //fprintf(stderr, "Compared to /admin: %d\n", strcmp(it.first, "/admin"));
-  //  fprintf(stderr, "WTF %p\n", it.second);
-    //it.second(NULL);
-  //}
-
-  void (*func)(void*) = routing_table[std::string(url)];
-
-  if (func)
-    func(NULL);
-
-
-  //void (*func)(void*) = routing_table[std::string(url).c_str()];
-  //fprintf(stderr, "What is length of %d\n", strlen(url));
-  //fprintf(stderr, "What is %p\n", func);
-  //func(NULL);
-  //
-  while ((numchars = get_line(client, buf, sizeof(buf))) > 2) {
-    fprintf(stderr, "%s", buf);
-  }
-
-  headers(client, NULL);
-
-  char json_buffer[512];
-  snprintf(json_buffer, 512,
-    "{\"foo\": \"bar\"}");
-  send(client, json_buffer, strlen(json_buffer), 0);
-
-  shutdown(client, SHUT_RDWR);
-  close(client);
-  return NULL;
-}
-
-
-/**
- * Cat the contents of a file to a socket.
- *
- * :param client: The client socket.
- * :param resource: The file to write to the socket.
- */
-void cat(int client, FILE *resource) {
-  char buf[1024];
-  fgets(buf, sizeof(buf), resource);
-  while (!feof(resource)) {
-    send(client, buf, strlen(buf), 0);
-    fgets(buf, sizeof(buf), resource);
-  }
-}
-
 
 /**
  * Die.
@@ -153,80 +48,34 @@ void error_die(const char *sc) {
  * character of the string will be a linefeed and the string will be terminated
  * with a null character.
  *
- * :param sock: The socket descriptor.
- * :param buf: The buffer to save data in.
- * :param size: The size of the buffer.
- * :returns: The number of bytes stored (excluding null)..
+ * :param client_socket: The socket descriptor.
+ * :param line: A string stream to write to.
+ * :returns: The number of bytes stored.
  */
-int get_line(int sock, char *buf, int size) {
+int HTTPServer::get_line(int client_socket, gallocy::stringstream &line) {
   int i = 0;
   char c = '\0';
   int n;
-  while ((i < size - 1) && (c != '\n')) {
-    n = recv(sock, &c, 1, 0);
+  while (c != '\n') {
+    n = recv(client_socket, &c, 1, 0);
     if (n > 0) {
       if (c == '\r') {
-        n = recv(sock, &c, 1, MSG_PEEK);
+        n = recv(client_socket, &c, 1, MSG_PEEK);
         if ((n > 0) && (c == '\n')) {
-          recv(sock, &c, 1, 0);
+          recv(client_socket, &c, 1, 0);
         } else {
           c = '\n';
         }
       }
-      buf[i] = c;
+      line << c;
       i++;
     } else {
       c = '\n';
     }
   }
-  buf[i] = '\0';
+  // This angers C++ streams.
+  // line << '\0';
   return(i);
-}
-
-
-/**
- * Writes HTTP headers to socket.
- *
- * :param client: The client socket descriptor.
- * :param filename: The file being send, or NULL.
- */
-void headers(int client, const char *filename) {
-  char buf[1024];
-  (void)filename;
-  strcpy(buf, "HTTP/1.0 200 OK\r\n");
-  send(client, buf, strlen(buf), 0);
-  strcpy(buf, SERVER_STRING);
-  send(client, buf, strlen(buf), 0);
-  sprintf(buf, "Content-Type: application/json\r\n");
-  send(client, buf, strlen(buf), 0);
-  strcpy(buf, "\r\n");
-  send(client, buf, strlen(buf), 0);
-}
-
-
-/**
- * Write a file to a socket.
- *
- * :param client: The client socket descriptor.
- * :param filename: The file to write to the socket.
- */
-void serve_file(int client, const char *filename) {
-  FILE *resource = NULL;
-  int numchars = 1;
-  char buf[1024];
-
-  buf[0] = 'A'; buf[1] = '\0';
-  while ((numchars > 0) && strcmp("\n", buf))  /* read & discard headers */
-    numchars = get_line(client, buf, sizeof(buf));
-
-  resource = fopen(filename, "r");
-  if (resource == NULL)
-    return;
-  else {
-    headers(client, filename);
-    cat(client, resource);
-  }
-  fclose(resource);
 }
 
 
@@ -237,7 +86,6 @@ void serve_file(int client, const char *filename) {
  * socket, then enters the HTTP server's main event loop.
  */
 void HTTPServer::start() {
-
   std::cout << "Starting the HTTP sever..." << std::endl;
 
   struct sockaddr_in name;
@@ -273,7 +121,6 @@ void HTTPServer::start() {
   pthread_t newthread;
 
   while (alive) {
-
     client_sock = accept(server_socket,
         reinterpret_cast<struct sockaddr *>(&client_name),
         reinterpret_cast<socklen_t *>(&client_name_len));
@@ -291,6 +138,11 @@ void HTTPServer::start() {
       perror("pthread_create1");
     }
 
+    // TODO(sholsapp): This shouldn't block, and we shouldn't just try to
+    // join this thread.
+    if (pthread_join(newthread, nullptr)) {
+      perror("pthread_join1");
+    }
   }
 
   close(server_socket);
@@ -331,26 +183,49 @@ void *HTTPServer::handle(int client_socket) {
   std::cout << "Server (" << this
             << ") is servering client on " << client_socket
             << std::endl;
-  // TODO(sholsapp): This just shells out to the old C-style way of handling
-  // the request. Once we done picking and choosing what we're moving into the
-  // server, fix this call.
-  //return accept_request(reinterpret_cast<void *>(client_socket));
-  return test(client_socket);
+
+  Request *req = get_request(client_socket);
+
+  req->pretty_print();
+
+  // TODO(sholsapp): Figure out routing information here and route to
+  // appropriate handler function.
+
+  Response response;
+  response.status_code = 200;
+  response.headers["Server"] = "Gallocy-Httpd";
+  response.headers["Content-Type"] = "application/json";
+  gallocy::json j = { { "foo", "bar" } };
+  // There is no known conversion from std::string to
+  // gallocy::string... we should fix this.
+  response.body = j.dump().c_str();
+
+  send(client_socket, response.str().c_str(), response.size(), 0);
+
+  // Teardown
+  internal_free(req);
+
+  shutdown(client_socket, SHUT_RDWR);
+  close(client_socket);
+
+  return nullptr;
 }
 
 
-void *HTTPServer::test(int client_socket) {
-  char buf[1024];
-  int numchars;
+/**
+ * Read an HTTP request from a socket.
+ *
+ * :param client_socket: The client's socket id.
+ * :param request: The string stream to write the request into.
+ * :returns: The request object.
+ */
+Request *HTTPServer::get_request(int client_socket) {
+  int numchars = 0;
+  int numlines = 0;
   gallocy::stringstream stream;
-  while ((numchars = get_line(client_socket, buf, sizeof(buf))) > 2) {
-    stream << buf;
+  while ((numchars = get_line(client_socket, stream)) > 2) {
+    if (numchars > 0)
+      numlines++;
   }
-  stream << buf;
-
-  Request req(stream.str());
-
-  req.pretty_print();
-
-  return nullptr;
+  return new (internal_malloc(sizeof(Request))) Request(stream.str());
 }

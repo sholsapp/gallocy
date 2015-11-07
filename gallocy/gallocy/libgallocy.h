@@ -40,7 +40,6 @@ namespace gallocy {
   template <typename T>
   using ContainerAllocator = STLAllocator<T, __STLAllocator>;
 
-
   using string = std::basic_string<char,
         std::char_traits<char>,
         ContainerAllocator<char> >;

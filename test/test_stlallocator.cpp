@@ -62,6 +62,20 @@ TEST(STLTests, StringTest) {
 }
 
 
+TEST(STLTests, StringConstructors) {
+  gallocy::string s1("abc");
+  ASSERT_EQ(s1, "abc");
+  gallocy::string s2 = "def";
+  ASSERT_EQ(s2, "def");
+  ASSERT_NE(&s1, &s2);
+  s1 = s2;
+  ASSERT_NE(&s1, &s2);
+  ASSERT_EQ(s1, "def");
+  s1 = "abc";
+  ASSERT_EQ(s1, "abc");
+}
+
+
 TEST(STLTests, StringManipulationTest) {
   gallocy::string a("aaa");
   gallocy::string b("bbb");
