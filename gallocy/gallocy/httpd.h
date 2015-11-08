@@ -13,28 +13,35 @@
 
 #include <functional>
 
+#include "gallocy/http_router.h"
 #include "gallocy/libgallocy.h"
 #include "gallocy/request.h"
 
 
 void error_die(const char *);
 
-void init();
-void admin(void *arg);
-
 
 class HTTPServer {
+ public:
+  using RouteArguments = gallocy::vector<gallocy::string>;
+  using HandlerFunction = std::function<int(RouteArguments *)>;
  public:
   /**
    * Construct a HTTP server.
    */
   explicit HTTPServer(int port) :
-    alive(true), port(port), server_socket(-1) {}
+    alive(true), port(port), server_socket(-1) {
+      routes.register_handler("/admin", [this](RouteArguments *args) { return route_admin(args); });
+  }
   ~HTTPServer() {}
   void start();
   static void *handle_entry(void *arg);
   void *handle(int client_socket);
   Request *get_request(int client_socket);
+  RoutingTable<HandlerFunction> routes;
+
+  int route_admin(RouteArguments *args);
+
  private:
   int get_line(int client_socket, gallocy::stringstream &line);
  private:

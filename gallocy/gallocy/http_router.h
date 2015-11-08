@@ -35,7 +35,7 @@ class RoutingTable {
   ~RoutingTable() {
     internal_free(table);
   }
-  HandlerFunction match(gallocy::string path);
+  std::function<int()> match(gallocy::string path);
   void dump_table();
   void register_handler(gallocy::string route, HandlerFunction func);
 
@@ -89,6 +89,7 @@ void RoutingTable<HandlerFunction>::dump_table() {
  *   /foo
  *   /foo/<param>
  *   /foo/<param>/bar
+ *   /foo/<param>/bar/<param>
  *
  *  Where the strings surrounded by `<` and `>` characters are variables and
  *  will match any other string not containing special characters (including
@@ -122,14 +123,16 @@ inline void RoutingTable<HandlerFunction>::register_handler(gallocy::string rout
  * one of the following:
  *
  *   /foo
- *   /foo/1
- *   /foo/1/bar
+ *   /foo/arg1
+ *   /foo/arg1/bar
+ *   /foo/arg1/bar/arg2
  *
  * :param path: The path to look up the handler for.
  */
 template <typename HandlerFunction>
-inline HandlerFunction RoutingTable<HandlerFunction>::match(gallocy::string path) {
-  gallocy::vector<gallocy::string> args;
+inline std::function<int()> RoutingTable<HandlerFunction>::match(gallocy::string path) {
+  gallocy::vector<gallocy::string> *args =
+    new (internal_malloc(sizeof(gallocy::vector<gallocy::string>))) gallocy::vector<gallocy::string>();
   gallocy::vector<gallocy::string> path_parts;
   utils::split(path, '/', path_parts);
   Node *tmp = table;
@@ -145,10 +148,10 @@ inline HandlerFunction RoutingTable<HandlerFunction>::match(gallocy::string path
     if (tmp->dynamic.compare("") != 0) {
       tmp = _get_item<gallocy::string, Node *>(tmp->routes, tmp->dynamic);
       std::advance(it, 1);
-      args.push_back(*it);
+      args->push_back(*it);
     }
   }
-  return tmp->func;
+  return std::bind(tmp->func, args);
 }
 
 #endif  // GALLOCY_HTTP_ROUTER_H_

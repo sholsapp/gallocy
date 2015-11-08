@@ -9,25 +9,6 @@
 #include "gallocy/stringutils.h"
 
 
-typedef
-  std::map<std::string, void (*)(void*),
-  std::less<std::string>,
-  STLAllocator<std::pair<std::string, void (*)(void*)>, SingletonHeapType> >
-    routing_table_t;
-
-
-routing_table_t routing_table;
-
-
-void init() {
-  routing_table["/admin"] = &admin;
-}
-
-
-void admin(void* arg) {
-  std::cout << "ADMIN" << std::endl;
-}
-
 /**
  * Die.
  *
@@ -36,6 +17,12 @@ void admin(void* arg) {
 void error_die(const char *sc) {
   perror(sc);
   exit(1);
+}
+
+
+int HTTPServer::route_admin(RouteArguments *args) {
+  std::cout << "/admin route" << std::endl;
+  return 0;
 }
 
 
@@ -189,8 +176,9 @@ void *HTTPServer::handle(int client_socket) {
 
   req->pretty_print();
 
-  // TODO(sholsapp): Figure out routing information here and route to
-  // appropriate handler function.
+  auto handler_function = routes.match(req->uri);
+
+  handler_function();
 
   Response response;
   response.status_code = 200;

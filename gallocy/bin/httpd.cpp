@@ -7,7 +7,6 @@
 
 
 int main(void) {
-  init();
   uint16_t port = 8080;
   HTTPServer server(port);
   server.start();

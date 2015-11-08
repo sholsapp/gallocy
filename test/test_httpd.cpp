@@ -124,26 +124,24 @@ TEST(ResponseTests, SimpleResponse) {
 }
 
 
-TEST(RoutingTableTests, Sanity) {
-  RoutingTable<int> t;
-  t.register_handler("/foo", 1);
-  t.register_handler("/foo/<x>", 2);
-  t.register_handler("/foo/<x>/bar", 3);
-  t.register_handler("/foo/<x>/bar/<y>", 4);
-  t.register_handler("/foo/<x>/baz", 5);
-  t.register_handler("/foo/<x>/baz/<y>", 6);
-  //t.dump_table();
-  ASSERT_EQ(t.match("/foo"), 1);
-  ASSERT_EQ(t.match("/foo/arg1"), 2);
-  ASSERT_EQ(t.match("/foo/arg1/bar"), 3);
-  ASSERT_EQ(t.match("/foo/arg1/bar/arg2"), 4);
-  ASSERT_EQ(t.match("/foo/arg1/baz"), 5);
-  ASSERT_EQ(t.match("/foo/arg1/baz/arg2"), 6);
-}
-
-
 TEST(RoutingTableTests, Functors) {
-  RoutingTable<std::function<int()> > t;
-  t.register_handler("/foo", []() { return 1; });
-  ASSERT_EQ(t.match("/foo")(), 1);
+  using ArgList = gallocy::vector<gallocy::string>;
+  RoutingTable<std::function<int(ArgList *)> > t;
+  auto f = [](ArgList *a) {
+    size_t sz = a->size();
+    internal_free(a);
+    return sz;
+  };
+  t.register_handler("/foo", f);
+  t.register_handler("/foo/<x>", f);
+  t.register_handler("/foo/<x>/bar", f);
+  t.register_handler("/foo/<x>/bar/<y>", f);
+  t.register_handler("/foo/<x>/baz", f);
+  t.register_handler("/foo/<x>/baz/<y>", f);
+  ASSERT_EQ(t.match("/foo")(), 0);
+  ASSERT_EQ(t.match("/foo/arg1")(), 1);
+  ASSERT_EQ(t.match("/foo/arg1/bar")(), 1);
+  ASSERT_EQ(t.match("/foo/arg1/bar/arg2")(), 2);
+  ASSERT_EQ(t.match("/foo/arg1/baz")(), 1);
+  ASSERT_EQ(t.match("/foo/arg1/baz/arg2")(), 2);
 }
