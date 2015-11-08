@@ -36,7 +36,7 @@ class RoutingTable {
   ~RoutingTable() {
     internal_free(table);
   }
-  std::function<int(Request *)> match(gallocy::string path);
+  std::function<Response *(Request *)> match(gallocy::string path);
   void dump_table();
   void register_handler(gallocy::string route, HandlerFunction func);
 
@@ -59,7 +59,9 @@ V _get_item(gallocy::map<K, V> *Map, K key) {
 
 
 /**
- * Dump the routing table.
+ * Dump the routing table to standard output.
+ *
+ * Useful for debugging only and shouldn't be used for any other purpose.
  */
 template <typename HandlerFunction>
 void RoutingTable<HandlerFunction>::dump_table() {
@@ -131,7 +133,7 @@ inline void RoutingTable<HandlerFunction>::register_handler(gallocy::string rout
  * :param path: The path to look up the handler for.
  */
 template <typename HandlerFunction>
-inline std::function<int(Request *)> RoutingTable<HandlerFunction>::match(gallocy::string path) {
+inline std::function<Response *(Request *)> RoutingTable<HandlerFunction>::match(gallocy::string path) {
   gallocy::vector<gallocy::string> *args =
     new (internal_malloc(sizeof(gallocy::vector<gallocy::string>))) gallocy::vector<gallocy::string>();
   gallocy::vector<gallocy::string> path_parts;

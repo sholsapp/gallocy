@@ -20,10 +20,29 @@ void error_die(const char *sc) {
 }
 
 
-int HTTPServer::route_admin(RouteArguments *args, Request *request) {
+/**
+ * Handle a request for /admin.
+ *
+ * :param args: The route arguments.
+ * :param request: The request itself.
+ */
+Response *HTTPServer::route_admin(RouteArguments *args, Request *request) {
   std::cout << "/admin route" << std::endl;
   request->pretty_print();
-  return 0;
+
+  Response *response = new (internal_malloc(sizeof(Response))) Response();
+  response->status_code = 200;
+  response->headers["Server"] = "Gallocy-Httpd";
+  response->headers["Content-Type"] = "application/json";
+  gallocy::json j = { { "foo", "bar" } };
+  // TODO(sholsapp): There is no known conversion from std::string to
+  // gallocy::string... we should fix this.
+  response->body = j.dump().c_str();
+
+  internal_free(args);
+  internal_free(request);
+
+  return response;
 }
 
 
@@ -165,6 +184,11 @@ void *HTTPServer::handle_entry(void *arg) {
  * The handling of the HTTP request is done in a threaded context. Access to
  * the server resources is available, but must be synchronized.
  *
+ * The route handler of the HTTP request is done by matching the HTTP request's
+ * URI against the map of registered routes. The route handler will be called
+ * with the URI arguments and the request object itself. The route handler is
+ * responsible for managing memory for all parameters passed to it.
+ *
  * :param client_socket: The client's socket id.
  * :returns: A null pointer.
  */
@@ -173,26 +197,14 @@ void *HTTPServer::handle(int client_socket) {
             << ") is servering client on " << client_socket
             << std::endl;
 
-  Request *req = get_request(client_socket);
+  Request *request = get_request(client_socket);
 
+  Response *response = routes.match(request->uri)(request);
 
-  auto handler_function = routes.match(req->uri);
-
-  handler_function(req);
-
-  Response response;
-  response.status_code = 200;
-  response.headers["Server"] = "Gallocy-Httpd";
-  response.headers["Content-Type"] = "application/json";
-  gallocy::json j = { { "foo", "bar" } };
-  // There is no known conversion from std::string to
-  // gallocy::string... we should fix this.
-  response.body = j.dump().c_str();
-
-  send(client_socket, response.str().c_str(), response.size(), 0);
+  send(client_socket, response->str().c_str(), response->size(), 0);
 
   // Teardown
-  internal_free(req);
+  internal_free(response);
 
   shutdown(client_socket, SHUT_RDWR);
   close(client_socket);
