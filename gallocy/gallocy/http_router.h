@@ -4,8 +4,9 @@
 #include <map>
 #include <vector>
 
-#include "gallocy/stringutils.h"
 #include "gallocy/objutils.h"
+#include "gallocy/request.h"
+#include "gallocy/stringutils.h"
 
 
 template <typename HandlerFunction = int>
@@ -35,7 +36,7 @@ class RoutingTable {
   ~RoutingTable() {
     internal_free(table);
   }
-  std::function<int()> match(gallocy::string path);
+  std::function<int(Request *)> match(gallocy::string path);
   void dump_table();
   void register_handler(gallocy::string route, HandlerFunction func);
 
@@ -130,7 +131,7 @@ inline void RoutingTable<HandlerFunction>::register_handler(gallocy::string rout
  * :param path: The path to look up the handler for.
  */
 template <typename HandlerFunction>
-inline std::function<int()> RoutingTable<HandlerFunction>::match(gallocy::string path) {
+inline std::function<int(Request *)> RoutingTable<HandlerFunction>::match(gallocy::string path) {
   gallocy::vector<gallocy::string> *args =
     new (internal_malloc(sizeof(gallocy::vector<gallocy::string>))) gallocy::vector<gallocy::string>();
   gallocy::vector<gallocy::string> path_parts;
@@ -151,7 +152,7 @@ inline std::function<int()> RoutingTable<HandlerFunction>::match(gallocy::string
       args->push_back(*it);
     }
   }
-  return std::bind(tmp->func, args);
+  return std::bind(tmp->func, args, std::placeholders::_1);
 }
 
 #endif  // GALLOCY_HTTP_ROUTER_H_

@@ -24,14 +24,14 @@ void error_die(const char *);
 class HTTPServer {
  public:
   using RouteArguments = gallocy::vector<gallocy::string>;
-  using HandlerFunction = std::function<int(RouteArguments *)>;
+  using HandlerFunction = std::function<int(RouteArguments *, Request *)>;
  public:
   /**
    * Construct a HTTP server.
    */
   explicit HTTPServer(int port) :
     alive(true), port(port), server_socket(-1) {
-      routes.register_handler("/admin", [this](RouteArguments *args) { return route_admin(args); });
+      routes.register_handler("/admin", [this](RouteArguments *args, Request *request) { return route_admin(args, request); });
   }
   ~HTTPServer() {}
   void start();
@@ -40,7 +40,7 @@ class HTTPServer {
   Request *get_request(int client_socket);
   RoutingTable<HandlerFunction> routes;
 
-  int route_admin(RouteArguments *args);
+  int route_admin(RouteArguments *args, Request *request);
 
  private:
   int get_line(int client_socket, gallocy::stringstream &line);

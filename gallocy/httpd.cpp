@@ -20,8 +20,9 @@ void error_die(const char *sc) {
 }
 
 
-int HTTPServer::route_admin(RouteArguments *args) {
+int HTTPServer::route_admin(RouteArguments *args, Request *request) {
   std::cout << "/admin route" << std::endl;
+  request->pretty_print();
   return 0;
 }
 
@@ -174,11 +175,10 @@ void *HTTPServer::handle(int client_socket) {
 
   Request *req = get_request(client_socket);
 
-  req->pretty_print();
 
   auto handler_function = routes.match(req->uri);
 
-  handler_function();
+  handler_function(req);
 
   Response response;
   response.status_code = 200;

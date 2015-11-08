@@ -126,8 +126,8 @@ TEST(ResponseTests, SimpleResponse) {
 
 TEST(RoutingTableTests, Functors) {
   using ArgList = gallocy::vector<gallocy::string>;
-  RoutingTable<std::function<int(ArgList *)> > t;
-  auto f = [](ArgList *a) {
+  RoutingTable<std::function<int(ArgList *, Request *)> > t;
+  auto f = [](ArgList *a, Request *r) {
     size_t sz = a->size();
     internal_free(a);
     return sz;
@@ -138,10 +138,10 @@ TEST(RoutingTableTests, Functors) {
   t.register_handler("/foo/<x>/bar/<y>", f);
   t.register_handler("/foo/<x>/baz", f);
   t.register_handler("/foo/<x>/baz/<y>", f);
-  ASSERT_EQ(t.match("/foo")(), 0);
-  ASSERT_EQ(t.match("/foo/arg1")(), 1);
-  ASSERT_EQ(t.match("/foo/arg1/bar")(), 1);
-  ASSERT_EQ(t.match("/foo/arg1/bar/arg2")(), 2);
-  ASSERT_EQ(t.match("/foo/arg1/baz")(), 1);
-  ASSERT_EQ(t.match("/foo/arg1/baz/arg2")(), 2);
+  ASSERT_EQ(t.match("/foo")(nullptr), 0);
+  ASSERT_EQ(t.match("/foo/arg1")(nullptr), 1);
+  ASSERT_EQ(t.match("/foo/arg1/bar")(nullptr), 1);
+  ASSERT_EQ(t.match("/foo/arg1/bar/arg2")(nullptr), 2);
+  ASSERT_EQ(t.match("/foo/arg1/baz")(nullptr), 1);
+  ASSERT_EQ(t.match("/foo/arg1/baz/arg2")(nullptr), 2);
 }
