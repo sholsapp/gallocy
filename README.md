@@ -20,9 +20,9 @@ long time.
 
 ## documentation
 
-  - [NUTSHELL](./resources/NUTSHELL.md)
-  - [DESIGN](./resources/DESIGN.md)
-  - [IMPLEMENTATION](./resources/IMPLEMENTATION.md)
+  - [NUTSHELL](./resources/NUTSHELL.md) *good for getting started with allocators*
+  - [DESIGN](./resources/DESIGN.md) *good if you're still curious*
+  - [IMPLEMENTATION](./resources/IMPLEMENTATION.md) *good for the makers*
 
 ## getting started
 
