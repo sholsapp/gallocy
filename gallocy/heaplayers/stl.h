@@ -119,7 +119,11 @@ class STLAllocator : public Allocator {
      * Construct elements of allocated storage p with value value.
      */
     void construct(pointer p, const T &value) {
-      new (reinterpret_cast<void *>(p)) T(value);
+      // TODO(sholsapp): Clang compiler doesn't like the following line because
+      // it removes const qualifiers. We'll need to implement an ``unconst``
+      // function here to make this work without using C-style casts.
+      //new (reinterpret_cast<void *>(p)) T(value);
+      new ((void *) p) T(value);
     }
 
     /**
