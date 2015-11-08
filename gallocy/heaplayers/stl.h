@@ -66,7 +66,6 @@ class STLAllocator : public Allocator {
       return *this;
     }
 
-#if 0
     /**
      * Move constructor.
      */
@@ -79,7 +78,6 @@ class STLAllocator : public Allocator {
       this->_alloc = other._alloc;
       return *this;
     }
-#endif
 
     /**
      * Rebind allocator to other type ``U``.
@@ -129,7 +127,11 @@ class STLAllocator : public Allocator {
      */
     template<typename U, typename... Args>
     void construct(U *p, Args&&... args) {
-      new (reinterpret_cast<void *>(p)) U(std::forward<Args>(args)...);
+      // TODO(sholsapp): Clang compiler doesn't like the following line because
+      // it removes const qualifiers. We'll need to implement an ``unconst``
+      // function here to make this work without using C-style casts.
+      // new (reinterpret_cast<void *>(unconst(p))) U(std::forward<Args>(args)...);
+      new ((void *) p) U(std::forward<Args>(args)...);
     }
 
     /**
