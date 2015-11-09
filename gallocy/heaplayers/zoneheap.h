@@ -54,7 +54,7 @@ class ZoneHeap : public Super {
     // Round up size to an aligned value.
     sz = align(sz);
     // Get more space in our arena if there's not enough room in this one.
-    if ((currentArena == NULL) || (sizeRemaining < reinterpret_cast<uint64_t>(sz))) {
+    if ((currentArena == NULL) || (sizeRemaining < static_cast<uint64_t>(sz))) {
       // First, add this arena to our past arena list.
       if (currentArena != NULL) {
         currentArena->nextArena = pastArenas;

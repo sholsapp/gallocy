@@ -36,9 +36,9 @@ class DebugHeap : public Super {
     if (!ptr) {
       return;
     }
-    char *b = reinterpret_cast<char *>(ptr);
     size_t sz = Super::getSize(ptr);
 #if 0
+    char *b = reinterpret_cast<char *>(ptr);
     // Check for the canary.
     uint64_t storedCanary = *(reinterpret_cast<uint64_t *>(b + sz - sizeof(uint64_t)));
     if (storedCanary != CANARY) {
