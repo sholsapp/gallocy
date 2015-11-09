@@ -24,7 +24,9 @@ is accounted for somewhere in the system library.
 
 Let's assume that we know how to create a custom allocator that provides the
 same call interface and semantics as the system allocator. We'll cover how you
-can design one of these allocators in another document.
+can design one of these allocators in another document. For the sake of this
+example, you just need to know that we can write *replacement* to `malloc` and
+customize its behavior.
 
 ![custom memory allocation](./images/nutshell/custom.png)
 
