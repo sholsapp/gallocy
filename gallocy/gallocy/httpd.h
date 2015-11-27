@@ -33,8 +33,12 @@ class HTTPServer {
    */
   explicit HTTPServer(int port) :
     alive(true), port(port), server_socket(-1) {
-      routes.register_handler("/admin", [this](RouteArguments *args, Request *request) { return route_admin(args, request); });
+      routes.register_handler("/admin",
+        [this](RouteArguments *args, Request *request) { return route_admin(args, request); });
   }
+
+  HTTPServer(const HTTPServer &) = delete;
+  HTTPServer &operator=(const HTTPServer &) = delete;
 
   ~HTTPServer() {}
 

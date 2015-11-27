@@ -20,7 +20,9 @@ class Request {
     Parameters;
 
   // Constructors
-  explicit Request(gallocy::string);
+  explicit Request(gallocy::string raw);
+  Request(const Request &) = delete;
+  Request &operator=(const Request &) = delete;
 
   // Members
   Headers headers;
@@ -51,6 +53,8 @@ class Response {
 
   // Constructors
   Response();
+  Response(const Response&) = delete;
+  Response &operator=(const Response&) = delete;
 
   // Members
   Headers headers;

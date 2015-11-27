@@ -6,18 +6,18 @@
 #define DEFAULT_ZONE_SZ 16384 - 16
 
 
-#include "heaplayers/debugheap.h"
-#include "heaplayers/pagetableheap.h"
 #include "heaplayers/addheap.h"
-#include "heaplayers/sizeheap.h"
-#include "heaplayers/myhashmap.h"
-#include "heaplayers/spinlock.h"
-#include "heaplayers/lockedheap.h"
-#include "heaplayers/freelistheap.h"
+#include "heaplayers/debugheap.h"
 #include "heaplayers/firstfitheap.h"
-#include "heaplayers/zoneheap.h"
-#include "heaplayers/stl.h"
+#include "heaplayers/freelistheap.h"
+#include "heaplayers/lockedheap.h"
+#include "heaplayers/myhashmap.h"
+#include "heaplayers/pagetableheap.h"
+#include "heaplayers/sizeheap.h"
+#include "heaplayers/spinlock.h"
 #include "heaplayers/stdlibheap.h"
+#include "heaplayers/stl.h"
+#include "heaplayers/zoneheap.h"
 
 
 namespace HL {

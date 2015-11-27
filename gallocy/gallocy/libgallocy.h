@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "external/json.hpp"
+#include "gallocy/pagetable.h"
 #include "heaplayers/firstfitheap.h"
 #include "heaplayers/heaptypes.h"
-#include "./pagetable.h"
 
 
 extern volatile int anyThreadCreated;

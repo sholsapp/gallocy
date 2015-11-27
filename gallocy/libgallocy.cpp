@@ -65,6 +65,7 @@ extern "C" {
 
   void __reset_memory_allocator() {
     heap.__reset();
+    singletonHeap.__reset();
   }
 
   void* custom_malloc(size_t sz) {

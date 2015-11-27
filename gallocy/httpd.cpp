@@ -33,14 +33,20 @@ Response *HTTPServer::route_admin(RouteArguments *args, Request *request) {
   Response *response = new (internal_malloc(sizeof(Response))) Response();
   response->status_code = 200;
   response->headers["Server"] = "Gallocy-Httpd";
+  response->headers["Content-Type"] = "text/plain";
   response->headers["Content-Type"] = "application/json";
-  gallocy::json j = { { "foo", "bar" } };
+  gallocy::json j = {
+    {"status", "GOOD" },
+    {"main", reinterpret_cast<int64_t>(global_main())},
+    {"end", reinterpret_cast<int64_t>(global_end())},
+    {"base", reinterpret_cast<int64_t>(global_base())},
+  };
   // TODO(sholsapp): There is no known conversion from std::string to
   // gallocy::string... we should fix this.
   response->body = j.dump().c_str();
 
+  args->~RouteArguments();
   internal_free(args);
-  internal_free(request);
 
   return response;
 }
@@ -173,6 +179,7 @@ void HTTPServer::start() {
 void *HTTPServer::handle_entry(void *arg) {
   struct RequestContext *ctx = reinterpret_cast<struct RequestContext *>(arg);
   void *ret = ctx->server->handle(ctx->client_socket);
+  ctx->~RequestContext();
   internal_free(ctx);
   return ret;
 }
@@ -201,9 +208,14 @@ void *HTTPServer::handle(int client_socket) {
 
   Response *response = routes.match(request->uri)(request);
 
-  send(client_socket, response->str().c_str(), response->size(), 0);
+  if (send(client_socket, response->str().c_str(), response->size(), 0) == -1) {
+    error_die("send");
+  }
 
   // Teardown
+  request->~Request();
+  internal_free(request);
+  response->~Response();
   internal_free(response);
 
   shutdown(client_socket, SHUT_RDWR);

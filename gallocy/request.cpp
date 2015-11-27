@@ -10,10 +10,7 @@
  *
  * :param raw: The raw request string.
  */
-Request::Request(gallocy::string raw)
-  : raw(raw),
-    json(gallocy::json(nullptr)),
-    params(Request::Parameters()) {
+Request::Request(gallocy::string raw) {
   // Parse the raw request into lines
   gallocy::vector<gallocy::string> lines;
   utils::split(raw, '\n', lines);
