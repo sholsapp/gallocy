@@ -215,3 +215,32 @@ TEST_F(MallocTests, CheckManyRandomAllocations) {
   }
 
 }
+
+
+TEST_F(MallocTests, LeakCheck) {
+  char* low = (char *) custom_malloc(1);
+  char* high = low;
+  custom_free(low);
+  char* p, *q, *r;
+  for(int i = 0; i < 10000; i++){
+    p = (char *) custom_malloc(4096);
+    q = (char *) custom_malloc(4096 * 2 + 1);
+    r = (char *) custom_malloc(1);
+    if (p < low)
+      low = p;
+    if (q < low)
+      low = q;
+    if (r < low)
+      low = r;
+    if (p > high)
+      high = p;
+    if (q > high)
+      high = q;
+    if (r > high)
+      high = r;
+    custom_free(p);
+    custom_free(q);
+    custom_free(r);
+  }
+  ASSERT_TRUE((uint64_t) high - (uint64_t) low < 4096 * 2);
+}
