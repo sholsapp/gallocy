@@ -6,4 +6,4 @@ then
   exit 1
 fi
 
-docker build -t $1 .
+docker build -t $1 -f tools/Dockerfile .
