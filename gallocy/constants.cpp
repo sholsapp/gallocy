@@ -16,8 +16,8 @@ char* _end = reinterpret_cast<char *>(0x800000000);
 /**
  * Return the address of the ``main`` function.
  */
-intptr_t &global_main() {
-  static intptr_t m = ((intptr_t) &main);
+uint64_t *&global_main() {
+  static uint64_t *m = reinterpret_cast<uint64_t *>(&main);
   return m;
 }
 
@@ -25,8 +25,8 @@ intptr_t &global_main() {
 /**
  * Return the address that demarks the end of the .TEXT region.
  */
-intptr_t &global_end() {
-  static intptr_t e = ((intptr_t) &_end);
+uint64_t *&global_end() {
+  static uint64_t *e = reinterpret_cast<uint64_t *>(&_end);
   return e;
 }
 
@@ -34,8 +34,8 @@ intptr_t &global_end() {
 /**
  * Return the starting address for use by internal memory allocators.
  */
-intptr_t &global_base() {
+uint64_t *&global_base() {
   // Page align the _end of the program + a page
-  static intptr_t base = (((intptr_t) &_end) & ~(PAGE_SZ - 1)) + PAGE_SZ;
+  static uint64_t *base = reinterpret_cast<uint64_t *>((((uint64_t) &_end) & ~(PAGE_SZ - 1)) + PAGE_SZ);
   return base;
 }

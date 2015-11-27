@@ -37,9 +37,9 @@ Response *HTTPServer::route_admin(RouteArguments *args, Request *request) {
   response->headers["Content-Type"] = "application/json";
   gallocy::json j = {
     {"status", "GOOD" },
-    {"main", reinterpret_cast<int64_t>(global_main())},
-    {"end", reinterpret_cast<int64_t>(global_end())},
-    {"base", reinterpret_cast<int64_t>(global_base())},
+    {"main", reinterpret_cast<uint64_t>(global_main())},
+    {"end", reinterpret_cast<uint64_t>(global_end())},
+    {"base", reinterpret_cast<uint64_t>(global_base())},
   };
   // TODO(sholsapp): There is no known conversion from std::string to
   // gallocy::string... we should fix this.
