@@ -22,7 +22,8 @@ sub_build() {
   fi
   make || exit 1
   make install || exit 1
-  sub_test
+  sub_stylecheck || exit 1
+  sub_test || exit 1
 }
 
 
