@@ -12,11 +12,7 @@ install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 
 script:
-  - cmake -G "Unix Makefiles"
-  - make && make install
-  - export LD_LIBRARY_PATH=./install/lib/
-  - export DYLD_LIBRARY_PATH=./install/lib/
-  - ./install/bin/gallocy_tests
+  - ./project build
 
 matrix:
   exclude:
