@@ -1,9 +1,9 @@
 #include <iostream>
 
-#include "./config.h"
-#include "./constants.h"
-#include "./httpd.h"
-#include "./libgallocy.h"
+#include "gallocy/config.h"
+#include "gallocy/constants.h"
+#include "gallocy/httpd.h"
+#include "gallocy/libgallocy.h"
 
 
 int main(void) {
