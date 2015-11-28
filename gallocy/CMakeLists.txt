@@ -21,6 +21,7 @@ set(GALLOCY_CORE_SRC
   config.cpp
   diff.cpp
   libgallocy.cpp
+  logging.cpp
   pagetable.cpp
   stringutils.cpp
   external/sqlite3/sqlite3.c)
