@@ -1,5 +1,5 @@
-#ifndef GALLOCY_HTTPD_H_
-#define GALLOCY_HTTPD_H_
+#ifndef GALLOCY_SERVER_H_
+#define GALLOCY_SERVER_H_
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -72,4 +72,4 @@ struct RequestContext {
   int client_socket;
 };
 
-#endif  // GALLOCY_HTTPD_H_
+#endif  // GALLOCY_SERVER_H_

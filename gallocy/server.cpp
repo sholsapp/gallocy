@@ -3,9 +3,9 @@
 #include <string>
 #include <utility>
 
-#include "gallocy/httpd.h"
 #include "gallocy/libgallocy.h"
 #include "gallocy/request.h"
+#include "gallocy/server.h"
 #include "gallocy/stringutils.h"
 
 

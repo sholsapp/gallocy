@@ -37,7 +37,7 @@ install(TARGETS gallocy-wrapper DESTINATION lib)
 
 # The gallocy-net build
 set(GALLOCY_NET_SRC
-  httpd.cpp
+  server.cpp
   request.cpp
   external/restclient-cpp/restclient.cpp)
 add_library(gallocy-net SHARED ${GALLOCY_NET_SRC})
@@ -50,7 +50,7 @@ add_library(gallocy-runtime SHARED ${GALLOCY_RUNTIME})
 install(TARGETS gallocy-runtime DESTINATION lib)
 
 # The tinyhttpd server and a test client
-add_executable(httpd bin/httpd.cpp)
+add_executable(httpd bin/server.cpp)
 target_link_libraries(httpd pthread gallocy-net gallocy-core gallocy-runtime)
 install(TARGETS httpd DESTINATION bin)
 add_executable(httpc bin/rest.cpp)

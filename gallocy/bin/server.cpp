@@ -2,8 +2,8 @@
 
 #include "gallocy/config.h"
 #include "gallocy/constants.h"
-#include "gallocy/httpd.h"
 #include "gallocy/libgallocy.h"
+#include "gallocy/server.h"
 
 
 int main(void) {
