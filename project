@@ -9,6 +9,7 @@ sub_help() {
   echo "Subcommands:"
   echo "    build - invoke cmake/make to build the code"
   echo "    clean - clean things up"
+  echo "    docker - build a docker"
   echo "    fuckit - seriously, clean everything up"
   echo "    integration - run the system test suite"
   echo "    stylecheck - run the style checker"
@@ -83,6 +84,29 @@ sub_stylecheck() {
     ./tools/cpplint.py ${LINT_ARGS[*]} $1
   fi
 }
+
+
+sub_docker() {
+  sub_build
+
+  RUNNING_CONTAINERS=$(docker ps -q)
+  if [ "$RUNNING_CONTAINERS" != "" ]; then
+    OUT="$(docker stop $RUNNING_CONTAINERS)"
+  fi
+
+  OLD_CONTAINERS="$(docker ps -a -q)"
+  if [ "$OLD_CONTAINERS" != "" ]; then
+    OUT="$(docker rm $OLD_CONTAINERS)"
+  fi
+
+  OLD_IMAGES="$(docker images -q)"
+  if [ "$OLD_IMAGES" != "" ]; then
+    OUT="$(docker rmi $OLD_IMAGES)"
+  fi
+
+  docker build -t gallocy-example -f tools/Dockerfile .
+}
+
 
 SUBCOMMAND=$1
 case $SUBCOMMAND in
