@@ -6,17 +6,20 @@ then
   exit 1
 fi
 
+PWD=$(pwd)
+
 INSTANCE=$(docker run     \
   --interactive           \
   --tty                   \
   --detach                \
+  -v ${PWD}/tools/etc:/home/gallocy/etc \
   --publish=808${1}:8081  \
   --hostname=gallocy${1}  \
   --memory=64M            \
   gallocy-example || exit 1)
 
 IPADDR="10.0.0.${1}"
-PIPEWORK_BIN="$(pwd)/tools/pipework"
+PIPEWORK_BIN="${PWD}/tools/pipework"
 PIPEWORK_OUTPUT=$("${PIPEWORK_BIN}" br1 \
   -i eth1                \
   -l app${1}             \
