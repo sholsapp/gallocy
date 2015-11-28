@@ -8,12 +8,14 @@ fi
 
 PWD=$(pwd)
 
+PORT=3000${1}
+
 INSTANCE=$(docker run     \
   --interactive           \
   --tty                   \
   --detach                \
   -v ${PWD}/tools/etc:/home/gallocy/etc \
-  --publish=808${1}:8081  \
+  --publish=${PORT}:8080 \
   --hostname=gallocy${1}  \
   --memory=64M            \
   gallocy-example || exit 1)
@@ -27,4 +29,4 @@ PIPEWORK_OUTPUT=$("${PIPEWORK_BIN}" br1 \
   ${IPADDR}/24 || exit 1)
 
 echo $PIPEWORK_OUTPUT
-echo "Started ${INSTANCE} listening on ${IPADDR} exposed on 808${1}."
+echo "Started ${INSTANCE} listening on ${IPADDR} exposed on ${PORT}."

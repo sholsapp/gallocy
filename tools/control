@@ -1,3 +1,3 @@
 #!/bin/bash
 /home/gallocy/pipework --wait -i eth1
-/home/gallocy/bin/httpd
+exec /home/gallocy/bin/httpd
