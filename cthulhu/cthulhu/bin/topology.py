@@ -135,6 +135,7 @@ class InstanceContext(object):
 # GENERATED CONTROL SCRIPT
 
 PID=$(docker run \\
+  --name {{ name }} \\
   --interactive \\
   --tty \\
   --detach \\
@@ -154,6 +155,7 @@ echo $PID > {{ local_root }}/pid.txt
     local_etc=self.node_etc,
     local_root=self.node_root,
     local_var=self.node_var,
+    name=self.instance_name,
   )
 
 
