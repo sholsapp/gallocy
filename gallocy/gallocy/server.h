@@ -33,7 +33,9 @@ class GallocyServer {
    * Construct a HTTP server.
    */
   explicit GallocyServer(GallocyConfig &config) :
+    config(config),
     alive(true),
+    is_master(config.master),
     address(config.address),
     port(config.port),
     server_socket(-1) {
@@ -48,7 +50,7 @@ class GallocyServer {
 
   void start();
   static void *handle_entry(void *arg);
-  void *handle(int client_socket);
+  void *handle(int client_socket, struct sockaddr_in client_name);
   Request *get_request(int client_socket);
 
   RoutingTable<HandlerFunction> routes;
@@ -58,7 +60,9 @@ class GallocyServer {
   int get_line(int client_socket, gallocy::stringstream &line);
 
  private:
+  GallocyConfig &config;
   bool alive;
+  bool is_master;
   gallocy::string address;
   int16_t port;
   int64_t server_socket;
@@ -75,6 +79,7 @@ struct RequestContext {
  public:
   GallocyServer *server;
   int client_socket;
+  struct sockaddr_in client_name;
 };
 
 #endif  // GALLOCY_SERVER_H_

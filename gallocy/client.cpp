@@ -5,6 +5,10 @@
 
 #include <iostream>
 
+#include "./restclient.h"
+#include "gallocy/logging.h"
+#include "gallocy/stringutils.h"
+
 
 /**
  * Start the client thread.
@@ -44,12 +48,10 @@ void *GallocyClient::work() {
   while (alive) {
     switch (state) {
       case JOINING:
-        std::cout << "Joining..." << std::endl;
+        state = state_joining();
         break;
       case IDLE:
-        std::cout << "Idle..." << std::endl;
-        for (auto i : peers)
-          std::cout << i << std::endl;
+        state = state_idle();
         break;
       default:
         std::cout << "Default..." << std::endl;
@@ -58,4 +60,34 @@ void *GallocyClient::work() {
     sleep(5);
   }
   return nullptr;
+}
+
+
+GallocyClient::State GallocyClient::state_joining() {
+  for (auto peer : config.peers) {
+    gallocy::stringstream url;
+    url << "http://" << peer << ":" << config.port << "/admin";
+    RestClient::response rsp = RestClient::get(url.str().c_str());
+    if (rsp.code == 200) {
+      gallocy::string body = rsp.body.c_str();
+      body = utils::trim(body);
+      LOG_INFO(url.str()
+        << " - "
+        << rsp.code
+        << " - "
+        << body)
+    } else {
+      LOG_INFO(url.str()
+        << " - "
+        << rsp.code);
+    }
+  }
+
+  return JOINING;
+}
+
+
+GallocyClient::State GallocyClient::state_idle() {
+  std::cout << "Idle..." << std::endl;
+  return IDLE;
 }

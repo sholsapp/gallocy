@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "gallocy/libgallocy.h"
+#include "gallocy/logging.h"
 #include "gallocy/request.h"
 #include "gallocy/server.h"
 #include "gallocy/stringutils.h"
@@ -27,9 +28,6 @@ void error_die(const char *sc) {
  * :param request: The request itself.
  */
 Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
-  std::cout << "/admin route" << std::endl;
-  request->pretty_print();
-
   Response *response = new (internal_malloc(sizeof(Response))) Response();
   response->status_code = 200;
   response->headers["Server"] = "Gallocy-Httpd";
@@ -37,9 +35,7 @@ Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
   response->headers["Content-Type"] = "application/json";
   gallocy::json j = {
     {"status", "GOOD" },
-    {"main", reinterpret_cast<uint64_t>(global_main())},
-    {"end", reinterpret_cast<uint64_t>(global_end())},
-    {"base", reinterpret_cast<uint64_t>(global_base())},
+    {"master", is_master},
   };
   // TODO(sholsapp): There is no known conversion from std::string to
   // gallocy::string... we should fix this.
@@ -101,7 +97,7 @@ int GallocyServer::get_line(int client_socket, gallocy::stringstream &line) {
  */
 void GallocyServer::start() {
   std::cout << "Starting the HTTP sever..." << std::endl
-    << "  on address" << address << std::endl
+    << "  on address " << address << std::endl
     << "  on port " << port << std::endl;
 
   struct sockaddr_in name;
@@ -150,6 +146,7 @@ void GallocyServer::start() {
       new (internal_malloc(sizeof(struct RequestContext))) struct RequestContext;
     ctx->server = this;
     ctx->client_socket = client_sock;
+    ctx->client_name = client_name;
 
     if (pthread_create(&newthread, NULL, handle_entry, reinterpret_cast<void *>(ctx)) != 0) {
       perror("pthread_create1");
@@ -181,7 +178,7 @@ void GallocyServer::start() {
  */
 void *GallocyServer::handle_entry(void *arg) {
   struct RequestContext *ctx = reinterpret_cast<struct RequestContext *>(arg);
-  void *ret = ctx->server->handle(ctx->client_socket);
+  void *ret = ctx->server->handle(ctx->client_socket, ctx->client_name);
   ctx->~RequestContext();
   internal_free(ctx);
   return ret;
@@ -202,18 +199,20 @@ void *GallocyServer::handle_entry(void *arg) {
  * :param client_socket: The client's socket id.
  * :returns: A null pointer.
  */
-void *GallocyServer::handle(int client_socket) {
-  std::cout << "Server (" << this
-            << ") is servering client on " << client_socket
-            << std::endl;
-
+void *GallocyServer::handle(int client_socket, struct sockaddr_in client_name) {
   Request *request = get_request(client_socket);
-
   Response *response = routes.match(request->uri)(request);
-
   if (send(client_socket, response->str().c_str(), response->size(), 0) == -1) {
     error_die("send");
   }
+
+  LOG_INFO(request->method << " "
+    << request->uri << " "
+    << " - "
+    << "HTTP " << response->status_code << " "
+    << " - "
+    << inet_ntoa(client_name.sin_addr) << " "
+    << request->headers["User-Agent"]);
 
   // Teardown
   request->~Request();

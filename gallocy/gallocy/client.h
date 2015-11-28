@@ -17,15 +17,19 @@ class GallocyClient {
   };
  public:
   explicit GallocyClient(GallocyConfig &config) :
-    state(IDLE), alive(true), peers(config.peers) {}
-  void start();
-  void *work();
-  void stop();
+    alive(true),
+    config(config),
+    state(JOINING) {}
+  State state_idle();
+  State state_joining();
   static void *handle_work(void *arg);
+  void *work();
+  void start();
+  void stop();
  private:
-  State state;
   bool alive;
-  gallocy::vector<gallocy::string> peers;
+  GallocyConfig &config;
+  State state;
   pthread_t thread;
 };
 
