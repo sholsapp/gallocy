@@ -51,9 +51,9 @@ add_library(gallocy-runtime SHARED ${GALLOCY_RUNTIME})
 install(TARGETS gallocy-runtime DESTINATION lib)
 
 # The tinyhttpd server and a test client
-add_executable(httpd bin/server.cpp)
-target_link_libraries(httpd pthread gallocy-net gallocy-core gallocy-runtime)
-install(TARGETS httpd DESTINATION bin)
+add_executable(server bin/server.cpp)
+target_link_libraries(server pthread gallocy-net gallocy-core gallocy-runtime)
+install(TARGETS server DESTINATION bin)
 add_executable(httpc bin/rest.cpp)
 target_link_libraries(httpc gallocy-net gallocy-core gallocy-runtime)
 install(TARGETS httpc DESTINATION bin)

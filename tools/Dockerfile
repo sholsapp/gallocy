@@ -15,7 +15,6 @@ RUN mkdir /home/gallocy/etc
 
 ADD install /home/gallocy
 ADD tools/pipework /home/gallocy
-ADD tools/control /home/gallocy
 
 ENV LD_LIBRARY_PATH /home/gallocy/lib
 VOLUME ["/home/gallocy/etc"]
@@ -26,4 +25,4 @@ EXPOSE 8080
 # configure the network interfaces after we start an instance.
 #CMD ["/bin/bash"]
 
-CMD ["/home/gallocy/control"]
+CMD ["/home/gallocy/bin/server", "/home/gallocy/etc/config.json"]
