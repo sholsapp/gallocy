@@ -58,11 +58,13 @@ setup(
     # For compatibility with py2.6
     'argparse',
     'click',
-    'tabulate',
-    'requests',
+    'jinja2',
     'netaddr',
-    'wheel',
+    'netifaces',
     'pex',
+    'requests',
+    'tabulate',
+    'wheel',
   ],
   tests_require=[
     'flake8',
