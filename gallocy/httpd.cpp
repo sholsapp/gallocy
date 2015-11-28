@@ -120,6 +120,7 @@ void HTTPServer::start() {
   name.sin_family = AF_INET;
   name.sin_port = htons(port);
   name.sin_addr.s_addr = htonl(INADDR_ANY);
+  // name.sin_addr.s_addr = inet_addr("10.0.0.0");
 
   if (bind(server_socket, (struct sockaddr *) &name, sizeof(name)) < 0) {
     error_die("bind");
