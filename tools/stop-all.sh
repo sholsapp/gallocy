@@ -1,2 +1,2 @@
 #!/bin/bash
-docker stop $(sudo docker ps -q)
+docker stop $(docker ps -q)
