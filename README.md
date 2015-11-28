@@ -1,7 +1,7 @@
 # gallocy
 
 <a href="https://travis-ci.org/sholsapp/gallocy">
-<img src='https://secure.travis-ci.org/sholsapp/gallocy.png?branch=master'>
+<img src='https://img.shields.io/travis/sholsapp/gallocy/master.svg?style=flat-square' />
 </a>
 
 The gallocy library implements a memory allocator that transparently allocates
