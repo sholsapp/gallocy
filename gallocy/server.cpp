@@ -100,7 +100,9 @@ int GallocyServer::get_line(int client_socket, gallocy::stringstream &line) {
  * socket, then enters the HTTP server's main event loop.
  */
 void GallocyServer::start() {
-  std::cout << "Starting the HTTP sever..." << std::endl;
+  std::cout << "Starting the HTTP sever..." << std::endl
+    << "  on address" << address << std::endl
+    << "  on port " << port << std::endl;
 
   struct sockaddr_in name;
   int optval = 1;

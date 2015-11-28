@@ -19,6 +19,8 @@
 class GallocyConfig {
  public:
   explicit GallocyConfig(gallocy::json j) {
+    port = j["port"];
+
     // TODO(sholsapp): Gah, this is driving me insane, we need to fix this
     // implicit converstion nightmare.
     gallocy::json::string_t _address = j["this"];
