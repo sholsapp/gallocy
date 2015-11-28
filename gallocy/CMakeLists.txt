@@ -37,6 +37,7 @@ install(TARGETS gallocy-wrapper DESTINATION lib)
 
 # The gallocy-net build
 set(GALLOCY_NET_SRC
+  client.cpp
   server.cpp
   request.cpp
   external/restclient-cpp/restclient.cpp)

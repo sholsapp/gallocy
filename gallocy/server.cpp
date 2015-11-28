@@ -26,7 +26,7 @@ void error_die(const char *sc) {
  * :param args: The route arguments.
  * :param request: The request itself.
  */
-Response *HTTPServer::route_admin(RouteArguments *args, Request *request) {
+Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
   std::cout << "/admin route" << std::endl;
   request->pretty_print();
 
@@ -66,7 +66,7 @@ Response *HTTPServer::route_admin(RouteArguments *args, Request *request) {
  * :param line: A string stream to write to.
  * :returns: The number of bytes stored.
  */
-int HTTPServer::get_line(int client_socket, gallocy::stringstream &line) {
+int GallocyServer::get_line(int client_socket, gallocy::stringstream &line) {
   int i = 0;
   char c = '\0';
   int n;
@@ -99,7 +99,7 @@ int HTTPServer::get_line(int client_socket, gallocy::stringstream &line) {
  * Starting the HTTP server binds to the socket, begins listening on the bound
  * socket, then enters the HTTP server's main event loop.
  */
-void HTTPServer::start() {
+void GallocyServer::start() {
   std::cout << "Starting the HTTP sever..." << std::endl;
 
   struct sockaddr_in name;
@@ -119,8 +119,8 @@ void HTTPServer::start() {
   memset(&name, 0, sizeof(name));
   name.sin_family = AF_INET;
   name.sin_port = htons(port);
-  name.sin_addr.s_addr = htonl(INADDR_ANY);
-  // name.sin_addr.s_addr = inet_addr("10.0.0.0");
+  // name.sin_addr.s_addr = htonl(INADDR_ANY);
+  name.sin_addr.s_addr = inet_addr(address.c_str());
 
   if (bind(server_socket, (struct sockaddr *) &name, sizeof(name)) < 0) {
     error_die("bind");
@@ -177,7 +177,7 @@ void HTTPServer::start() {
  * :param arg: A heap``RequestContext`` argument.
  * :returns: A null pointer.
  */
-void *HTTPServer::handle_entry(void *arg) {
+void *GallocyServer::handle_entry(void *arg) {
   struct RequestContext *ctx = reinterpret_cast<struct RequestContext *>(arg);
   void *ret = ctx->server->handle(ctx->client_socket);
   ctx->~RequestContext();
@@ -200,7 +200,7 @@ void *HTTPServer::handle_entry(void *arg) {
  * :param client_socket: The client's socket id.
  * :returns: A null pointer.
  */
-void *HTTPServer::handle(int client_socket) {
+void *GallocyServer::handle(int client_socket) {
   std::cout << "Server (" << this
             << ") is servering client on " << client_socket
             << std::endl;
@@ -233,7 +233,7 @@ void *HTTPServer::handle(int client_socket) {
  * :param request: The string stream to write the request into.
  * :returns: The request object.
  */
-Request *HTTPServer::get_request(int client_socket) {
+Request *GallocyServer::get_request(int client_socket) {
   int numchars = 0;
   int numlines = 0;
   gallocy::stringstream stream;

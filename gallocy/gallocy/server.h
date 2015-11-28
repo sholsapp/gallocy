@@ -14,6 +14,7 @@
 #include <functional>
 #include <vector>
 
+#include "gallocy/config.h"
 #include "gallocy/http_router.h"
 #include "gallocy/libgallocy.h"
 #include "gallocy/request.h"
@@ -22,7 +23,7 @@
 void error_die(const char *);
 
 
-class HTTPServer {
+class GallocyServer {
  public:
   using RouteArguments = gallocy::vector<gallocy::string>;
   using HandlerFunction = std::function<Response *(RouteArguments *, Request *)>;
@@ -31,16 +32,19 @@ class HTTPServer {
   /**
    * Construct a HTTP server.
    */
-  explicit HTTPServer(int port) :
-    alive(true), port(port), server_socket(-1) {
+  explicit GallocyServer(GallocyConfig &config) :
+    alive(true),
+    address(config.address),
+    port(config.port),
+    server_socket(-1) {
       routes.register_handler("/admin",
         [this](RouteArguments *args, Request *request) { return route_admin(args, request); });
   }
 
-  HTTPServer(const HTTPServer &) = delete;
-  HTTPServer &operator=(const HTTPServer &) = delete;
+  GallocyServer(const GallocyServer &) = delete;
+  GallocyServer &operator=(const GallocyServer &) = delete;
 
-  ~HTTPServer() {}
+  ~GallocyServer() {}
 
   void start();
   static void *handle_entry(void *arg);
@@ -55,6 +59,7 @@ class HTTPServer {
 
  private:
   bool alive;
+  gallocy::string address;
   int16_t port;
   int64_t server_socket;
 };
@@ -68,7 +73,7 @@ class HTTPServer {
  */
 struct RequestContext {
  public:
-  HTTPServer *server;
+  GallocyServer *server;
   int client_socket;
 };
 

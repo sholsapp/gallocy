@@ -118,6 +118,7 @@ class InstanceContext(object):
     ip = self.network[self.instance]
     return json.dumps({
       'this': str(ip),
+      'port': 8080,
       'master': True if ip == self.network[0] else False,
       'peers': [str(n) for n in self.network if n != ip]
       ,
