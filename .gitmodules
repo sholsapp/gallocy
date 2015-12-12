@@ -1,0 +1,6 @@
+[submodule "opt/curl"]
+  path = opt/curl
+  url = https://github.com/bagder/curl
+[submodule "opt/googletest"]
+  path = opt/googletest
+  url = https://github.com/google/googletest 
