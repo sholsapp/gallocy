@@ -20,6 +20,7 @@ set(test_sources
   test_json.cpp
   test_malloc.cpp
   test_mmult.cpp
+  test_models.cpp
   test_pagetable.cpp
   test_singleton.cpp
   test_stlallocator.cpp
