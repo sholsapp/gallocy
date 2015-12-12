@@ -5,7 +5,7 @@ set (GALLOCY_INCLUDE
   ../gallocy/external/frozen
   ../gallocy/external/sqlite3)
 include_directories(${GALLOCY_INCLUDE})
-include_directories(${gtest_SOURCE_DIR}/include)
+include_directories(${GTEST_INCLUDE_DIRS})
 
 # Custom compile flags for memory allocator
 set(CMAKE_CXX_FLAGS

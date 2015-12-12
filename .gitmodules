@@ -1,6 +1,8 @@
 [submodule "opt/curl"]
 	path = opt/curl
-	url = https://github.com/bagder/curl
+	url = https://github.com/sholsapp/curl.git
+	ignore = all
 [submodule "opt/googletest"]
 	path = opt/googletest
-	url = https://github.com/google/googletest
+	url = https://github.com/sholsapp/googletest.git
+	ignore = dirty

@@ -44,7 +44,7 @@ set(GALLOCY_NET_SRC
   request.cpp
   external/restclient-cpp/restclient.cpp)
 add_library(gallocy-net SHARED ${GALLOCY_NET_SRC})
-target_link_libraries(gallocy-net gallocy-core curl)
+target_link_libraries(gallocy-net gallocy-core libcurl)
 install(TARGETS gallocy-net DESTINATION lib)
 
 set(GALLOCY_RUNTIME
@@ -57,7 +57,7 @@ add_executable(server bin/server.cpp)
 target_link_libraries(server pthread gallocy-net gallocy-core gallocy-runtime)
 install(TARGETS server DESTINATION bin)
 add_executable(httpc bin/rest.cpp)
-target_link_libraries(httpc gallocy-net gallocy-core gallocy-runtime)
+target_link_libraries(httpc pthread gallocy-net gallocy-core gallocy-runtime)
 install(TARGETS httpc DESTINATION bin)
 
 # XXX: refactor this into gallocy-threading or something. Or add it to
