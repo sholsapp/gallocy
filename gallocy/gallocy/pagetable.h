@@ -1,6 +1,7 @@
 #ifndef GALLOCY_PAGETABLE_H_
 #define GALLOCY_PAGETABLE_H_
 
+#if 0
 #include <pthread.h>
 #include <sqlite3.h>
 
@@ -40,5 +41,6 @@ class PageTable {
 };
 
 extern PageTable pt;
+#endif
 
 #endif  // GALLOCY_PAGETABLE_H_

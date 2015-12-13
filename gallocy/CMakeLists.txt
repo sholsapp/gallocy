@@ -24,6 +24,7 @@ set(GALLOCY_CORE_SRC
   logging.cpp
   models.cpp
   pagetable.cpp
+  sqlite.cpp
   stringutils.cpp
   external/sqlite3/sqlite3.c)
 add_library(gallocy-core SHARED ${GALLOCY_CORE_SRC})
@@ -58,9 +59,9 @@ install(TARGETS gallocy-runtime DESTINATION lib)
 add_executable(server bin/server.cpp)
 target_link_libraries(server pthread gallocy-net gallocy-core gallocy-runtime)
 install(TARGETS server DESTINATION bin)
-add_executable(httpc bin/rest.cpp)
-target_link_libraries(httpc pthread gallocy-net gallocy-core gallocy-runtime)
-install(TARGETS httpc DESTINATION bin)
+#add_executable(httpc bin/rest.cpp)
+#target_link_libraries(httpc pthread gallocy-net gallocy-core gallocy-runtime)
+#install(TARGETS httpc DESTINATION bin)
 
 # XXX: refactor this into gallocy-threading or something. Or add it to
 # gallocy-core.
