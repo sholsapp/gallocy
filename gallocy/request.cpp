@@ -54,6 +54,7 @@ gallocy::json &Request::get_json() {
   if (json == gallocy::json(nullptr)
       && headers.count("Content-Type")
       && headers["Content-Type"] == "application/json") {
+    std::cout << "Raw body: " << raw_body.c_str() << std::endl;
     json = gallocy::json::parse(raw_body.c_str());
   }
   return json;

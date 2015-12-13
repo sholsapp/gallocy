@@ -55,7 +55,9 @@ Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
  */
 Response *GallocyServer::route_join(RouteArguments *args, Request *request) {
   Response *response = new (internal_malloc(sizeof(Response))) Response();
-  std::cout << request->get_json() << std::endl;
+  request->pretty_print();
+  // TODO(sholsapp): Setup the joining logic here.
+  //std::cout << request->get_json() << std::endl;
   return response;
 }
 

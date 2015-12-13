@@ -66,14 +66,15 @@ void *GallocyClient::work() {
 GallocyClient::State GallocyClient::state_joining() {
   for (auto peer : config.peers) {
     gallocy::stringstream url;
-    gallocy::json body;
-    body["ip_address"] = config.address;
-    body["is_master"] = config.master;
+    gallocy::json json_body;
+    json_body["ip_address"] = config.address.c_str();
+    json_body["is_master"] = config.master;
     url << "http://" << peer << ":" << config.port << "/join";
+    std::cout << "BODY: " << json_body.dump() << std::endl;
     RestClient::response rsp = RestClient::post(
         url.str().c_str(),
         "application/json",
-        body.dump());
+        json_body.dump().c_str());
     if (rsp.code == 200) {
       gallocy::string body = rsp.body.c_str();
       body = utils::trim(body);

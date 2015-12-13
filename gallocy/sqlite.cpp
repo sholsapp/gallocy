@@ -64,7 +64,6 @@ void* xRealloc(void* ptr, int sz) {
   size_t min_size = sqliteHeap.getSize(ptr);
   void* buf = sqliteHeap.malloc(sz);
   if (buf != NULL) {
-    std::cout << ptr << " " << min_size << std::endl;
     memcpy(buf, ptr, min_size);
     sqliteHeap.free(ptr);
   }
