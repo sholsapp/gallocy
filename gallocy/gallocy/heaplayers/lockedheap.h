@@ -18,7 +18,7 @@ class LockedHeap : public Super {
     Super::free(ptr);
   }
 
-  inline size_t getSize(void *ptr) const {
+  inline size_t getSize(void *ptr) {
     Guard<LockType> l(thelock);
     return Super::getSize(ptr);
   }

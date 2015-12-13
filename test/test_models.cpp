@@ -9,10 +9,16 @@
 
 
 TEST(ModelsTests, PeerInfo) {
-
+  // TODO(sholsapp): Move this into a setup/teardown
+  // fixture so that we can test multiple times.
+  e.initialize();
   e.execute(PeerInfo::CREATE_STATEMENT);
   for (int i = 0; i < 16; ++i)
-    e.execute(PeerInfo(i, i, 0, false).insert());
-
-  std::cout << "Size: " << peer_info_table.all().size() << std::endl;
+    e.execute(PeerInfo(i, 0, 0, false).insert());
+  gallocy::vector<PeerInfo> peers = peer_info_table.all();
+  ASSERT_EQ(peers.size(), static_cast<size_t>(16));
+  for (int i = 0; i < 16; ++i) {
+    ASSERT_EQ(peers[i].id, static_cast<uint64_t>(i + 1));
+    ASSERT_EQ(peers[i].ip_address, static_cast<uint64_t>(i));
+  }
 }

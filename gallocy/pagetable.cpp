@@ -225,4 +225,4 @@ int PageTable::get_page_table_entry_count() {
 }
 
 
-PageTable pt;
+//PageTable pt;

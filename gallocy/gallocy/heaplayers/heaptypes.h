@@ -62,11 +62,13 @@ typedef
 
 
 typedef
-  HL::FirstFitHeap<
-    HL::SizeHeap<
-      HL::ZoneHeap<
-        HL::SourceMmapHeap,
-        DEFAULT_ZONE_SZ> > >
+  HL::LockedHeap<
+    HL::SpinLockType,
+    HL::FirstFitHeap<
+      HL::SizeHeap<
+        HL::ZoneHeap<
+          HL::SourceMmapHeap,
+          DEFAULT_ZONE_SZ> > > >
   SqliteAllocatorHeapType;
 
 

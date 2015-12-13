@@ -9,7 +9,6 @@
 #include "gallocy/server.h"
 #include "gallocy/stringutils.h"
 
-
 /**
  * Die.
  *
@@ -47,6 +46,18 @@ Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
   return response;
 }
 
+
+/**
+ * Handle a request for /join.
+ *
+ * :param args: The route arguments.
+ * :param request: The request itself.
+ */
+Response *GallocyServer::route_join(RouteArguments *args, Request *request) {
+  Response *response = new (internal_malloc(sizeof(Response))) Response();
+  std::cout << request->get_json() << std::endl;
+  return response;
+}
 
 /**
  * Get a line from a socket.

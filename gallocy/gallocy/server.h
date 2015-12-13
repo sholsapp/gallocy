@@ -41,6 +41,8 @@ class GallocyServer {
     server_socket(-1) {
       routes.register_handler("/admin",
         [this](RouteArguments *args, Request *request) { return route_admin(args, request); });
+      routes.register_handler("/join",
+        [this](RouteArguments *args, Request *request) { return route_join(args, request); });
   }
 
   GallocyServer(const GallocyServer &) = delete;
@@ -55,6 +57,7 @@ class GallocyServer {
 
   RoutingTable<HandlerFunction> routes;
   Response *route_admin(RouteArguments *args, Request *request);
+  Response *route_join(RouteArguments *args, Request *request);
 
  private:
   int get_line(int client_socket, gallocy::stringstream &line);

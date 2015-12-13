@@ -23,7 +23,7 @@ class GallocyConfig {
 
     // TODO(sholsapp): Gah, this is driving me insane, we need to fix this
     // implicit converstion nightmare.
-    gallocy::json::string_t _address = j["this"];
+    gallocy::json::string_t _address = j["self"];
     address = _address.c_str();
 
     // TODO(sholsapp): Gah, this is driving me insane, we need to fix this
