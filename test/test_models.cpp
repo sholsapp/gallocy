@@ -10,9 +10,9 @@
 
 TEST(ModelsTests, PeerInfo) {
 
-  Engine e;
-
-  e.create_table(PeerInfo::CREATE_STATEMENT);
+  e.execute(PeerInfo::CREATE_STATEMENT);
   for (int i = 0; i < 16; ++i)
     e.execute(PeerInfo(i, i, 0, false).insert());
+
+  std::cout << "Size: " << peer_info_table.all().size() << std::endl;
 }

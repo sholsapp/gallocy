@@ -44,7 +44,9 @@ set(GALLOCY_NET_SRC
   request.cpp
   external/restclient-cpp/restclient.cpp)
 add_library(gallocy-net SHARED ${GALLOCY_NET_SRC})
-target_link_libraries(gallocy-net gallocy-core libcurl)
+# Note, if building this locally in opt, we'll need to change curl to libcurl
+# to distringuish between executable and library.
+target_link_libraries(gallocy-net gallocy-core curl)
 install(TARGETS gallocy-net DESTINATION lib)
 
 set(GALLOCY_RUNTIME
