@@ -70,11 +70,13 @@ GallocyClient::State GallocyClient::state_joining() {
     json_body["ip_address"] = config.address.c_str();
     json_body["is_master"] = config.master;
     url << "http://" << peer << ":" << config.port << "/join";
-    std::cout << "BODY: " << json_body.dump() << std::endl;
+    gallocy::string _test = json_body.dump().c_str();
+
     RestClient::response rsp = RestClient::post(
         url.str().c_str(),
         "application/json",
-        json_body.dump().c_str());
+        _test.c_str());
+
     if (rsp.code == 200) {
       gallocy::string body = rsp.body.c_str();
       body = utils::trim(body);
