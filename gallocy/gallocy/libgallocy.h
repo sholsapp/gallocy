@@ -39,9 +39,33 @@ namespace gallocy {
   template <typename T>
   using ContainerAllocator = STLAllocator<T, __STLAllocator>;
 
-  using string = std::basic_string<char,
+  using _string = std::basic_string<char,
         std::char_traits<char>,
         ContainerAllocator<char> >;
+
+  /**
+   * Define a custom string type.
+   *
+   * We define a custom string type so that we can define various conversion
+   * operators that are commonly used within this library -- this is important
+   * since we have dependencies on code that don't realize we're using a custom
+   * string type.
+   */
+  class string: public _string {
+   public:
+    // Inherit all of the constructors from the base class.
+    using _string::_string;
+    string() {}
+    string(const _string &s) {
+      *this = string(s.c_str());
+    }
+    string(const std::string &s) {
+      *this = string(s.c_str());
+    }
+    operator const char *() { return this->c_str(); }
+    operator const _string () { return this->c_str(); }
+    operator const std::string () { return this->c_str(); }
+  };
 
   using stringstream = std::basic_stringstream<char,
         std::char_traits<char>,
