@@ -61,7 +61,7 @@ Response *GallocyServer::route_join(RouteArguments *args, Request *request) {
   gallocy::json j = {
     {"status", "JOINED" },
   };
-  response->body = j.dump().c_str();
+  response->body = j.dump();
 
   args->~RouteArguments();
   internal_free(args);
