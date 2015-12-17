@@ -30,7 +30,6 @@ Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
   Response *response = new (internal_malloc(sizeof(Response))) Response();
   response->status_code = 200;
   response->headers["Server"] = "Gallocy-Httpd";
-  response->headers["Content-Type"] = "text/plain";
   response->headers["Content-Type"] = "application/json";
   gallocy::json j = {
     {"status", "GOOD" },
@@ -38,7 +37,7 @@ Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
   };
   // TODO(sholsapp): There is no known conversion from std::string to
   // gallocy::string... we should fix this.
-  response->body = j.dump().c_str();
+  response->body = j.dump();
 
   args->~RouteArguments();
   internal_free(args);
@@ -55,50 +54,19 @@ Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
  */
 Response *GallocyServer::route_join(RouteArguments *args, Request *request) {
   Response *response = new (internal_malloc(sizeof(Response))) Response();
-  request->pretty_print();
   // TODO(sholsapp): Setup the joining logic here.
-  //std::cout << request->get_json() << std::endl;
-  return response;
-}
+  response->status_code = 200;
+  response->headers["Server"] = "Gallocy-Httpd";
+  response->headers["Content-Type"] = "application/json";
+  gallocy::json j = {
+    {"status", "JOINED" },
+  };
+  response->body = j.dump().c_str();
 
-/**
- * Get a line from a socket.
- *
- * Lines end in a newline, a carriage return, or a CRLF combination. This
- * function terminates the string read with a null character. If no newline
- * indicator is found before the end of the buffer, the string is terminated
- * with a null. If any of the above three line terminators is read, the last
- * character of the string will be a linefeed and the string will be terminated
- * with a null character.
- *
- * :param client_socket: The socket descriptor.
- * :param line: A string stream to write to.
- * :returns: The number of bytes stored.
- */
-int GallocyServer::get_line(int client_socket, gallocy::stringstream &line) {
-  int i = 0;
-  char c = '\0';
-  int n;
-  while (c != '\n') {
-    n = recv(client_socket, &c, 1, 0);
-    if (n > 0) {
-      if (c == '\r') {
-        n = recv(client_socket, &c, 1, MSG_PEEK);
-        if ((n > 0) && (c == '\n')) {
-          recv(client_socket, &c, 1, 0);
-        } else {
-          c = '\n';
-        }
-      }
-      line << c;
-      i++;
-    } else {
-      c = '\n';
-    }
-  }
-  // This angers C++ streams.
-  // line << '\0';
-  return(i);
+  args->~RouteArguments();
+  internal_free(args);
+
+  return response;
 }
 
 
@@ -249,12 +217,16 @@ void *GallocyServer::handle(int client_socket, struct sockaddr_in client_name) {
  * :returns: The request object.
  */
 Request *GallocyServer::get_request(int client_socket) {
-  int numchars = 0;
-  int numlines = 0;
-  gallocy::stringstream stream;
-  while ((numchars = get_line(client_socket, stream)) > 2) {
-    if (numchars > 0)
-      numlines++;
+  gallocy::stringstream request;
+  int n;
+  char buf[256] = {0};
+  n = recv(client_socket, buf, 16, 0);
+  request << buf;
+  while (n > 0) {
+    memset(buf, 0, 256);
+    n = recv(client_socket, buf, 256, MSG_DONTWAIT);
+    request << buf;
   }
-  return new (internal_malloc(sizeof(Request))) Request(stream.str());
+  std::cout << std::endl;
+  return new (internal_malloc(sizeof(Request))) Request(request.str());
 }

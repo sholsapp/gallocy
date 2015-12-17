@@ -60,9 +60,6 @@ class GallocyServer {
   Response *route_join(RouteArguments *args, Request *request);
 
  private:
-  int get_line(int client_socket, gallocy::stringstream &line);
-
- private:
   GallocyConfig &config;
   bool alive;
   bool is_master;
