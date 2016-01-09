@@ -15,6 +15,7 @@ namespace utils {
   gallocy::string string_to_hex(const gallocy::string &input);
   bool startswith(gallocy::string hackstack, gallocy::string needle);
   bool endswith(gallocy::string hackstack, gallocy::string needle);
+  uint64_t parse_internet_address(const gallocy::string &ip_address);
 }
 
 #endif  // GALLOCY_STRINGUTILS_H_

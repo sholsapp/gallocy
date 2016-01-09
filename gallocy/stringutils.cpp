@@ -1,5 +1,7 @@
 #include "gallocy/stringutils.h"
 
+#include <arpa/inet.h>
+
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -123,4 +125,29 @@ namespace utils {
       && std::equal(needle.begin(), needle.end(), haystack.end() - needle.size());
   }
 
+  /**
+   * Parse an IPv4 internet address from a string.
+   *
+   * .. note::
+   *
+   *   This function naively parses an IPv4 internet address from a string.
+   *   This function needs to be rewritten such that endian-ness and IPv6 is
+   *   handled.
+   *
+   * :param ip_address: The IPv4 internet address as a string.
+   * :returns: An unsigned 64 bit integer of the IPv4 address.
+   */
+  uint64_t parse_internet_address(const gallocy::string &ip_address) {
+    uint64_t ip = 0;
+    uint8_t buf[4];
+    int r = inet_pton(AF_INET, ip_address.c_str(), buf);
+    if (r <= 0) {
+      return 0;
+    }
+    for (int i = 0; i < 4; i++) {
+      ip <<= 8;
+      ip |= buf[i] & 0xff;
+    }
+    return ip;
+  }
 }  // namespace utils
