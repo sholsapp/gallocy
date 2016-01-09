@@ -75,13 +75,21 @@ class Model {
  */
 class PeerInfo {
  public:
-  PeerInfo(uint64_t ip_address, uint64_t first_seen, uint64_t last_seen, bool is_master) :
+  /**
+   * Primary constructor.
+   */
+  PeerInfo(uint64_t ip_address, uint64_t first_seen, uint64_t last_seen, bool
+      is_master) :
     is_master(is_master),
     ip_address(ip_address),
     first_seen(first_seen),
     last_seen(last_seen) {}
 
-  PeerInfo(uint64_t id, uint64_t ip_address, uint64_t first_seen, uint64_t last_seen, bool is_master) :
+  /**
+   * Internal constructor.
+   */
+  PeerInfo(uint64_t id, uint64_t ip_address, uint64_t first_seen, uint64_t
+      last_seen, bool is_master) :
     is_master(is_master),
     id(id),
     ip_address(ip_address),
@@ -112,8 +120,104 @@ class PeerInfo {
 };
 
 
+/**
+ * A model to describe the application.
+ */
+class ApplicationInfo {
+ public:
+  /**
+   * Primary constructor.
+   */
+  ApplicationInfo(uint64_t text_region, uint64_t data_region, uint64_t
+      main_address, uint64_t heap_region, uint64_t memory_in_use, uint64_t
+      threads_in_use) :
+    data_region(data_region),
+    heap_region(heap_region),
+    main_address(main_address),
+    memory_in_use(memory_in_use),
+    text_region(text_region),
+    threads_in_use(threads_in_use) {}
+
+  /**
+   * Internal constructor.
+   */
+  ApplicationInfo(uint64_t id, uint64_t text_region, uint64_t data_region,
+      uint64_t main_address, uint64_t heap_region, uint64_t memory_in_use,
+      uint64_t threads_in_use) :
+    data_region(data_region),
+    heap_region(heap_region),
+    id(id),
+    main_address(main_address),
+    memory_in_use(memory_in_use),
+    text_region(text_region),
+    threads_in_use(threads_in_use) {}
+
+ public:
+  uint64_t data_region;
+  uint64_t heap_region;
+  uint64_t id;
+  uint64_t main_address;
+  uint64_t memory_in_use;
+  uint64_t text_region;
+  uint64_t threads_in_use;
+  static const gallocy::string CREATE_STATEMENT;
+  static const gallocy::string COLUMNS_LIST;
+  static const gallocy::string TABLE_NAME;
+};
+
+
+/**
+ * A model to describe an application's memory.
+ */
+class ApplicationMemory {
+ public:
+  /**
+   * Primary constructor.
+   */
+  ApplicationMemory(bool dirty, uint64_t address, uint64_t coherency_model,
+      uint64_t faults, uint64_t owner, uint64_t permissions, uint64_t size) :
+    dirty(dirty),
+    address(address),
+    coherency_model(coherency_model),
+    faults(faults),
+    owner(owner),
+    permissions(permissions),
+    size(size) {}
+
+  /**
+   * Internal constructor.
+   */
+  ApplicationMemory(bool dirty, uint64_t address, uint64_t coherency_model,
+      uint64_t faults, uint64_t id, uint64_t owner, uint64_t permissions,
+      uint64_t size) :
+    dirty(dirty),
+    address(address),
+    coherency_model(coherency_model),
+    faults(faults),
+    id(id),
+    owner(owner),
+    permissions(permissions),
+    size(size) {}
+
+ public:
+  bool dirty;
+  uint64_t address;
+  uint64_t coherency_model;
+  uint64_t faults;
+  uint64_t id;
+  uint64_t owner;
+  uint64_t permissions;
+  uint64_t size;
+  static const gallocy::string CREATE_STATEMENT;
+  static const gallocy::string COLUMNS_LIST;
+  static const gallocy::string TABLE_NAME;
+};
+
+
 // TODO(sholsapp): Rename to "engine".
 extern Engine e;
 extern Model<PeerInfo> peer_info_table;
+extern Model<ApplicationInfo> application_info_table;
+extern Model<ApplicationMemory> application_memory_table;
 
 #endif  // GALLOCY_MODELS_H_
