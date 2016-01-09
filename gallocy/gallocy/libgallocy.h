@@ -25,66 +25,66 @@ extern SingletonHeapType singletonHeap;
 
 namespace gallocy {
 
-  /**
-   * XXX: I can't figure out why we actually need this class. All if does is
-   * extends HL::SingletonHeap. Without it, the STLAllocator uses below fail.
-   * With it, the STLAllocators work. Here be dragons.
-   */
-  class __STLAllocator: public HL::SingletonHeap {};
+/**
+ * XXX: I can't figure out why we actually need this class. All if does is
+ * extends HL::SingletonHeap. Without it, the STLAllocator uses below fail.
+ * With it, the STLAllocators work. Here be dragons.
+ */
+class __STLAllocator: public HL::SingletonHeap {};
 
-  /**
-   * Use a C++11 alias declaration here, as opposed to inheritance, so that the
-   * the new declaration need not reimplement constructors.
-   */
-  template <typename T>
-  using ContainerAllocator = STLAllocator<T, __STLAllocator>;
+/**
+ * Use a C++11 alias declaration here, as opposed to inheritance, so that the
+ * the new declaration need not reimplement constructors.
+ */
+template <typename T>
+using ContainerAllocator = STLAllocator<T, __STLAllocator>;
 
-  using _string = std::basic_string<char,
-        std::char_traits<char>,
-        ContainerAllocator<char> >;
+using _string = std::basic_string<char,
+      std::char_traits<char>,
+      ContainerAllocator<char> >;
 
-  /**
-   * Define a custom string type.
-   *
-   * We define a custom string type so that we can define various conversion
-   * operators that are commonly used within this library -- this is important
-   * since we have dependencies on code that don't realize we're using a custom
-   * string type.
-   */
-  class string: public _string {
-   public:
-    // Inherit all of the constructors from the base class.
-    using _string::_string;
-    string() {}
-    string(const _string &s) {
-      *this = string(s.c_str());
-    }
-    string(const std::string &s) {
-      *this = string(s.c_str());
-    }
-    operator const char *() { return this->c_str(); }
-    operator const _string () { return this->c_str(); }
-    operator const std::string () { return this->c_str(); }
-  };
+/**
+ * Define a custom string type.
+ *
+ * We define a custom string type so that we can define various conversion
+ * operators that are commonly used within this library -- this is important
+ * since we have dependencies on code that don't realize we're using a custom
+ * string type.
+ */
+class string: public _string {
+ public:
+  // Inherit all of the constructors from the base class.
+  using _string::_string;
+  string() {}
+  string(const _string &s) {
+    *this = string(s.c_str());
+  }
+  string(const std::string &s) {
+    *this = string(s.c_str());
+  }
+  operator const char *() { return this->c_str(); }
+  operator const _string () { return this->c_str(); }
+  operator const std::string () { return this->c_str(); }
+};
 
-  using stringstream = std::basic_stringstream<char,
-        std::char_traits<char>,
-        ContainerAllocator<char> >;
+using stringstream = std::basic_stringstream<char,
+      std::char_traits<char>,
+      ContainerAllocator<char> >;
 
-  template <typename T>
-  using vector = std::vector<T, ContainerAllocator<T> >;
+template <typename T>
+using vector = std::vector<T, ContainerAllocator<T> >;
 
-  template <typename K, typename V>
-  using map = std::map<K, V, std::less<K>, ContainerAllocator<std::pair<K, V> > >;
+template <typename K, typename V>
+using map = std::map<K, V, std::less<K>, ContainerAllocator<std::pair<K, V> > >;
 
-  using json = nlohmann::basic_json<
-    std::map,
-    std::vector,
-    std::string,
-    bool,
-    int64_t,
-    double,
-    ContainerAllocator>;
+using json = nlohmann::basic_json<
+  std::map,
+  std::vector,
+  std::string,
+  bool,
+  int64_t,
+  double,
+  ContainerAllocator>;
 
 }  // namespace gallocy
 
