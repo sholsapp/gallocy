@@ -56,10 +56,10 @@ class string: public _string {
   // Inherit all of the constructors from the base class.
   using _string::_string;
   string() {}
-  string(const _string &s) {
+  string(const _string &s) {  // NOLINT(runtime/explicit)
     *this = string(s.c_str());
   }
-  string(const std::string &s) {
+  string(const std::string &s) {  // NOLINT(runtime/explicit)
     *this = string(s.c_str());
   }
   operator const char *() { return this->c_str(); }
