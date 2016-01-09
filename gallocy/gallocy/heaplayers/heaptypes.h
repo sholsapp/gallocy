@@ -27,6 +27,9 @@ class SourceMmapHeap;
 }
 
 
+/**
+ * Local internal memory.
+ */
 typedef
   HL::StdlibHeap<
     HL::FirstFitHeap<
@@ -40,16 +43,9 @@ typedef
 #include "heaplayers/source.h"
 
 
-typedef
-  HL::DebugHeap<
-    HL::FirstFitHeap<
-      HL::SizeHeap<
-        HL::ZoneHeap<
-          HL::PageTableHeap<HL::SourceMmapHeap>,
-          DEFAULT_ZONE_SZ> > > >
-  MainHeapType;
-
-
+/**
+ * Shared page table.
+ */
 typedef
   HL::LockedHeap<
     HL::SpinLockType,
@@ -70,6 +66,19 @@ typedef
           HL::SourceMmapHeap,
           DEFAULT_ZONE_SZ> > > >
   SqliteAllocatorHeapType;
+
+
+/**
+ * Shared application memory.
+ */
+typedef
+  HL::DebugHeap<
+    HL::FirstFitHeap<
+      HL::SizeHeap<
+        HL::ZoneHeap<
+          HL::PageTableHeap<HL::SourceMmapHeap>,
+          DEFAULT_ZONE_SZ> > > >
+  MainHeapType;
 
 
 #endif  // GALLOCY_HEAPLAYERS_HEAPTYPES_H_
