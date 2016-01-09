@@ -16,46 +16,6 @@ volatile int anyThreadCreated = 0;
 MainHeapType heap;
 
 
-// This is a secondary heap which draws all of its memory from a single pool
-// for structures using STL objects that must be required to use a dedicated
-// memory space. The singleton property is important because of weird STL
-// implementation (i.e., using a singleton pool was the only way I could make
-// this work, else produce memory errors in deep STL codes).
-SingletonHeapType singletonHeap;
-SingletonHeapType HL::SingletonHeap::heap = singletonHeap;
-
-
-/**
- * Internal memory allocators
- *
- * These are used internally to maintain data structures, but could also be
- * referenced using the ``singletonHeap`` object directly.
- */
-extern "C" {
-
-  void *internal_malloc(size_t sz) {
-    return singletonHeap.malloc(sz);
-  }
-
-  void internal_free(void *ptr) {
-    singletonHeap.free(ptr);
-  }
-
-  void* internal_realloc(void* ptr, size_t sz) {
-    return singletonHeap.realloc(ptr, sz);
-  }
-
-  char *internal_strdup(const char *s1) {
-    return singletonHeap.strdup(s1);
-  }
-
-  void *internal_calloc(size_t count, size_t size) {
-    return singletonHeap.calloc(count, size);
-  }
-
-}
-
-
 /**
  * Application memory allocators.
  *
@@ -65,7 +25,7 @@ extern "C" {
 
   void __reset_memory_allocator() {
     heap.__reset();
-    singletonHeap.__reset();
+    local_internal_memory.__reset();
   }
 
   void* custom_malloc(size_t sz) {

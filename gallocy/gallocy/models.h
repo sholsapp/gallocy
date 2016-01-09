@@ -5,9 +5,8 @@
 #include <iostream>
 #include <vector>
 
-#include "external/sqlite3/sqlite3.h"
-#include "gallocy/libgallocy.h"
 #include "gallocy/sqlite.h"
+#include "gallocy/allocators/internal.h"
 
 
 /**

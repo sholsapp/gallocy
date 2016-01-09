@@ -20,9 +20,11 @@ set(CMAKE_CXX_FLAGS
 set(GALLOCY_CORE_SRC
   config.cpp
   diff.cpp
+  internal.cpp
   libgallocy.cpp
   logging.cpp
   models.cpp
+  shared.cpp
   sqlite.cpp
   stringutils.cpp
   external/sqlite3/sqlite3.c)

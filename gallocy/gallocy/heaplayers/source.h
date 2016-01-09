@@ -3,15 +3,6 @@
 
 #include <sys/mman.h>
 
-#include "heaplayers/myhashmap.h"
-#include "heaplayers/spinlock.h"
-#include "heaplayers/lockedheap.h"
-#include "heaplayers/freelistheap.h"
-#include "heaplayers/firstfitheap.h"
-#include "heaplayers/zoneheap.h"
-#include "heaplayers/sizeheap.h"
-#include "heaplayers/heaptypes.h"
-
 #include "gallocy/constants.h"
 
 
@@ -21,7 +12,6 @@
 
 
 namespace HL {
-
 
 class SourceMmapHeap {
  public:
@@ -72,34 +62,6 @@ class SourceMmapHeap {
   void *zone;
   char *next;
   uint64_t bytes_left;
-};
-
-
-class SingletonHeap {
- public:
-  static SingletonHeap& getInstance() {
-    static SingletonHeap instance;
-    return instance;
-  }
-
-  static void* malloc(size_t sz) {
-    return heap.malloc(sz);
-  }
-
-  static void free(void* ptr) {
-    heap.free(ptr);
-  }
-
-  static void __reset() {
-    heap.__reset();
-  }
-
- private:
-  static SingletonHeapType heap;
-  // Need public for STL allocators.
-  // SingletonHeap() {};
-  // SingletonHeap(SingletonHeap const&);
-  // void operator=(SingletonHeap const&);
 };
 
 }  // namespace HL

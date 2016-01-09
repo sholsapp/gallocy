@@ -74,9 +74,9 @@ int diff(
   size_t x_matrix_len = mem2_len + 1;
 
   // Allocate the matrices
-  Element **_matrix = reinterpret_cast<Element** >(singletonHeap.malloc(sizeof(Element *) * y_matrix_len));
+  Element **_matrix = reinterpret_cast<Element** >(internal_malloc(sizeof(Element *) * y_matrix_len));
   for (unsigned int y = 0; y < y_matrix_len; y++) {
-    _matrix[y] = reinterpret_cast<Element *>(singletonHeap.malloc(sizeof(Element) * x_matrix_len));
+    _matrix[y] = reinterpret_cast<Element *>(internal_malloc(sizeof(Element) * x_matrix_len));
     for (unsigned int x = 0; x < x_matrix_len; x++) {
       Element* e = new (reinterpret_cast<void *>(&_matrix[y][x])) Element(x, y);
       e->value = 0;
@@ -128,8 +128,8 @@ int diff(
   }
 
   // Now we can proceed with building the output
-  mem1_alignment = reinterpret_cast<char *>(singletonHeap.malloc(sizeof(char) * longest));
-  mem2_alignment = reinterpret_cast<char *>(singletonHeap.malloc(sizeof(char) * longest));
+  mem1_alignment = reinterpret_cast<char *>(internal_malloc(sizeof(char) * longest));
+  mem2_alignment = reinterpret_cast<char *>(internal_malloc(sizeof(char) * longest));
   memset(mem1_alignment, 0, longest);
   memset(mem2_alignment, 0, longest);
   mem1_alignment[longest] = 0;
@@ -155,9 +155,9 @@ int diff(
 
   // Free the matrices
   for (unsigned int y = 0; y < y_matrix_len; y++) {
-    singletonHeap.free(_matrix[y]);
+    internal_free(_matrix[y]);
   }
-  singletonHeap.free(_matrix);
+  internal_free(_matrix);
 
   return 0;
 }

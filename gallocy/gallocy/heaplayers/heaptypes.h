@@ -6,6 +6,7 @@
 #define DEFAULT_ZONE_SZ 16384 - 16
 
 
+// NOTE: Order matters because forward declarations do not exist.
 #include "heaplayers/addheap.h"
 #include "heaplayers/debugheap.h"
 #include "heaplayers/firstfitheap.h"
@@ -18,54 +19,7 @@
 #include "heaplayers/stdlibheap.h"
 #include "heaplayers/stl.h"
 #include "heaplayers/zoneheap.h"
-
-
-namespace HL {
-
-class SourceMmapHeap;
-
-}
-
-
-/**
- * Local internal memory.
- */
-typedef
-  HL::StdlibHeap<
-    HL::FirstFitHeap<
-      HL::SizeHeap<
-        HL::ZoneHeap<
-          HL::SourceMmapHeap,
-          DEFAULT_ZONE_SZ> > > >
-  SingletonHeapType;
-
-
 #include "heaplayers/source.h"
-
-
-/**
- * Shared page table.
- */
-typedef
-  HL::LockedHeap<
-    HL::SpinLockType,
-    HL::FirstFitHeap<
-      HL::SizeHeap<
-        HL::ZoneHeap<
-          HL::SingletonHeap,
-          DEFAULT_ZONE_SZ> > > >
-  SqlitexSizeHeapType;
-
-
-typedef
-  HL::LockedHeap<
-    HL::SpinLockType,
-    HL::FirstFitHeap<
-      HL::SizeHeap<
-        HL::ZoneHeap<
-          HL::SourceMmapHeap,
-          DEFAULT_ZONE_SZ> > > >
-  SqliteAllocatorHeapType;
 
 
 /**

@@ -1,7 +1,6 @@
-#include "gallocy/config.h"
-
 #include <string>
 
+#include "gallocy/config.h"
 #include "gallocy/stringutils.h"
 
 

@@ -37,8 +37,8 @@ TEST(DiffTests, DiffGeneral_1) {
 
 TEST(DiffTests, DiffGeneral_2) {
   int mem_sz = 1024;
-  char* str1 = (char*) singletonHeap.malloc(sizeof(char) * mem_sz);
-  char* str2 = (char*) singletonHeap.malloc(sizeof(char) * mem_sz);
+  char* str1 = (char*) internal_malloc(sizeof(char) * mem_sz);
+  char* str2 = (char*) internal_malloc(sizeof(char) * mem_sz);
   char* str1align = NULL;
   char* str2align = NULL;
   for (int i = 0; i < mem_sz; i++) {

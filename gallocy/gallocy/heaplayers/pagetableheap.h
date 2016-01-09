@@ -2,6 +2,9 @@
 #define GALLOCY_HEAPLAYERS_PAGETABLEHEAP_H_
 
 
+#include "allocators/internal.h"
+
+
 namespace HL {
 
 template <class Super>
