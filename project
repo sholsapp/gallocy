@@ -10,7 +10,6 @@ sub_help() {
   echo "    build - invoke cmake/make to build the code"
   echo "    clean - clean things up"
   echo "    docker - build a docker"
-  echo "    fuckit - seriously, clean everything up"
   echo "    integration - run the system test suite"
   echo "    stylecheck - run the style checker"
   echo "    test - run the unit test suite"
@@ -30,11 +29,6 @@ sub_build() {
 
 sub_clean() {
   make clean
-}
-
-
-sub_fuckit() {
-  git clean -fxd
 }
 
 

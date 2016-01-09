@@ -33,7 +33,6 @@ Usage: project <subcommand> [options]
 Subcommands:
     build - invoke cmake/make to build the code
     clean - clean things up
-    fuckit - seriously, clean everything up
     integration - run the system test suite
     stylecheck - run the style checker
     test - run the unit test suite
