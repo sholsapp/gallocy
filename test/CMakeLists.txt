@@ -21,7 +21,6 @@ set(test_sources
   test_malloc.cpp
   test_mmult.cpp
   test_models.cpp
-  test_pagetable.cpp
   test_singleton.cpp
   test_stlallocator.cpp
   test_stringutils.cpp
