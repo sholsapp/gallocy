@@ -7,6 +7,7 @@
 
 #include "./restclient.h"
 #include "gallocy/logging.h"
+#include "gallocy/models.h"
 #include "gallocy/stringutils.h"
 
 
@@ -67,6 +68,8 @@ void *GallocyClient::work() {
  * A joining state.
  */
 GallocyClient::State GallocyClient::state_joining() {
+  // TODO(sholsapp): don't bug peers that we're already connected to by cross
+  // references the peer_info_table.
   for (auto peer : config.peers) {
     gallocy::stringstream url;
     gallocy::json json_body;
@@ -90,14 +93,18 @@ GallocyClient::State GallocyClient::state_joining() {
         << rsp.code
         << " - "
         << body)
-      return IDLE;
     } else {
       LOG_INFO(url.str()
         << " - "
         << rsp.code);
     }
   }
-  return JOINING;
+
+  if (peer_info_table.all().size() != config.peers.size()) {
+    return JOINING;
+  } else {
+    return IDLE;
+  }
 }
 
 
