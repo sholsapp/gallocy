@@ -33,3 +33,9 @@ TEST(StringutilsTests, Trim) {
   ASSERT_EQ(utils::trim(v[2]), "c");
   ASSERT_EQ(utils::trim(v[3]), "d");
 }
+
+
+TEST(StringutilsTests, ParseInternetAddress) {
+  ASSERT_EQ(utils::parse_internet_address(""), 0);
+  ASSERT_EQ(utils::parse_internet_address("127.0.0.1"), 2130706433);
+}
