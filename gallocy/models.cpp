@@ -1,24 +1,26 @@
 #include "gallocy/models.h"
 
 
+// TODO(sholsapp): Rename this to "engine" to be clearer outside of this
+// module -- it's polluting the code.
 Engine e;
 Model<PeerInfo> peer_info_table(&e);
 
 
-void Engine::execute(const gallocy::string &sql) {
+int Engine::execute(const gallocy::string &sql) {
   int rc;
   sqlite3_stmt* stmt;
   rc = sqlite3_prepare_v2(db, sql.c_str(), sql.size(), &stmt, NULL);
   if (rc != SQLITE_OK) {
-    std::cout << "Failed to prepare execute" << std::endl;
-     return;
+    std::cout << "Failed to prepare query: " << sql.c_str() << std::endl;
+    return -1;
   }
   if (sqlite3_step(stmt) != SQLITE_DONE) {
     std::cout << "Failed to execute query: " << sql << std::endl;
-    return;
+    return -1;
   }
   sqlite3_finalize(stmt);
-  return;
+  return 1;
 }
 
 

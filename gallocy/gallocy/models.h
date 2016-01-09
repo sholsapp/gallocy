@@ -29,7 +29,7 @@ class Engine {
       std::cout << "Failed to create database engine!" << std::endl;
     }
   }
-  void execute(const gallocy::string &sql);
+  int execute(const gallocy::string &sql);
 
  public:
   sqlite3 *db;
@@ -112,6 +112,7 @@ class PeerInfo {
 };
 
 
+// TODO(sholsapp): Rename to "engine".
 extern Engine e;
 extern Model<PeerInfo> peer_info_table;
 

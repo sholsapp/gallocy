@@ -63,11 +63,17 @@ void *GallocyClient::work() {
 }
 
 
+/**
+ * A joining state.
+ */
 GallocyClient::State GallocyClient::state_joining() {
   for (auto peer : config.peers) {
     gallocy::stringstream url;
     gallocy::json json_body;
-    json_body["ip_address"] = config.address;
+    // TODO(sholsapp): This isn't implicitly converting to a
+    // gallocy::json::string_t? Without this c_str(), the JSON payload turns
+    // into an array of characters.
+    json_body["ip_address"] = config.address.c_str();
     json_body["is_master"] = config.master;
     url << "http://" << peer << ":" << config.port << "/join";
 
@@ -84,17 +90,20 @@ GallocyClient::State GallocyClient::state_joining() {
         << rsp.code
         << " - "
         << body)
+      return IDLE;
     } else {
       LOG_INFO(url.str()
         << " - "
         << rsp.code);
     }
   }
-
   return JOINING;
 }
 
 
+/**
+ * An idle state.
+ */
 GallocyClient::State GallocyClient::state_idle() {
   std::cout << "Idle..." << std::endl;
   return IDLE;

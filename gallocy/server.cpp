@@ -1,3 +1,4 @@
+#include <ctime>
 #include <functional>
 #include <map>
 #include <string>
@@ -5,9 +6,11 @@
 
 #include "gallocy/libgallocy.h"
 #include "gallocy/logging.h"
+#include "gallocy/models.h"
 #include "gallocy/request.h"
 #include "gallocy/server.h"
 #include "gallocy/stringutils.h"
+
 
 /**
  * Die.
@@ -31,12 +34,23 @@ Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
   response->status_code = 200;
   response->headers["Server"] = "Gallocy-Httpd";
   response->headers["Content-Type"] = "application/json";
+
   gallocy::json j = {
     {"status", "GOOD" },
     {"master", is_master},
+    {"peers", { } },
   };
-  // TODO(sholsapp): There is no known conversion from std::string to
-  // gallocy::string... we should fix this.
+
+  for (auto p : peer_info_table.all()) {
+    gallocy::json peer_info = {
+      {"id", p.id},
+      {"ip_address", p.ip_address},
+      {"first_seen", p.first_seen},
+      {"last_seen", p.last_seen},
+    };
+    j["peers"].push_back(peer_info);
+  }
+
   response->body = j.dump();
 
   args->~RouteArguments();
@@ -55,13 +69,34 @@ Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
 Response *GallocyServer::route_join(RouteArguments *args, Request *request) {
   Response *response = new (internal_malloc(sizeof(Response))) Response();
   // TODO(sholsapp): Setup the joining logic here.
-  response->status_code = 200;
+
+  gallocy::json peer_info = request->get_json();
+
+  std::cout << peer_info << std::endl;
+
+  // TODO(sholsapp): We need a serialization framework so that we're not doing
+  // random JSON building/parsing. Maybe the models should have a codec build
+  // into them?
+  int ret = e.execute(
+    PeerInfo(
+      utils::parse_internet_address(peer_info["ip_address"]),
+      std::time(nullptr),
+      std::time(nullptr),
+      static_cast<gallocy::json::boolean_t>(peer_info["is_master"])).insert());
+
   response->headers["Server"] = "Gallocy-Httpd";
   response->headers["Content-Type"] = "application/json";
-  gallocy::json j = {
-    {"status", "JOINED" },
-  };
-  response->body = j.dump();
+
+  if (ret) {
+    response->status_code = 200;
+    gallocy::json j = {
+      {"status", "JOINED" },
+    };
+    response->body = j.dump();
+  } else {
+    response->status_code = 500;
+    response->body = "";
+  }
 
   args->~RouteArguments();
   internal_free(args);
