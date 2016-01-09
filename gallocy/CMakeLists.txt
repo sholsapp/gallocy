@@ -23,7 +23,6 @@ set(GALLOCY_CORE_SRC
   libgallocy.cpp
   logging.cpp
   models.cpp
-  pagetable.cpp
   sqlite.cpp
   stringutils.cpp
   external/sqlite3/sqlite3.c)
