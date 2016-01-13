@@ -68,22 +68,24 @@ operations that can be applied to it to transition itself between states. Some
 of these operations include:
 
 - allocate memory
-- deallocate memory
-- grant lease on memory
-- revoke lease on memory
+- lease memory
 
 Each of these operations happen over a period of time forming a *log*. This
-*log* must be kept consistent between companies. A hypothetical *log* might
-look something like the following:
+*log* must be kept consistent between companies. A hypothetical *log* snippet
+might look something like the following:
 
-> $ S1(Foo Corp.) allocate 0x1000
-> $ S1(Foo Corp.) allocate 0x2000
-> $ S2(Bar Corp.) leases 0x1000
-> $ S2(Bar Corp.) revoke 0x1000
-> $ S1(Foo Corp.) leases 0x1000
-> $ S1(Foo Corp.) leases 0x2000
+```
+...
+S1 allocate 0x1000
+S1 allocate 0x2000
+S2 allocate 0x3000
+```
 
-### Application allocates memory
+Such a log ultimately corresponds to a data structure, the *page table*, that
+allows us to get and set information about application memory in a way that is
+consistent between all owners in a company..
+
+##### allocate memory
 
 When an application calls malloc, the application heap receives the call. From
 the top down, each heap layer of the application heap will attempt to service
@@ -129,7 +131,7 @@ completed negotiations, the new lease metadata is committed into the page table
 and the application's call to malloc returns.
 
 
-### Application faults on memory
+##### lease memory
 
 When an application accesses a memory address that it does not have access to,
 a SIGSEGV signal is raised in the thread that caused the fault to occur.
