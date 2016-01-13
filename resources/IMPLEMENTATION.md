@@ -2,7 +2,7 @@
 
 ## implementation
 
-### owners, companies, and leases
+### owners and companies
 
 Every page of memory in the system has an owner, a company, and one or more
 leases.
@@ -31,54 +31,64 @@ respective company).
 #### companies
 
 A company is a set of owners that act as managers of the application memory
-page. This company is responsible for maintaining a consistent version of
-metadata, granting and revoking permissions, ensuring redundancy, servicing
-requests, and any other responsibilities that might relate to a page of memory.
-A company can grow and shrink depending on the number of owners available in
-the system. Companies are calculated using the size of the global heap and the
-number of potential owners (i.e., nodes)  available in the system.
+page. A company typically manages a range of memory, not just a single memory
+page. A company can be thought of as a shard in that a company will only manage
+an agreed upon region of memory, thereby limiting the amount of overall work
+that any single company is accountable for.
 
-#### leases
+A company is responsible for maintaining a consistent version of metadata,
+granting and revoking permissions, ensuring redundancy, servicing requests, and
+any other responsibilities that might relate to a page of memory.
 
-A lease is a temporary grant from a company to read or write a part of
-application memory that the company owns. Leases are granted from individual
-owners. A lease has a set of terms that must be followed until the lease
-expires or is forfeited.
+A company is run by a single owner at a time. The owner that is running a
+company at some given time is referred to as the leader. The leader of a
+company is the same leader implementation referred to in the
+[Raft](https://raft.github.io/) consensus algorithm. A company can grow and
+shrink depending on the number of owners available in the system.  Companies
+are calculated using the size of the global heap and the number of potential
+owners (i.e., nodes)  available in the system.
 
-#### interactions as a distributed log
+### distributed state machine
 
-Owners, companies, and leases form a distributed state machine that can be
-maintained in as  distributed log.
+All members of the cluster are custodians of a distributed state machine,
+hereby referred to as the *page table*.
 
-
-### Page table
-
-The page table is a data structure that can be used to reason about the memory
-that exists in an application, the memory permissions, and more. This data
-structure is maintained on each node in an in-memory SQLite database that
-utilizes memory allocated by the shared page table allocator.
-
-The page table is a SQLite database table that has columns for the following
-pieces of information::
-
-  - The address of the page of memory.
-  - The total number of faults.
-  - The owner set of the page.
-  - The lease holder of the page.
-  - The current memory protections.
+The *page table* is a data structure that can be used to reason about the
+memory that exists in the application. This data structure is maintained on
+each node in an in-memory SQLite database.
 
 It is important to note that the page table on any specific host *only tracks
 the memory that is or was available on that host*. Thus, the page table only
-exists in parts on each node. To assemble the entire address space of the
-memory region maintained by the system, one must employ a scatter/gather
-operation to query at least one owner of each owner set that exists.
+exists in parts on each node.
+
+#### operations
+
+The *page table* is a distributed state machine, and as such, supports a set of
+operations that can be applied to it to transition itself between states. Some
+of these operations include:
+
+- allocate memory
+- deallocate memory
+- grant lease on memory
+- revoke lease on memory
+
+Each of these operations happen over a period of time forming a *log*. This
+*log* must be kept consistent between companies. A hypothetical *log* might
+look something like the following:
+
+> $ S1(Foo Corp.) allocate 0x1000
+> $ S1(Foo Corp.) allocate 0x2000
+> $ S2(Bar Corp.) leases 0x1000
+> $ S2(Bar Corp.) revoke 0x1000
+> $ S1(Foo Corp.) leases 0x1000
+> $ S1(Foo Corp.) leases 0x2000
 
 ### Application allocates memory
 
 When an application calls malloc, the application heap receives the call. From
 the top down, each heap layer of the application heap will attempt to service
 the call. A high level heap layer may successfully service the call if, for
-example, it was maintaining a free list of memory.. Once a layer successfully
+example, it was maintaining a free list of memory. Once a layer successfully
 services the call, the application's call to malloc returns. If the page table
 heap layer attempts to service the call, the following algorithm is used.
 
