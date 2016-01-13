@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <pthread.h>
 
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
 
 #include "./restclient.h"
@@ -46,6 +48,7 @@ void *GallocyClient::handle_work(void *arg) {
  * The work finite state machine.
  */
 void *GallocyClient::work() {
+  std::srand(std::time(0));
   while (alive) {
     switch (state) {
       case JOINING:
@@ -58,7 +61,7 @@ void *GallocyClient::work() {
         LOG_ERROR("Client reached default handler.");
         break;
     }
-    sleep(5);
+    sleep(sleep_duration - std::rand() % sleep_duration);
   }
   return nullptr;
 }
