@@ -21,8 +21,5 @@ VOLUME ["/home/gallocy/etc"]
 
 EXPOSE 8080
 
-# Execute a shell command when starting an instance because we need time to
-# configure the network interfaces after we start an instance.
-#CMD ["/bin/bash"]
-
-CMD ["/home/gallocy/bin/server", "/home/gallocy/etc/config.json"]
+# Disable Address Space Layout Randomisation (ASLR) before starting the DSM.
+CMD ["setarch", "x86_64", "-R", "/home/gallocy/bin/server", "/home/gallocy/etc/config.json"]
