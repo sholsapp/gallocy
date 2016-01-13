@@ -1,16 +1,6 @@
 #ifndef GALLOCY_LIBGALLOCY_H_
 #define GALLOCY_LIBGALLOCY_H_
 
-#include <functional>
-#include <map>
-#include <sstream>
-#include <streambuf>
-#include <string>
-#include <utility>
-#include <vector>
-
-#include "external/json.hpp"
-#include "heaplayers/firstfitheap.h"
 #include "heaplayers/heaptypes.h"
 #include "allocators/internal.h"
 #include "allocators/shared.h"

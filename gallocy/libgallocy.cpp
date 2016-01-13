@@ -9,7 +9,7 @@
 
 // When we start handling multithreaded applications, this must be set to `1`
 // when a thread is created. This is for the HL::SpinLockType.
-volatile int anyThreadCreated = 0;
+volatile int anyThreadCreated = 1;
 
 
 // This is the main heap that we expose to the application.

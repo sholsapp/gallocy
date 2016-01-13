@@ -39,6 +39,10 @@ Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
     {"status", "GOOD" },
     {"master", is_master},
     {"peers", { } },
+    {"diagnostics", {
+      { "local_internal_memory", reinterpret_cast<uint64_t>(&local_internal_memory) },
+      { "shared_page_table", reinterpret_cast<uint64_t>(&shared_page_table) },
+    } },
   };
 
   for (auto p : peer_info_table.all()) {

@@ -1,7 +1,7 @@
 #ifndef GALLOCY_HEAPLAYERS_DEBUGHEAP_H_
 #define GALLOCY_HEAPLAYERS_DEBUGHEAP_H_
 
-#include <assert.h>
+#include <stdint.h>
 
 
 // XXX: Some code in this file is disabled because it opaquely changes the size
