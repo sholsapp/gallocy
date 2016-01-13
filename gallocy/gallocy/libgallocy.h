@@ -1,7 +1,7 @@
 #ifndef GALLOCY_LIBGALLOCY_H_
 #define GALLOCY_LIBGALLOCY_H_
 
-#include "heaplayers/heaptypes.h"
+#include "heaplayers/application.h"
 #include "allocators/internal.h"
 #include "allocators/shared.h"
 
@@ -9,7 +9,7 @@
 extern volatile int anyThreadCreated;
 
 
-extern MainHeapType heap;
+extern ApplicationHeapType heap;
 
 
 extern "C" {

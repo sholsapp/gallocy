@@ -3,28 +3,28 @@
 #include <cstring>
 #include <string>
 
+#include "gallocy/allocators/shared.h"
+#include "gallocy/logging.h"
 #include "gallocy/sqlite.h"
-#include "allocators/shared.h"
 
 
 sqlite3_mem_methods my_mem = {
-  &xMalloc,
-  &xFree,
-  &xRealloc,
-  &xSize,
-  &xRoundup,
-  &xInit,
-  &xShutdown,
+  &sqlite_malloc,
+  &sqlite_free,
+  &sqlite_realloc,
+  &sqlite_size,
+  &sqlite_roundup,
+  &sqlite_init,
+  &sqlite_shutdown,
   0
 };
 
 
 void init_sqlite_memory() {
   if (sqlite3_config(SQLITE_CONFIG_MALLOC, &my_mem) != SQLITE_OK) {
-    fprintf(stderr, "Failed to set custom sqlite memory allocator!\n");
-    return;
+    LOG_ERROR("Failed to set custom sqlite memory allocator!");
+    abort();
   }
-  fprintf(stderr, "Successfully set custom sqlite memory allocator!\n");
   return;
 }
 

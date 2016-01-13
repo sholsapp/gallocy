@@ -3,6 +3,8 @@
 
 
 #include "allocators/internal.h"
+#include "gallocy/logging.h"
+#include "gallocy/models.h"
 
 
 namespace HL {
@@ -13,6 +15,8 @@ class PageTableHeap : public Super {
   inline void *malloc(size_t sz) {
     void *ptr;
     ptr = Super::malloc(sz);
+    gallocy::stringstream test;
+    LOG_DEBUG("Allocating " << sz << " byte(s) at " << ptr);
     return ptr;
   }
 

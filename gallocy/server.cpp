@@ -78,8 +78,6 @@ Response *GallocyServer::route_join(RouteArguments *args, Request *request) {
 
   gallocy::json peer_info = request->get_json();
 
-  std::cout << peer_info << std::endl;
-
   // TODO(sholsapp): We need a serialization framework so that we're not doing
   // random JSON building/parsing. Maybe the models should have a codec build
   // into them?

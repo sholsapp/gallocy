@@ -13,7 +13,7 @@ volatile int anyThreadCreated = 1;
 
 
 // This is the main heap that we expose to the application.
-MainHeapType heap;
+ApplicationHeapType heap;
 
 
 /**

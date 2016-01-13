@@ -55,7 +55,7 @@ void *GallocyClient::work() {
         state = state_idle();
         break;
       default:
-        std::cout << "Default..." << std::endl;
+        LOG_ERROR("Client reached default handler.");
         break;
     }
     sleep(5);
@@ -92,7 +92,7 @@ GallocyClient::State GallocyClient::state_joining() {
         << " - "
         << rsp.code
         << " - "
-        << body)
+        << body);
     } else {
       LOG_INFO(url.str()
         << " - "
@@ -112,6 +112,6 @@ GallocyClient::State GallocyClient::state_joining() {
  * An idle state.
  */
 GallocyClient::State GallocyClient::state_idle() {
-  std::cout << "Idle..." << std::endl;
+  LOG_INFO("Idle...");
   return IDLE;
 }

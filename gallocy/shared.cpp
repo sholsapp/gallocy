@@ -3,16 +3,13 @@
 #include <cstdlib>
 #include <map>
 
-#include "allocators/shared.h"
-#include "heaplayers/stl.h"
+#include "gallocy/allocators/shared.h"
+#include "gallocy/heaplayers/stl.h"
+#include "gallocy/logging.h"
 
 HL::SingletonSharedHeapType shared_page_table_heap;
 HL::SingletonSharedHeapType HL::SharedPageTableHeap::heap = shared_page_table_heap;
 HL::SharedPageTableHeap shared_page_table;
-
-
-// TODO(sholsapp): This module needs some names cleaning up to match style
-// with the rest of the modules.
 
 typedef
   std::map<void *, int,
@@ -23,7 +20,7 @@ typedef
 xSizeMapType2 xSizeMap;
 
 
-void* xMalloc(int sz) {
+void* sqlite_malloc(int sz) {
   if (sz == 0) {
     return NULL;
   }
@@ -33,14 +30,14 @@ void* xMalloc(int sz) {
 }
 
 
-void xFree(void* ptr) {
+void sqlite_free(void* ptr) {
   xSizeMap.erase(ptr);
   shared_page_table.free(ptr);
   return;
 }
 
 
-void* xRealloc(void* ptr, int sz) {
+void* sqlite_realloc(void* ptr, int sz) {
   if (ptr == NULL) {
     return shared_page_table.malloc(sz);
   }
@@ -55,24 +52,24 @@ void* xRealloc(void* ptr, int sz) {
 }
 
 
-int xSize(void* ptr) {
+int sqlite_size(void* ptr) {
   int sz = xSizeMap[ptr];
   return sz;
 }
 
 
-int xRoundup(int sz) {
+int sqlite_roundup(int sz) {
   return sz;
 }
 
 
-int xInit(void* ptr) {
-  fprintf(stderr, "xInit\n");
+int sqlite_init(void* ptr) {
+  LOG_DEBUG("Initialized SQLite database!");
   return 0;
 }
 
 
-void xShutdown(void* ptr) {
-  fprintf(stderr, "xShutdown\n");
+void sqlite_shutdown(void* ptr) {
+  LOG_DEBUG("Shutting down SQLite database!");
   return;
 }

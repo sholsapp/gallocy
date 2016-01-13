@@ -1,15 +1,16 @@
-#include "gallocy/logging.h"
-
 #include <time.h>
 
 #include <iostream>
 #include <vector>
 
+#include "gallocy/allocators/internal.h"
+#include "gallocy/logging.h"
 #include "gallocy/stringutils.h"
 
 
-void _log(const char *module, const char *level, const char *message) {
+void __log(const char *module, const char *level, const char *raw_message) {
   gallocy::vector<gallocy::string> path_parts;
+  gallocy::string message = raw_message;
   utils::split(module, '/', path_parts);
 
   time_t t = std::time(0);
@@ -27,6 +28,6 @@ void _log(const char *module, const char *level, const char *message) {
             << " - "
             << utils::trim(path_parts.at(path_parts.size() - 1))
             << " - "
-            << message
+            << utils::trim(message)
             << std::endl;
 }

@@ -1,11 +1,11 @@
-#include "heaplayers/shared.h"
+#include "gallocy/heaplayers/shared.h"
 
 extern HL::SharedPageTableHeap shared_page_table;
 
-void* xMalloc(int sz);
-void xFree(void* ptr);
-void* xRealloc(void* ptr, int sz);
-int xSize(void* ptr);
-int xRoundup(int sz);
-int xInit(void* ptr);
-void xShutdown(void* ptr);
+void* sqlite_malloc(int sz);
+void sqlite_free(void* ptr);
+void* sqlite_realloc(void* ptr, int sz);
+int sqlite_size(void* ptr);
+int sqlite_roundup(int sz);
+int sqlite_init(void* ptr);
+void sqlite_shutdown(void* ptr);

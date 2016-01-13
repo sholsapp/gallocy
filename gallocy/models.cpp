@@ -1,4 +1,5 @@
 #include "gallocy/models.h"
+#include "gallocy/logging.h"
 
 
 // TODO(sholsapp): Rename this to "engine" to be clearer outside of this
@@ -12,11 +13,11 @@ int Engine::execute(const gallocy::string &sql) {
   sqlite3_stmt* stmt;
   rc = sqlite3_prepare_v2(db, sql.c_str(), sql.size(), &stmt, NULL);
   if (rc != SQLITE_OK) {
-    std::cout << "Failed to prepare query: " << sql.c_str() << std::endl;
+    LOG_WARNING("Failed to prepare query: " << sql.c_str() << std::endl);
     return -1;
   }
   if (sqlite3_step(stmt) != SQLITE_DONE) {
-    std::cout << "Failed to execute query: " << sql << std::endl;
+    LOG_WARNING("Failed to execute query: " << sql << std::endl);
     return -1;
   }
   sqlite3_finalize(stmt);

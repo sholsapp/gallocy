@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "gallocy/libgallocy.h"
+#include "allocators/internal.h"
 
 
 namespace utils {
