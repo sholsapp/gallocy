@@ -40,8 +40,10 @@ Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
     {"master", is_master},
     {"peers", { } },
     {"diagnostics", {
+      // TODO(sholsapp): These names suck.. we should indicate that they are allocators.
       { "local_internal_memory", reinterpret_cast<uint64_t>(&local_internal_memory) },
       { "shared_page_table", reinterpret_cast<uint64_t>(&shared_page_table) },
+      // TODO(sholsapp): Add the main application allocator here.
     } },
   };
 

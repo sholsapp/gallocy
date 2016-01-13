@@ -1,10 +1,25 @@
 #ifndef GALLOCY_HEAPLAYERS_INTERNAL_H_
 #define GALLOCY_HEAPLAYERS_INTERNAL_H_
 
-#include "heaplayers/singleton.h"
+#include "heaplayers/firstfitheap.h"
+#include "heaplayers/sizeheap.h"
+#include "heaplayers/source.h"
+#include "heaplayers/stdlibheap.h"
+#include "heaplayers/zoneheap.h"
 
+// TODO(sholsapp): This is defined in several places.
+#define DEFAULT_ZONE_SZ 16384 - 16
 
 namespace HL {
+
+typedef
+  HL::StdlibHeap<
+    HL::FirstFitHeap<
+      HL::SizeHeap<
+        HL::ZoneHeap<
+          HL::SourceMmapHeap<PURPOSE_INTERNAL_HEAP>,
+          DEFAULT_ZONE_SZ> > > >
+  SingletonInternalHeapType;
 
 class InternalMemoryHeap {
  public:
@@ -33,12 +48,16 @@ class InternalMemoryHeap {
     heap.free(ptr);
   }
 
+  inline size_t getSize(void *ptr) {
+    return heap.getSize(ptr);
+  }
+
   static void __reset() {
     heap.__reset();
   }
 
  private:
-  static SingletonHeapType heap;
+  static SingletonInternalHeapType heap;
   // Need public for STL allocators.
   // InternalMemoryHeap() {};
   // InternalMemoryHeap(InternalMemoryHeap const&);

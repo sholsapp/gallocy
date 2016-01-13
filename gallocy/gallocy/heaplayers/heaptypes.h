@@ -23,7 +23,7 @@ typedef
     HL::FirstFitHeap<
       HL::SizeHeap<
         HL::ZoneHeap<
-          HL::PageTableHeap<HL::SourceMmapHeap>,
+          HL::PageTableHeap<HL::SourceMmapHeap<PURPOSE_APPLICATION_HEAP> >,
           DEFAULT_ZONE_SZ> > > >
   MainHeapType;
 

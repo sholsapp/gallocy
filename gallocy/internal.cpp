@@ -18,8 +18,8 @@
  *   - not included in the shared page table
  *   - not shared with any other process running the shared application
  */
-HL::SingletonHeapType local_internal_memory_heap;
-HL::SingletonHeapType HL::InternalMemoryHeap::heap = local_internal_memory_heap;
+HL::SingletonInternalHeapType local_internal_memory_heap;
+HL::SingletonInternalHeapType HL::InternalMemoryHeap::heap = local_internal_memory_heap;
 HL::InternalMemoryHeap local_internal_memory;
 
 /**

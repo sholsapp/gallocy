@@ -12,15 +12,6 @@
 
 namespace HL {
 
-typedef
-  HL::StdlibHeap<
-    HL::FirstFitHeap<
-      HL::SizeHeap<
-        HL::ZoneHeap<
-          HL::SourceMmapHeap,
-          DEFAULT_ZONE_SZ> > > >
-  SingletonHeapType;
-
 template <typename Heap>
 class SingletonHeap {
  public:

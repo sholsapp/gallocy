@@ -4,20 +4,15 @@
 #include <map>
 
 #include "allocators/shared.h"
-#include "heaplayers/firstfitheap.h"
-#include "heaplayers/lockedheap.h"
-#include "heaplayers/sizeheap.h"
-#include "heaplayers/source.h"
-#include "heaplayers/spinlock.h"
-#include "heaplayers/stdlibheap.h"
 #include "heaplayers/stl.h"
-#include "heaplayers/zoneheap.h"
 
-
-HL::SingletonHeapType shared_page_table_heap;
-HL::SingletonHeapType HL::SharedPageTableHeap::heap = shared_page_table_heap;
+HL::SingletonSharedHeapType shared_page_table_heap;
+HL::SingletonSharedHeapType HL::SharedPageTableHeap::heap = shared_page_table_heap;
 HL::SharedPageTableHeap shared_page_table;
 
+
+// TODO(sholsapp): This module needs some names cleaning up to match style
+// with the rest of the modules.
 
 typedef
   std::map<void *, int,
@@ -25,27 +20,14 @@ typedef
   STLAllocator<std::pair<void *, int>, HL::SharedPageTableHeap> >
     xSizeMapType2;
 
-
-typedef
-  HL::LockedHeap<
-    HL::SpinLockType,
-    HL::FirstFitHeap<
-      HL::SizeHeap<
-        HL::ZoneHeap<
-          HL::SourceMmapHeap,
-          DEFAULT_ZONE_SZ> > > >
-  SqliteAllocatorHeapType2;
-
-
 xSizeMapType2 xSizeMap;
-SqliteAllocatorHeapType2 sqliteHeap;
 
 
 void* xMalloc(int sz) {
   if (sz == 0) {
     return NULL;
   }
-  void* ptr = sqliteHeap.malloc(sz);
+  void* ptr = shared_page_table.malloc(sz);
   xSizeMap.insert(std::pair<void*, int>(ptr, sz));
   return ptr;
 }
@@ -53,20 +35,20 @@ void* xMalloc(int sz) {
 
 void xFree(void* ptr) {
   xSizeMap.erase(ptr);
-  sqliteHeap.free(ptr);
+  shared_page_table.free(ptr);
   return;
 }
 
 
 void* xRealloc(void* ptr, int sz) {
   if (ptr == NULL) {
-    return sqliteHeap.malloc(sz);
+    return shared_page_table.malloc(sz);
   }
-  size_t min_size = sqliteHeap.getSize(ptr);
-  void* buf = sqliteHeap.malloc(sz);
+  size_t min_size = shared_page_table.getSize(ptr);
+  void* buf = shared_page_table.malloc(sz);
   if (buf != NULL) {
     memcpy(buf, ptr, min_size);
-    sqliteHeap.free(ptr);
+    shared_page_table.free(ptr);
   }
   xSizeMap.insert(std::pair<void*, int>(buf, sz));
   return buf;
