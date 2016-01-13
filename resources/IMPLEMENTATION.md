@@ -14,7 +14,7 @@ responsible for servicing requests from clients. When servicing requests that
 require coordination, it is the owner's responsibility to get consensus in such
 a way that exhibits [Byzantine fault
 tolerance](https://en.wikipedia.org/wiki/Byzantine_fault_tolerance) and
-[Paxos-like](https://en.wikipedia.org/wiki/Paxos_(computer_science) consensus,
+[Paxos-like](https://en.wikipedia.org/wiki/Paxos_(computer_science)) consensus,
 hereby referred to simply as *consensus*. This system makes use of the
 [Raft](https://raft.github.io/) consensus algorithm to maintain the shared data
 structure due to its simplified design and implementation compared to
