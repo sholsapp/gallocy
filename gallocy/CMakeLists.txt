@@ -31,7 +31,7 @@ set(GALLOCY_CORE_SRC
   threads.cpp
   external/sqlite3/sqlite3.c)
 add_library(gallocy-core SHARED ${GALLOCY_CORE_SRC})
-target_link_libraries(gallocy-core gallocy-runtime pthread)
+target_link_libraries(gallocy-core gallocy-runtime pthread dl)
 install(TARGETS gallocy-core DESTINATION lib)
 
 # The gallocy-wrapper build

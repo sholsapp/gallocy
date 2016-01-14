@@ -65,10 +65,17 @@ void* allocate_thread_stack(void* location, size_t stack_size) {
 /**
  * A custom implementation of pthread_create.
  */
+#if __linux__
 extern "C" int pthread_create(pthread_t *thread,
     const pthread_attr_t *attr,
     void *(*start_routine)(void *),
     void *arg) throw() {
+#elif __APPLE__
+extern "C" int pthread_create(pthread_t *thread,
+    const pthread_attr_t *attr,
+    void *(*start_routine)(void *),
+    void *arg) {
+#endif
   pthread_create_function __library_pthread_create =
     reinterpret_cast<pthread_create_function>
     (reinterpret_cast<uint64_t *>(dlsym(RTLD_NEXT, "pthread_create")));

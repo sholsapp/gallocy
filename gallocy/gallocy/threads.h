@@ -48,10 +48,17 @@ typedef
 // pthread replacements for external applications
 //
 
+#if __linux__
 extern "C" int pthread_create(pthread_t *thread,
   const pthread_attr_t *attr,
   void *(*start_routine)(void *),
   void *arg) throw();
+#elif __APPLE__
+extern "C" int pthread_create(pthread_t *thread,
+  const pthread_attr_t *attr,
+  void *(*start_routine)(void *),
+  void *arg);
+#endif
 
 extern "C" int pthread_join(pthread_t thread, void **value_ptr);
 
