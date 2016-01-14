@@ -22,7 +22,10 @@ void __log(const char *module, const char *level, const char *raw_message) {
 
   gallocy::string _utc_now = utc_now;
 
-  std::cout << "[" << level << "]"
+  // TODO(sholsapp): Implement coloring using the codes at
+  // http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/x329.html and add macros to
+  // make this easier elsewhere.
+  std::cout << "[" << "\033[0;33m" << level << "\033[0m" << "]"
             << " - "
             << utils::trim(_utc_now)
             << " - "

@@ -1,8 +1,16 @@
 #include "gallocy/threads.h"
 
+#include <dlfcn.h>
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+
+#include "gallocy/logging.h"
+
+
+extern "C" pthread_create_function __gallocy_pthread_create = nullptr;
+extern "C" pthread_join_function __gallocy_pthread_join = nullptr;
 
 
 /**
@@ -51,4 +59,36 @@ void* allocate_thread_stack(void* location, size_t stack_size) {
   // Even though stacks grow downward, return the lowest addressable byte
   // because that's what the pthread API uses.
   return reinterpret_cast<void *>(raw + PAGE_SZ);
+}
+
+
+/**
+ * A custom implementation of pthread_create.
+ */
+extern "C" int pthread_create(pthread_t *thread,
+    const pthread_attr_t *attr,
+    void *(*start_routine)(void *),
+    void *arg) throw() {
+  pthread_create_function __library_pthread_create =
+    reinterpret_cast<pthread_create_function>
+    (reinterpret_cast<uint64_t *>(dlsym(RTLD_NEXT, "pthread_create")));
+  LOG_DEBUG("Using intercepted pthread_create (wrapping "
+      << &__library_pthread_create
+      << " with "
+      << reinterpret_cast<uint64_t *>(pthread_create)
+      << ")");
+  return __library_pthread_create(thread, attr, start_routine, arg);
+}
+
+
+extern "C" int pthread_join(pthread_t thread, void **value_ptr) {
+  pthread_join_function __library_pthread_join =
+    reinterpret_cast<pthread_join_function>
+    (reinterpret_cast<uint64_t *>(dlsym(RTLD_NEXT, "pthread_join")));
+  LOG_DEBUG("Using intercepted pthread_join (wrapping "
+      << &__library_pthread_join
+      << " with "
+      << reinterpret_cast<uint64_t *>(pthread_join)
+      << ")");
+  return __library_pthread_join(thread, value_ptr);
 }

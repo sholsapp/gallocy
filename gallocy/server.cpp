@@ -4,12 +4,13 @@
 #include <string>
 #include <utility>
 
-#include "gallocy/libgallocy.h"
+//#include "gallocy/libgallocy.h"
 #include "gallocy/logging.h"
 #include "gallocy/models.h"
 #include "gallocy/request.h"
 #include "gallocy/server.h"
 #include "gallocy/stringutils.h"
+#include "gallocy/threads.h"
 
 
 /**
@@ -168,13 +169,13 @@ void GallocyServer::start() {
     ctx->client_socket = client_sock;
     ctx->client_name = client_name;
 
-    if (pthread_create(&newthread, NULL, handle_entry, reinterpret_cast<void *>(ctx)) != 0) {
+    if (__gallocy_pthread_create(&newthread, NULL, handle_entry, reinterpret_cast<void *>(ctx)) != 0) {
       perror("pthread_create1");
     }
 
     // TODO(sholsapp): This shouldn't block, and we shouldn't just try to
     // join this thread.
-    if (pthread_join(newthread, nullptr)) {
+    if (__gallocy_pthread_join(newthread, nullptr)) {
       perror("pthread_join1");
     }
   }

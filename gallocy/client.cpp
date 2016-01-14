@@ -11,13 +11,14 @@
 #include "gallocy/logging.h"
 #include "gallocy/models.h"
 #include "gallocy/stringutils.h"
+#include "gallocy/threads.h"
 
 
 /**
  * Start the client thread.
  */
 void GallocyClient::start() {
-  if (pthread_create(&thread, nullptr, handle_work, reinterpret_cast<void *>(this))) {
+  if (__gallocy_pthread_create(&thread, nullptr, handle_work, reinterpret_cast<void *>(this))) {
     perror("pthread_create");
   }
 }
@@ -28,7 +29,7 @@ void GallocyClient::start() {
  */
 void GallocyClient::stop() {
   alive = false;
-  if (pthread_join(thread, nullptr)) {
+  if (__gallocy_pthread_join(thread, nullptr)) {
     perror("pthread_join");
   }
 }

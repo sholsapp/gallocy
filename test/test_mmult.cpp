@@ -11,6 +11,7 @@
 #include "gtest/gtest.h"
 
 #include "libgallocy.h"
+#include "gallocy/entrypoint.h"
 
 
 #define MAX_THREAD 4
@@ -104,7 +105,6 @@ TEST(GallocyTest, MatrixMultiplication) {
    double** a = NULL;
    double** b = NULL;
    double** c = NULL;
-
 
    int j;
    pthread_t* threads;

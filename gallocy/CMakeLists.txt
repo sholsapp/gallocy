@@ -20,6 +20,7 @@ set(CMAKE_CXX_FLAGS
 set(GALLOCY_CORE_SRC
   config.cpp
   diff.cpp
+  entrypoint.cpp
   internal.cpp
   libgallocy.cpp
   logging.cpp
@@ -27,9 +28,10 @@ set(GALLOCY_CORE_SRC
   shared.cpp
   sqlite.cpp
   stringutils.cpp
+  threads.cpp
   external/sqlite3/sqlite3.c)
 add_library(gallocy-core SHARED ${GALLOCY_CORE_SRC})
-target_link_libraries(gallocy-core gallocy-runtime)
+target_link_libraries(gallocy-core gallocy-runtime pthread)
 install(TARGETS gallocy-core DESTINATION lib)
 
 # The gallocy-wrapper build
@@ -66,10 +68,10 @@ install(TARGETS server DESTINATION bin)
 
 # XXX: refactor this into gallocy-threading or something. Or add it to
 # gallocy-core.
-add_library(threads SHARED threads.cpp)
-target_link_libraries(threads pthread)
-install(TARGETS threads DESTINATION lib)
+#add_library(threads SHARED threads.cpp)
+#target_link_libraries(threads pthread)
+#install(TARGETS threads DESTINATION lib)
 
-add_executable(stacks bin/pthread.cpp)
-target_link_libraries(stacks pthread dl gallocy-core threads)
-install(TARGETS stacks DESTINATION bin)
+#add_executable(stacks bin/pthread.cpp)
+#target_link_libraries(stacks pthread dl gallocy-core threads)
+#install(TARGETS stacks DESTINATION bin)
