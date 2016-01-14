@@ -8,6 +8,30 @@
 #include "gallocy/stringutils.h"
 
 
+gallocy::string level_string(const char *level) {
+  gallocy::string log_level = level;
+  gallocy::stringstream s;
+  if (log_level.compare("DEBUG") == 0) {
+    s << L_GREY("[" << level << "]");
+  }
+  else if (log_level.compare("INFO") == 0) {
+    s << L_GREEN("[" << level << "]");
+  }
+  else if (log_level.compare("WARNING") == 0) {
+    s << L_YELLOW("[" << level << "]");
+  }
+  else if (log_level.compare("ERROR") == 0) {
+    s << L_RED("[" << level << "]");
+  }
+  else if (log_level.compare("APP") == 0) {
+    s << L_BLUE("[" << level << "]");
+  } else {
+    s << level;
+  }
+  return s.str();
+}
+
+
 void __log(const char *module, const char *level, const char *raw_message) {
   gallocy::vector<gallocy::string> path_parts;
   gallocy::string message = raw_message;
@@ -22,10 +46,7 @@ void __log(const char *module, const char *level, const char *raw_message) {
 
   gallocy::string _utc_now = utc_now;
 
-  // TODO(sholsapp): Implement coloring using the codes at
-  // http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/x329.html and add macros to
-  // make this easier elsewhere.
-  std::cout << "[" << "\033[0;33m" << level << "\033[0m" << "]"
+  std::cout << level_string(level)
             << " - "
             << utils::trim(_utc_now)
             << " - "

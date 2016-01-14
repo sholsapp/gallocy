@@ -27,6 +27,27 @@
   __log(__FILE__, "ERROR", s.str().c_str()); \
 }
 
+#define LOG_APP(message) { \
+  gallocy::stringstream s; \
+  s << message; \
+  __log(__FILE__, "APP", s.str().c_str()); \
+}
+
+#define L_RED(message) \
+  "\033[0;31m" << message << "\033[0m"
+
+#define L_YELLOW(message) \
+  "\033[0;33m" << message << "\033[0m"
+
+#define L_GREEN(message) \
+  "\033[0;32m" << message << "\033[0m"
+
+#define L_BLUE(message) \
+  "\033[0;34m" << message << "\033[0m"
+
+#define L_GREY(message) \
+  "\033[0;37m" << message << "\033[0m"
+
 void __log(const char *module, const char *level, const char *raw_message);
 
 #endif  // GALLOCY_LOGGING_H_

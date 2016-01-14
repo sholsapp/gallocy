@@ -74,11 +74,11 @@ int initialize_gallocy_framework(const char* config_path) {
   while (true) {
     int size = 8092 - std::rand() % 8092;
     char *memory = (char *) malloc(sizeof(char) * size);
-    std::cout << "[applicaton] - allocated " << size << " byte(s) in " << reinterpret_cast<void *>(memory) << std::endl;
+    LOG_APP("allocated " << size << " byte(s) in " << reinterpret_cast<void *>(memory));
     memset(memory, '!', size);
     free(memory);
     int duration = 30 - std::rand() % 30;
-    std::cout << "[application] - sleeping for " << duration << std::endl;;
+    LOG_APP("sleeping for " << duration);
     sleep(duration);
   }
 

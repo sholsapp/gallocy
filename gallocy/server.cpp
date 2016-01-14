@@ -286,6 +286,5 @@ Request *GallocyServer::get_request(int client_socket) {
     n = recv(client_socket, buf, 256, MSG_DONTWAIT);
     request << buf;
   }
-  std::cout << std::endl;
   return new (internal_malloc(sizeof(Request))) Request(request.str());
 }
