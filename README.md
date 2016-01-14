@@ -71,9 +71,14 @@ tests. Output files will be placed into the `install` directory.
 
 ## about
 
-This project is the continuation of a M.S. thesis and project from California
-Polytechnic University, San Luis Obispo, that was just too much fun to stop
-working on.
+This project is the continuation of a [M.S. thesis and project from California
+Polytechnic University, San Luis
+Obispo](http://digitalcommons.calpoly.edu/theses/725/), that was just too much
+fun to stop working on. *Substantial* improvements have since been made to the
+original prototype that was presented in this thesis and now the major focuses
+of this project are operability, maintainability, programability, and all the
+other nice things that one learns from the software industry. It should be
+*fun* to program on gallocy.
 
 ![Go Mustangs.](./resources/images/cal-poly.png)
 
