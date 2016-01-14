@@ -119,6 +119,15 @@ void GallocyServer::start() {
   }
 }
 
+/**
+ * Stop the server thread.
+ */
+void GallocyServer::stop() {
+  alive = false;
+  if (__gallocy_pthread_join(thread, nullptr)) {
+    perror("pthread_join");
+  }
+}
 
 /**
  * A pthread invocation wrapper for work function.

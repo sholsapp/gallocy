@@ -43,6 +43,6 @@ class GallocyConfig {
 };
 
 
-GallocyConfig load_config(const gallocy::string &);
+GallocyConfig *load_config(const gallocy::string &);
 
 #endif  // GALLOCY_CONFIG_H_

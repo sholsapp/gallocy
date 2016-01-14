@@ -56,6 +56,7 @@ class GallocyServer {
   void *handle(int client_socket, struct sockaddr_in client_name);
   void *work();
   void start();
+  void stop();
 
   RoutingTable<HandlerFunction> routes;
   Response *route_admin(RouteArguments *args, Request *request);

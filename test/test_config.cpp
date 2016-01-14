@@ -8,11 +8,13 @@
 
 
 TEST(ConfigTests, LoadConfig) {
-  GallocyConfig config = load_config("test/data/config.json");
+  GallocyConfig *config = load_config("test/data/config.json");
+  // TODO(sholsapp): Free memory.
 }
 
 
 TEST(ConfigTests, LoadConfigNoPeers) {
-  GallocyConfig config = load_config("test/data/config-no-peers.json");
-  ASSERT_EQ(config.peers.size(), 0);
+  GallocyConfig *config = load_config("test/data/config-no-peers.json");
+  ASSERT_EQ(config->peers.size(), 0);
+  // TODO(sholsapp): Free memory.
 }

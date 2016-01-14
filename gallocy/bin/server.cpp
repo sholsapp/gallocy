@@ -7,11 +7,25 @@
 #include "gallocy/entrypoint.h"
 
 int main(int argc, char *argv[]) {
-  // TODO(sholsapp): Find a way... any way... to replace this module's main
-  // routine transparently so that we can call this before executing
-  // application logic.
+  // TODO(sholsapp): Transparently inject this.
   initialize_gallocy_framework(argv[1]);
-
-  // TODO(sholsapp): Implement a tear down function for the gallocy framework.
+  //
+  // Application start.
+  //
+  while (true) {
+    int size = 8092 - std::rand() % 8092;
+    char *memory = (char *) malloc(sizeof(char) * size);
+    LOG_APP("allocated " << size << " byte(s) in " << reinterpret_cast<void *>(memory));
+    memset(memory, '!', size);
+    free(memory);
+    int duration = 30 - std::rand() % 30;
+    LOG_APP("sleeping for " << duration);
+    sleep(duration);
+  }
+  //
+  // Application end.
+  //
+  // TODO(sholsapp): Transparently inject this.
+  teardown_gallocy_framework();
   return 0;
 }

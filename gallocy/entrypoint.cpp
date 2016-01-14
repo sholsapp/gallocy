@@ -11,18 +11,16 @@
 #include "gallocy/server.h"
 #include "gallocy/threads.h"
 
-// TODO(sholsapp): This function needs to utilize the private heaps for most of
-// these things, otherwise they'll go out of scope once the initialization
-// function is finished.
+GallocyClient *gallocy_client = nullptr;
+GallocyConfig *gallocy_config = nullptr;
+GallocyServer *gallocy_server = nullptr;
+
 int initialize_gallocy_framework(const char* config_path) {
-
-  char *error;
-
   LOG_INFO("Initializing gallocy framework!");
-
+  char *error;
+  void *handle;
   std::srand(std::time(0));
-
-  void *handle = dlopen("pthread.so", RTLD_GLOBAL);
+  handle = dlopen("pthread.so", RTLD_GLOBAL);
   //
   // pthread_create
   //
@@ -51,7 +49,9 @@ int initialize_gallocy_framework(const char* config_path) {
       << "] from pthread_join ["
       << reinterpret_cast<uint64_t *>(pthread_join)
       << "]");
-
+  //
+  // Initialize libcurl memory allocator.
+  //
   curl_global_init_mem(
     CURL_GLOBAL_ALL,
     internal_malloc,
@@ -59,28 +59,36 @@ int initialize_gallocy_framework(const char* config_path) {
     internal_realloc,
     internal_strdup,
     internal_calloc);
-
+  //
+  // Initialize SQLite memory allocator.
+  //
   e.initialize();
   e.execute(PeerInfo::CREATE_STATEMENT);
+  //
+  // Load configuration file.
+  //
+  gallocy_config = load_config(config_path);
+  //
+  // Start the client thread.
+  //
+  gallocy_client = new (internal_malloc(sizeof(GallocyClient))) GallocyClient(*gallocy_config);
+  gallocy_client->start();
+  //
+  // Start the server thread.
+  //
+  gallocy_server = new (internal_malloc(sizeof(GallocyServer))) GallocyServer(*gallocy_config);
+  gallocy_server->start();
+  //
+  // Yield to the application.
+  //
+  return 0;
+}
 
-  GallocyConfig config = load_config(config_path);
-  GallocyClient client(config);
-  GallocyServer server(config);
 
-  client.start();
-  server.start();
-
-  // The following is sample application logic.
-  while (true) {
-    int size = 8092 - std::rand() % 8092;
-    char *memory = (char *) malloc(sizeof(char) * size);
-    LOG_APP("allocated " << size << " byte(s) in " << reinterpret_cast<void *>(memory));
-    memset(memory, '!', size);
-    free(memory);
-    int duration = 30 - std::rand() % 30;
-    LOG_APP("sleeping for " << duration);
-    sleep(duration);
-  }
-
+int teardown_gallocy_framework() {
+  gallocy_server->stop();
+  gallocy_client->stop();
+  // TODO(sholsapp): Destroy the SQLite objects.
+  // TODO(sholsapp): Destroy server, client, config objects and free memory.
   return 0;
 }
