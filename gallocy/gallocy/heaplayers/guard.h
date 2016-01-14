@@ -1,6 +1,6 @@
 #ifndef GALLOCY_HEAPLAYERS_GUARD_H_
 #define GALLOCY_HEAPLAYERS_GUARD_H_
-
+#include <iostream>
 namespace HL {
 
 template <class LockType>

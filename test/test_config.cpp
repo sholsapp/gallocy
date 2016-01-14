@@ -10,3 +10,9 @@
 TEST(ConfigTests, LoadConfig) {
   GallocyConfig config = load_config("test/data/config.json");
 }
+
+
+TEST(ConfigTests, LoadConfigNoPeers) {
+  GallocyConfig config = load_config("test/data/config-no-peers.json");
+  ASSERT_EQ(config.peers.size(), 0);
+}

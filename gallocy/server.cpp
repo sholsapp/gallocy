@@ -111,15 +111,34 @@ Response *GallocyServer::route_join(RouteArguments *args, Request *request) {
 
 
 /**
+ * Start the server thread.
+ */
+void GallocyServer::start() {
+  if (__gallocy_pthread_create(&thread, nullptr, handle_work, reinterpret_cast<void *>(this))) {
+    perror("pthread_create");
+  }
+}
+
+
+/**
+ * A pthread invocation wrapper for work function.
+ */
+void *GallocyServer::handle_work(void *arg) {
+  GallocyServer *server = reinterpret_cast<GallocyServer *>(arg);
+  void *ret = server->work();
+  return ret;
+}
+
+
+/**
  * Start the HTTP server.
  *
  * Starting the HTTP server binds to the socket, begins listening on the bound
  * socket, then enters the HTTP server's main event loop.
  */
-void GallocyServer::start() {
-  std::cout << "Starting the HTTP sever..." << std::endl
-    << "  on address " << address << std::endl
-    << "  on port " << port << std::endl;
+void *GallocyServer::work() {
+
+  LOG_INFO("Starting HTTP server on " << address << ":" << port);
 
   struct sockaddr_in name;
   int optval = 1;
@@ -182,7 +201,7 @@ void GallocyServer::start() {
 
   close(server_socket);
 
-  return;
+  return nullptr;
 }
 
 

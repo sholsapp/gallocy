@@ -50,10 +50,12 @@ class GallocyServer {
 
   ~GallocyServer() {}
 
-  void start();
-  static void *handle_entry(void *arg);
-  void *handle(int client_socket, struct sockaddr_in client_name);
   Request *get_request(int client_socket);
+  static void *handle_entry(void *arg);
+  static void *handle_work(void *arg);
+  void *handle(int client_socket, struct sockaddr_in client_name);
+  void *work();
+  void start();
 
   RoutingTable<HandlerFunction> routes;
   Response *route_admin(RouteArguments *args, Request *request);
@@ -66,6 +68,7 @@ class GallocyServer {
   gallocy::string address;
   int16_t port;
   int64_t server_socket;
+  pthread_t thread;
 };
 
 

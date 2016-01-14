@@ -12,9 +12,8 @@
 /**
  * The gallocy configuration.
  *
- * As of today, exists soley to hide the ugly fucking
- * handling of nlohmann::json implicit converstion issues
- * from the rest of the application.
+ * As of today, exists soley to hide the ugly fucking handling of
+ * nlohmann::json implicit converstion issues from the rest of the application.
  */
 class GallocyConfig {
  public:

@@ -49,7 +49,7 @@ void *GallocyClient::handle_work(void *arg) {
  * The work finite state machine.
  */
 void *GallocyClient::work() {
-  std::srand(std::time(0));
+  LOG_INFO("Starting HTTP client");
   while (alive) {
     switch (state) {
       case JOINING:

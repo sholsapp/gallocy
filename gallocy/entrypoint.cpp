@@ -11,11 +11,16 @@
 #include "gallocy/server.h"
 #include "gallocy/threads.h"
 
+// TODO(sholsapp): This function needs to utilize the private heaps for most of
+// these things, otherwise they'll go out of scope once the initialization
+// function is finished.
 int initialize_gallocy_framework(const char* config_path) {
 
   char *error;
 
   LOG_INFO("Initializing gallocy framework!");
+
+  std::srand(std::time(0));
 
   void *handle = dlopen("pthread.so", RTLD_GLOBAL);
   //
@@ -56,20 +61,26 @@ int initialize_gallocy_framework(const char* config_path) {
     internal_calloc);
 
   e.initialize();
-  // TODO(sholsapp): Move this into a "create_all" function so that we can
-  // initialize the entire model without having to add something here every
-  // time we add a new model.
   e.execute(PeerInfo::CREATE_STATEMENT);
 
-  LOG_INFO("Reading in config from " << config_path);
-
   GallocyConfig config = load_config(config_path);
-
   GallocyClient client(config);
   GallocyServer server(config);
 
   client.start();
   server.start();
+
+  // The following is sample application logic.
+  while (true) {
+    int size = 8092 - std::rand() % 8092;
+    char *memory = (char *) malloc(sizeof(char) * size);
+    std::cout << "[applicaton] - allocated " << size << " byte(s) in " << reinterpret_cast<void *>(memory) << std::endl;
+    memset(memory, '!', size);
+    free(memory);
+    int duration = 30 - std::rand() % 30;
+    std::cout << "[application] - sleeping for " << duration << std::endl;;
+    sleep(duration);
+  }
 
   return 0;
 }
