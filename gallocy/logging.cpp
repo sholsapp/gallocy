@@ -13,17 +13,13 @@ gallocy::string level_string(const char *level) {
   gallocy::stringstream s;
   if (log_level.compare("DEBUG") == 0) {
     s << L_GREY("[" << level << "]");
-  }
-  else if (log_level.compare("INFO") == 0) {
+  } else if (log_level.compare("INFO") == 0) {
     s << L_GREEN("[" << level << "]");
-  }
-  else if (log_level.compare("WARNING") == 0) {
+  } else if (log_level.compare("WARNING") == 0) {
     s << L_YELLOW("[" << level << "]");
-  }
-  else if (log_level.compare("ERROR") == 0) {
+  } else if (log_level.compare("ERROR") == 0) {
     s << L_RED("[" << level << "]");
-  }
-  else if (log_level.compare("APP") == 0) {
+  } else if (log_level.compare("APP") == 0) {
     s << L_BLUE("[" << level << "]");
   } else {
     s << level;

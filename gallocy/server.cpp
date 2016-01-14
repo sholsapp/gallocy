@@ -4,7 +4,6 @@
 #include <string>
 #include <utility>
 
-//#include "gallocy/libgallocy.h"
 #include "gallocy/logging.h"
 #include "gallocy/models.h"
 #include "gallocy/request.h"
@@ -146,7 +145,6 @@ void *GallocyServer::handle_work(void *arg) {
  * socket, then enters the HTTP server's main event loop.
  */
 void *GallocyServer::work() {
-
   LOG_INFO("Starting HTTP server on " << address << ":" << port);
 
   struct sockaddr_in name;

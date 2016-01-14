@@ -1,5 +1,5 @@
-#ifndef GALLOCY_HEAPLAYERS_HEAPTYPES_H_
-#define GALLOCY_HEAPLAYERS_HEAPTYPES_H_
+#ifndef GALLOCY_HEAPLAYERS_APPLICATION_H_
+#define GALLOCY_HEAPLAYERS_APPLICATION_H_
 
 // NOTE: Order matters because forward declarations do not exist.
 #include "heaplayers/firstfitheap.h"
@@ -24,4 +24,4 @@ typedef
           DEFAULT_ZONE_SZ> > > >
   ApplicationHeapType;
 
-#endif  // GALLOCY_HEAPLAYERS_HEAPTYPES_H_
+#endif  // GALLOCY_HEAPLAYERS_APPLICATION_H_

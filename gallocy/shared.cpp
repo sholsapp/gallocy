@@ -1,7 +1,9 @@
 #include <stdint.h>
 
 #include <cstdlib>
+#include <functional>
 #include <map>
+#include <utility>
 
 #include "gallocy/allocators/shared.h"
 #include "gallocy/heaplayers/stl.h"

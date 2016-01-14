@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
   //
   while (true) {
     int size = 8092 - std::rand() % 8092;
-    char *memory = (char *) malloc(sizeof(char) * size);
+    char *memory = reinterpret_cast<char *>(malloc(sizeof(char) * size));
     LOG_APP("allocated " << size << " byte(s) in " << reinterpret_cast<void *>(memory));
     memset(memory, '!', size);
     free(memory);

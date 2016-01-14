@@ -1,3 +1,6 @@
+#ifndef GALLOCY_ALLOCATORS_SHARED_H_
+#define GALLOCY_ALLOCATORS_SHARED_H_
+
 #include "gallocy/heaplayers/shared.h"
 
 extern HL::SharedPageTableHeap shared_page_table;
@@ -9,3 +12,5 @@ int sqlite_size(void* ptr);
 int sqlite_roundup(int sz);
 int sqlite_init(void* ptr);
 void sqlite_shutdown(void* ptr);
+
+#endif  // GALLOCY_ALLOCATORS_SHARED_H_

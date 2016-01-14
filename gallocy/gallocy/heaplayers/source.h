@@ -24,7 +24,7 @@ template <uint64_t Purpose>
 class SourceMmapHeap {
  public:
   void *get_location(uint64_t purpose) {
-    switch(purpose) {
+    switch (purpose) {
       case PURPOSE_DEVELOPMENT_HEAP:
         std::cout << "[development heap]" << std::endl;
         return nullptr;

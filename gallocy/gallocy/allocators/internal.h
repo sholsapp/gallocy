@@ -80,4 +80,4 @@ extern "C" {
 
 }
 
-#endif
+#endif  // GALLOCY_ALLOCATORS_INTERNAL_H_
