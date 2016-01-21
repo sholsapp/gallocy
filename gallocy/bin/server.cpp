@@ -1,10 +1,30 @@
+#include <pthread.h>
 #include <unistd.h>
 
 #include <cstdlib>
+#include <cstring>
 #include <ctime>
 #include <iostream>
 
-#include "gallocy/entrypoint.h"
+
+extern int initialize_gallocy_framework(const char* config_path);
+extern int teardown_gallocy_framework();
+
+
+void *work(void *arg) {
+  while (true) {
+    int size = 8092 - std::rand() % 8092;
+    char *memory = reinterpret_cast<char *>(malloc(sizeof(char) * size));
+    //LOG_APP("allocated " << size << " byte(s) in " << reinterpret_cast<void *>(memory));
+    std::cout << "allocated " << size << " byte(s) in " << reinterpret_cast<void *>(memory) << std::endl;
+    memset(memory, '!', size);
+    free(memory);
+    int duration = 30 - std::rand() % 30;
+    //LOG_APP("sleeping for " << duration);
+    sleep(duration);
+  }
+}
+
 
 int main(int argc, char *argv[]) {
   // TODO(sholsapp): Transparently inject this.
@@ -12,16 +32,9 @@ int main(int argc, char *argv[]) {
   //
   // Application start.
   //
-  while (true) {
-    int size = 8092 - std::rand() % 8092;
-    char *memory = reinterpret_cast<char *>(malloc(sizeof(char) * size));
-    LOG_APP("allocated " << size << " byte(s) in " << reinterpret_cast<void *>(memory));
-    memset(memory, '!', size);
-    free(memory);
-    int duration = 30 - std::rand() % 30;
-    LOG_APP("sleeping for " << duration);
-    sleep(duration);
-  }
+  pthread_t thread;
+  pthread_create(&thread, nullptr, work, nullptr);
+  pthread_join(thread, nullptr);
   //
   // Application end.
   //
