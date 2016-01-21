@@ -4,6 +4,7 @@
 #include "gallocy/config.h"
 #include "gallocy/consensus/client.h"
 #include "gallocy/consensus/server.h"
+#include "gallocy/consensus/state.h"
 
 /**
  * Initialize the gallocy framework.

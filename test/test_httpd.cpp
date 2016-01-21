@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 
 
-#include "gallocy/server.h"
+#include "gallocy/consensus/server.h"
 #include "gallocy/http_router.h"
 #include "gallocy/request.h"
 
