@@ -23,7 +23,17 @@ int initialize_gallocy_framework(const char* config_path) {
   // Seed random number generator
   //
   std::srand(std::time(0));
-  handle = dlopen("pthread.so", RTLD_GLOBAL);
+#if __linux__
+  const char* libpthread = "/lib/x86_64-linux-gnu/libpthread.so.0";
+#else
+  const char* libpthread = "/lib/x86_64-linux-gnu/libpthread.so.0";
+  LOG_ERROR("We don't know how to find libpthread.so on this platform.");
+#endif
+  dlerror();
+  handle = dlopen(libpthread, RTLD_LAZY);
+  if (!handle) {
+    LOG_ERROR("Failed to open " << libpthread << ": " << dlerror());
+  }
   //
   // pthread_create
   //
@@ -36,7 +46,7 @@ int initialize_gallocy_framework(const char* config_path) {
   LOG_INFO("Initialized __gallocy_pthread_create ["
       << &__gallocy_pthread_create
       << "] from pthread_create ["
-      << reinterpret_cast<uint64_t *>(pthread_create)
+      << reinterpret_cast<uint64_t *>(*__gallocy_pthread_create)
       << "]");
   //
   // pthread_join
@@ -50,7 +60,7 @@ int initialize_gallocy_framework(const char* config_path) {
   LOG_INFO("Initialized __gallocy_pthread_join ["
       << &__gallocy_pthread_join
       << "] from pthread_join ["
-      << reinterpret_cast<uint64_t *>(pthread_join)
+      << reinterpret_cast<uint64_t *>(*__gallocy_pthread_join)
       << "]");
   //
   // Initialize libcurl memory allocator.
