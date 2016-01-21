@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "external/json.hpp"
-#include "heaplayers/internal.h"
-#include "heaplayers/stl.h"
+#include "gallocy/heaplayers/internal.h"
+#include "gallocy/heaplayers/stl.h"
 
 
 

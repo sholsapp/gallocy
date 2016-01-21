@@ -1,7 +1,7 @@
 set (GALLOCY_INCLUDE
   ../gallocy
-  ../gallocy/gallocy
-  ../gallocy/heaplayers
+  ../gallocy/include
+  ../gallocy/include/gallocy
   ../gallocy/external/frozen
   ../gallocy/external/sqlite3)
 include_directories(${GALLOCY_INCLUDE})

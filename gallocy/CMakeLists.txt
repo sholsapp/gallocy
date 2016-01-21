@@ -1,7 +1,9 @@
 # The directories that must be included for build
 set(GALLOCY_INCLUDE
   .
-  gallocy
+  include
+  # TODO(sholsapp): Remove this and refactor include paths
+  include/gallocy
   heaplayers
   external/restclient-cpp
   external/sqlite3)
@@ -18,21 +20,22 @@ set(CMAKE_CXX_FLAGS
 
 # The gallocy-core build
 set(GALLOCY_CORE_SRC
-  config.cpp
-  diff.cpp
+  allocators/internal.cpp
+  allocators/shared.cpp
+  consensus/client.cpp
+  consensus/server.cpp
   entrypoint.cpp
-  internal.cpp
-  libgallocy.cpp
-  logging.cpp
-  models.cpp
-  shared.cpp
-  sqlite.cpp
-  stringutils.cpp
-  threads.cpp
-  client.cpp
-  server.cpp
-  request.cpp
   glibc/time.c
+  libgallocy.cpp
+  models.cpp
+  request.cpp
+  sqlite.cpp
+  threads.cpp
+  utils/config.cpp
+  utils/diff.cpp
+  utils/logging.cpp
+  utils/objutils.cpp
+  utils/stringutils.cpp
   external/restclient-cpp/restclient.cpp
   external/sqlite3/sqlite3.c)
 add_library(gallocy-core SHARED ${GALLOCY_CORE_SRC})
@@ -47,7 +50,7 @@ add_library(gallocy-wrapper SHARED ${GALLOCY_WRAPPER_SOURCE})
 install(TARGETS gallocy-wrapper DESTINATION lib)
 
 set(GALLOCY_RUNTIME
-  constants.cpp)
+  utils/constants.cpp)
 add_library(gallocy-runtime SHARED ${GALLOCY_RUNTIME})
 install(TARGETS gallocy-runtime DESTINATION lib)
 

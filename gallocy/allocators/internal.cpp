@@ -2,7 +2,7 @@
 
 #include <cstdlib>
 
-#include "allocators/internal.h"
+#include "gallocy/allocators/internal.h"
 
 /**
  * The local internal memory heap.
