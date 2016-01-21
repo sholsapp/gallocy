@@ -6,6 +6,7 @@
 #include "gallocy/config.h"
 #include "gallocy/consensus/client.h"
 #include "gallocy/consensus/server.h"
+#include "gallocy/consensus/state.h"
 #include "gallocy/entrypoint.h"
 #include "gallocy/logging.h"
 #include "gallocy/models.h"
@@ -14,6 +15,7 @@
 GallocyClient *gallocy_client = nullptr;
 GallocyConfig *gallocy_config = nullptr;
 GallocyServer *gallocy_server = nullptr;
+GallocyState *gallocy_state = nullptr;
 
 int initialize_gallocy_framework(const char* config_path) {
   LOG_INFO("Initializing gallocy framework!");

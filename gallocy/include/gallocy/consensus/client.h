@@ -9,10 +9,23 @@
 #include "gallocy/worker.h"
 
 
-class HTTPClient {
+class ConsensusClient {
  public:
-  void request();
-  void multirequest();
+  /**
+   *
+   */
+  void replicate() {
+    // Main - Create pthread_condition_t majority_responded
+    // Main - Create gallocy::vector<Request> work
+    // Main - Create thread pool to execute work
+    //   Pool - exit if no work exists
+    //   Pool - make request
+    //   Pool - interpret response
+    //   Pool - update state
+    // Main - Wait for majority_responded signal
+    // Main - Respond to client
+    // Main - Wait for thread pool
+  }
 };
 
 

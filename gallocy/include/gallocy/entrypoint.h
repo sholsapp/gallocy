@@ -46,6 +46,11 @@ extern GallocyServer *gallocy_server;
 extern GallocyClient *gallocy_client;
 
 /**
+ * The global handle to the state.
+ */
+extern GallocyState *gallocy_state;
+
+/**
  * The global handle to the configuration.
  */
 extern GallocyConfig *gallocy_config;
