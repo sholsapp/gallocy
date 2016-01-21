@@ -80,7 +80,7 @@ extern "C" int pthread_create(pthread_t *thread,
     reinterpret_cast<pthread_create_function>
     (reinterpret_cast<uint64_t *>(dlsym(RTLD_NEXT, "pthread_create")));
   LOG_DEBUG("Using intercepted pthread_create (wrapping "
-      << &__library_pthread_create
+      << reinterpret_cast<uint64_t *>(__library_pthread_create)
       << " with "
       << reinterpret_cast<uint64_t *>(pthread_create)
       << ")");
