@@ -56,5 +56,9 @@ install(TARGETS gallocy-runtime DESTINATION lib)
 
 # A sample application
 add_executable(server bin/server.cpp)
-target_link_libraries(server gallocy-core gallocy-runtime gallocy-wrapper)
+# TODO(sholsapp): Sort out the libc/libc++ static linking issue to keep
+# standard library usage between internal and application uses seperate before
+# continuing down this path.
+#target_link_libraries(server gallocy-core gallocy-runtime gallocy-wrapper)
+target_link_libraries(server gallocy-core gallocy-runtime)
 install(TARGETS server DESTINATION bin)
