@@ -21,3 +21,4 @@
 - [glibc malloc hook deprecation considered harmful](https://sourceware.org/ml/libc-alpha/2011-07/msg00136.html)
 - [musl - libc](http://www.musl-libc.org/)
 - [musl - replacing malloc](http://www.openwall.com/lists/musl/2014/08/08/11)
+- [Sanos](http://www.jbox.dk/sanos/)

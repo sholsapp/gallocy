@@ -9,24 +9,39 @@
 #include "gallocy/worker.h"
 
 
+class HTTPClient {
+ public:
+  void request();
+  void multirequest();
+};
+
+
 class GallocyClient : public ThreadedDaemon {
  public:
   enum State {
     JOINING,
     IDLE,
+    // Raft
+    FOLLOWER,
+    LEADER,
+    CANDIDATE,
   };
  public:
   explicit GallocyClient(GallocyConfig &config) :
     config(config),
     state(JOINING),
-    sleep_duration(5) {}
+    step_time(5) {}
   State state_idle();
   State state_joining();
+  // Raft
+  State state_follower();
+  State state_leader();
+  State state_candidate();
   void *work();
  private:
   GallocyConfig &config;
   State state;
-  uint64_t sleep_duration;
+  uint64_t step_time;
 };
 
 #endif  // GALLOCY_CLIENT_H_

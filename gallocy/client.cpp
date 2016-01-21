@@ -31,11 +31,10 @@ void *GallocyClient::work() {
         LOG_ERROR("Client reached default handler.");
         break;
     }
-    sleep(sleep_duration - std::rand() % sleep_duration);
+    sleep(step_time - std::rand() % step_time);
   }
   return nullptr;
 }
-
 
 /**
  * A joining state.
