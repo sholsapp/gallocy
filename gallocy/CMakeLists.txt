@@ -32,6 +32,7 @@ set(GALLOCY_CORE_SRC
   client.cpp
   server.cpp
   request.cpp
+  glibc/time.c
   external/restclient-cpp/restclient.cpp
   external/sqlite3/sqlite3.c)
 add_library(gallocy-core SHARED ${GALLOCY_CORE_SRC})
@@ -42,7 +43,7 @@ install(TARGETS gallocy-core DESTINATION lib)
 set (GALLOCY_WRAPPER_SOURCE
   wrapper.cpp)
 add_library(gallocy-wrapper SHARED ${GALLOCY_WRAPPER_SOURCE})
-target_link_libraries(gallocy-wrapper gallocy-core)
+#target_link_libraries(gallocy-wrapper gallocy-core)
 install(TARGETS gallocy-wrapper DESTINATION lib)
 
 set(GALLOCY_RUNTIME
@@ -50,20 +51,7 @@ set(GALLOCY_RUNTIME
 add_library(gallocy-runtime SHARED ${GALLOCY_RUNTIME})
 install(TARGETS gallocy-runtime DESTINATION lib)
 
-# The tinyhttpd server and a test client
+# A sample application
 add_executable(server bin/server.cpp)
-target_link_libraries(server pthread gallocy-core gallocy-runtime)
+target_link_libraries(server gallocy-core gallocy-runtime gallocy-wrapper)
 install(TARGETS server DESTINATION bin)
-#add_executable(httpc bin/rest.cpp)
-#target_link_libraries(httpc pthread gallocy-core gallocy-runtime)
-#install(TARGETS httpc DESTINATION bin)
-
-# XXX: refactor this into gallocy-threading or something. Or add it to
-# gallocy-core.
-#add_library(threads SHARED threads.cpp)
-#target_link_libraries(threads pthread)
-#install(TARGETS threads DESTINATION lib)
-
-#add_executable(stacks bin/pthread.cpp)
-#target_link_libraries(stacks pthread dl gallocy-core threads)
-#install(TARGETS stacks DESTINATION bin)

@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "gallocy/allocators/internal.h"
+#include "gallocy/glibc/time.h"
 #include "gallocy/logging.h"
 #include "gallocy/stringutils.h"
 
@@ -37,17 +38,18 @@ void __log(const char *module, const char *level, const char *raw_message) {
   struct tm now = {0};
   gmtime_r(&t, &now);
   // See gmtime_r(3)
-  char utc_now[256];
+  char utc_now[256] = {0};
   asctime_r(&now, utc_now);
-
   gallocy::string _utc_now = utc_now;
 
-  std::cout << level_string(level)
-            << " - "
-            << utils::trim(_utc_now)
-            << " - "
-            << utils::trim(path_parts.at(path_parts.size() - 1))
-            << " - "
-            << utils::trim(message)
-            << std::endl;
+  gallocy::stringstream line;
+  line << level_string(level).c_str()
+       << " - "
+       << utils::trim(_utc_now)
+       << " - "
+       << utils::trim(path_parts.at(path_parts.size() - 1))
+       << " - "
+       << utils::trim(message)
+       << std::endl;
+  fprintf(stderr, "%s", line.str().c_str());
 }
