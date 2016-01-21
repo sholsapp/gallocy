@@ -16,25 +16,23 @@
 
 #include "gallocy/config.h"
 #include "gallocy/http_router.h"
-#include "gallocy/libgallocy.h"
 #include "gallocy/request.h"
+#include "gallocy/worker.h"
 
 
 void error_die(const char *);
 
 
-class GallocyServer {
+class GallocyServer : public ThreadedDaemon {
  public:
   using RouteArguments = gallocy::vector<gallocy::string>;
   using HandlerFunction = std::function<Response *(RouteArguments *, Request *)>;
 
- public:
   /**
    * Construct a HTTP server.
    */
   explicit GallocyServer(GallocyConfig &config) :
     config(config),
-    alive(true),
     is_master(config.master),
     address(config.address),
     port(config.port),
@@ -52,11 +50,8 @@ class GallocyServer {
 
   Request *get_request(int client_socket);
   static void *handle_entry(void *arg);
-  static void *handle_work(void *arg);
   void *handle(int client_socket, struct sockaddr_in client_name);
   void *work();
-  void start();
-  void stop();
 
   RoutingTable<HandlerFunction> routes;
   Response *route_admin(RouteArguments *args, Request *request);
@@ -64,12 +59,10 @@ class GallocyServer {
 
  private:
   GallocyConfig &config;
-  bool alive;
   bool is_master;
   gallocy::string address;
   int16_t port;
   int64_t server_socket;
-  pthread_t thread;
 };
 
 

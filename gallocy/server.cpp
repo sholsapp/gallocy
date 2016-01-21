@@ -110,39 +110,14 @@ Response *GallocyServer::route_join(RouteArguments *args, Request *request) {
 
 
 /**
- * Start the server thread.
- */
-void GallocyServer::start() {
-  if (__gallocy_pthread_create(&thread, nullptr, handle_work, reinterpret_cast<void *>(this))) {
-    perror("pthread_create");
-  }
-}
-
-/**
- * Stop the server thread.
- */
-void GallocyServer::stop() {
-  alive = false;
-  if (__gallocy_pthread_join(thread, nullptr)) {
-    perror("pthread_join");
-  }
-}
-
-/**
- * A pthread invocation wrapper for work function.
- */
-void *GallocyServer::handle_work(void *arg) {
-  GallocyServer *server = reinterpret_cast<GallocyServer *>(arg);
-  void *ret = server->work();
-  return ret;
-}
-
-
-/**
- * Start the HTTP server.
+ * The primary work loop.
  *
  * Starting the HTTP server binds to the socket, begins listening on the bound
- * socket, then enters the HTTP server's main event loop.
+ * socket, then enters the HTTP server's main event loop. The HTTP server's
+ * main event loop listens while alive for incoming connections and creates a
+ * handler thread for each established connection.
+ *
+ * To stop the HTTP server set `alive` to false.
  */
 void *GallocyServer::work() {
   LOG_INFO("Starting HTTP server on " << address << ":" << port);

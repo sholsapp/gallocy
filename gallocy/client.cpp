@@ -15,37 +15,6 @@
 
 
 /**
- * Start the client thread.
- */
-void GallocyClient::start() {
-  if (__gallocy_pthread_create(&thread, nullptr, handle_work, reinterpret_cast<void *>(this))) {
-    perror("pthread_create");
-  }
-}
-
-
-/**
- * Stop the client thread.
- */
-void GallocyClient::stop() {
-  alive = false;
-  if (__gallocy_pthread_join(thread, nullptr)) {
-    perror("pthread_join");
-  }
-}
-
-
-/**
- * A pthread invocation wrapper for work function.
- */
-void *GallocyClient::handle_work(void *arg) {
-  GallocyClient *client = reinterpret_cast<GallocyClient *>(arg);
-  void *ret = client->work();
-  return ret;
-}
-
-
-/**
  * The work finite state machine.
  */
 void *GallocyClient::work() {
