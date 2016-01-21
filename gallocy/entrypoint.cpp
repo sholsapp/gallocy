@@ -19,6 +19,9 @@ int initialize_gallocy_framework(const char* config_path) {
   LOG_INFO("Initializing gallocy framework!");
   char *error;
   void *handle;
+  //
+  // Seed random number generator
+  //
   std::srand(std::time(0));
   handle = dlopen("pthread.so", RTLD_GLOBAL);
   //
