@@ -15,11 +15,13 @@
 - [Sieve of Eratosthenes](https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes)
 
 ### implementation
+- [GNU C Library](https://www.gnu.org/software/libc/)
+- [GNU LD](http://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_node/ld_24.html) - Entry points
 - [How To Write Shared Libraries](https://www.akkadia.org/drepper/dsohowto.pdf)
 - [JSON Schema](http://json-schema.org/)
 - [Minix](http://www.cise.ufl.edu/~cop4600/cgi-bin/lxr/http/source.cgi/tools/)
+- [Sanos](http://www.jbox.dk/sanos/)
+- [Sanos](http://www.jbox.dk/sanos/)
 - [glibc malloc hook deprecation considered harmful](https://sourceware.org/ml/libc-alpha/2011-07/msg00136.html)
 - [musl - libc](http://www.musl-libc.org/)
 - [musl - replacing malloc](http://www.openwall.com/lists/musl/2014/08/08/11)
-- [Sanos](http://www.jbox.dk/sanos/)
-- [GNU LD](http://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_node/ld_24.html) - Entry points
