@@ -66,7 +66,14 @@ int initialize_gallocy_framework(const char* config_path) {
   // Initialize libcurl memory allocator.
   //
   curl_global_init_mem(
-    CURL_GLOBAL_ALL,
+    // TODO(sholsapp): libcurl causes an invalid free to happen in libcrypto
+    // when this is enabled *and* the wrapper is linked with target application
+    // (note: wrapper is linked means all memory functions have been interposed
+    // in the target application, including libc/libc++ which gallocy may be
+    // using internally). This is likely a problem with either i) double free
+    // or ii) libc is handing a pointer from custom_malloc to internal_free.
+    //CURL_GLOBAL_ALL,
+    CURL_GLOBAL_NOTHING,
     internal_malloc,
     internal_free,
     internal_realloc,
