@@ -1,5 +1,3 @@
-#include "gallocy/client.h"
-
 #include <unistd.h>
 #include <pthread.h>
 
@@ -8,6 +6,7 @@
 #include <iostream>
 
 #include "./restclient.h"
+#include "gallocy/consensus/client.h"
 #include "gallocy/logging.h"
 #include "gallocy/models.h"
 #include "gallocy/stringutils.h"

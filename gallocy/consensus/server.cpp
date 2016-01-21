@@ -4,10 +4,10 @@
 #include <string>
 #include <utility>
 
+#include "gallocy/consensus/server.h"
 #include "gallocy/logging.h"
 #include "gallocy/models.h"
 #include "gallocy/request.h"
-#include "gallocy/server.h"
 #include "gallocy/stringutils.h"
 #include "gallocy/threads.h"
 

@@ -3,12 +3,12 @@
 
 #include <iostream>
 
-#include "gallocy/client.h"
 #include "gallocy/config.h"
+#include "gallocy/consensus/client.h"
+#include "gallocy/consensus/server.h"
 #include "gallocy/entrypoint.h"
 #include "gallocy/logging.h"
 #include "gallocy/models.h"
-#include "gallocy/server.h"
 #include "gallocy/threads.h"
 
 GallocyClient *gallocy_client = nullptr;

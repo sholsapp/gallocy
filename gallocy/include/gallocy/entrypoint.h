@@ -1,9 +1,9 @@
 #ifndef GALLOCY_ENTRYPOINT_H_
 #define GALLOCY_ENTRYPOINT_H_
 
-#include "gallocy/client.h"
 #include "gallocy/config.h"
-#include "gallocy/server.h"
+#include "gallocy/consensus/client.h"
+#include "gallocy/consensus/server.h"
 
 /**
  * Initialize the gallocy framework.
