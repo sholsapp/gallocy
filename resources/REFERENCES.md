@@ -22,3 +22,4 @@
 - [musl - libc](http://www.musl-libc.org/)
 - [musl - replacing malloc](http://www.openwall.com/lists/musl/2014/08/08/11)
 - [Sanos](http://www.jbox.dk/sanos/)
+- [GNU LD](http://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_node/ld_24.html) - Entry points

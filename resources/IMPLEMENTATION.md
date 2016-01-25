@@ -106,24 +106,6 @@ negotiations:
   HTTP 200 - The owner agrees to the terms and has successfully committed the
   metadata to its pagetable.
 
-  HTTP 301 - The owner is no longer an authoritative owner of this region of
-  memory but knows another host that is. The requester should follow the
-  redirect and update its routing information. The payload contains additional
-  routing information that the requester can use to patch its own routing
-  information.
-
-  HTTP 302 - The owner has leased this region of memory to another host. The
-  requester should follow the redirect but make future requests to this owner.
-
-  HTTP 409 - The owner disagrees to the terms because the metadata already
-  exists in its pagetable. The response contains the lease information about
-  the owner of the requested memory. The requester should update its pagetable
-  and retry servicing the allocation from the beginning.
-
-  HTTP 503 - The owner is busy negotiating with other requesters so this
-  requester should try again at a future time. The response data may indicate
-  that the requester need not retry the request at a future time.
-
 Execution blocks until negotiations complete with an appropriate number of
 owners. The appropriate number of owners to require negotiations with is
 determined by the coherency protocol the system is configured to use. Upon
