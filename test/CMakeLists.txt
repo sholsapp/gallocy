@@ -14,6 +14,7 @@ set(CMAKE_CXX_FLAGS
 set(test_sources
   gtest.cpp
   test_config.cpp
+  test_consensus_timer.cpp
   test_diff.cpp
   test_free.cpp
   test_httpd.cpp
