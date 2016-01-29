@@ -6,7 +6,8 @@ set(GALLOCY_INCLUDE
   include/gallocy
   heaplayers
   external/restclient-cpp
-  external/sqlite3)
+  external/sqlite3
+  ${CURL_INCLUDE_DIRS})
 include_directories(${GALLOCY_INCLUDE})
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -25,7 +26,6 @@ set(GALLOCY_CORE_SRC
   consensus/client.cpp
   consensus/server.cpp
   entrypoint.cpp
-  #glibc/time.c
   libgallocy.cpp
   models.cpp
   request.cpp
@@ -47,7 +47,6 @@ install(TARGETS gallocy-core DESTINATION lib)
 set (GALLOCY_WRAPPER_SOURCE
   wrapper.cpp)
 add_library(gallocy-wrapper SHARED ${GALLOCY_WRAPPER_SOURCE})
-#target_link_libraries(gallocy-wrapper gallocy-core)
 install(TARGETS gallocy-wrapper DESTINATION lib)
 
 set(GALLOCY_RUNTIME
@@ -61,5 +60,5 @@ add_executable(server bin/server.cpp)
 # standard library usage between internal and application uses seperate before
 # continuing down this path.
 #target_link_libraries(server gallocy-core gallocy-runtime gallocy-wrapper)
-target_link_libraries(server gallocy-core gallocy-runtime)
+target_link_libraries(server ${CURL_LIBRARIES} gallocy-core gallocy-runtime)
 install(TARGETS server DESTINATION bin)
