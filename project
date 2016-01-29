@@ -93,7 +93,7 @@ sub_docker() {
 
   RUNNING_CONTAINERS=$(docker ps -q)
   if [ "$RUNNING_CONTAINERS" != "" ]; then
-    OUT="$(docker stop $RUNNING_CONTAINERS)"
+    OUT="$(docker stop -t 1 $RUNNING_CONTAINERS)"
   fi
 
   OLD_CONTAINERS="$(docker ps -a -q)"
