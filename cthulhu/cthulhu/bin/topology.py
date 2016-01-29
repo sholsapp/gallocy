@@ -49,8 +49,16 @@ class FixtureContext(object):
     os.chmod(path, perm)
 
   def render(self):
+    # Render all instances
     for instance in self.instances:
       instance.render()
+    # Render human readable links to each instance
+    for instance in self.instances:
+      try:
+        os.symlink(instance.node_root, os.path.join(self.fixture_root, instance.instance_name))
+      except Exception:
+        log.exception('Failed to create symlink to %s', instance.instance_name)
+    # Render the master control script
     self.write_file(self.fixture_control, self.render_control(), perm=0o755)
 
   def render_control(self):
