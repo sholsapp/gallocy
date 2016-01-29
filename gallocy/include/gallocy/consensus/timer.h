@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <condition_variable>
+#include <ctime>
 #include <iostream>
 #include <thread>
 
@@ -11,10 +12,11 @@ class Timer {
   /**
    * Construct a timer.
    */
-  Timer(uint64_t step, std::condition_variable *timed_out) {
-    _step = step;
-    _timed_out = timed_out;
-  }
+  Timer(uint64_t step, uint64_t jitter, std::condition_variable *timed_out) :
+    timed_out(timed_out),
+    step(step),
+    jitter(jitter)
+  {}
   Timer(const Timer &other) = delete;
   Timer &operator=(Timer &other) = delete;
   /**
@@ -39,6 +41,12 @@ class Timer {
     was_reset = true;
     cv.notify_all();
   }
+  /**
+   * True if the timer is currently running.
+   */
+  bool is_timer_running() {
+    return is_alive;
+  }
 
  private:
   /**
@@ -47,10 +55,10 @@ class Timer {
   void event_loop() {
     while (is_alive) {
       std::unique_lock<std::mutex> lk(cv_m);
-      std::cv_status status = cv.wait_for(lk, std::chrono::milliseconds(_step));
+      std::cv_status status = cv.wait_for(lk, calculate_wait_time());
       if (status == std::cv_status::timeout) {
         // std::cout << "> TIMEOUT" << std::endl;
-        _timed_out->notify_all();
+        timed_out->notify_all();
       } else if (status == std::cv_status::no_timeout) {
         if (was_reset) {
           was_reset = false;
@@ -60,6 +68,15 @@ class Timer {
         }
       }
     }
+  }
+  /**
+   * Calculate a random wait time.
+   *
+   * The random wait time calculated is somewhere between `step` and `step /
+   * 2`, and should be suitable in a Raft consensus protocol.
+   */
+  std::chrono::milliseconds calculate_wait_time() {
+    return std::chrono::milliseconds(step - std::rand() % (step / 2));
   }
 
  private:
@@ -74,7 +91,7 @@ class Timer {
   /**
    * Condition signaled if/when a time out occurs.
    */
-  std::condition_variable *_timed_out;
+  std::condition_variable *timed_out;
   /**
    * Condition used internally for starting, stopping, and resetting the timer.
    */
@@ -90,7 +107,11 @@ class Timer {
   /**
    * The amount of time in milliseconds to use as a countdown constant.
    */
-  uint64_t _step;
+  uint64_t step;
+  /**
+   * The amount of time in milliseconds to use as an upper bound for jitter.
+   */
+  uint64_t jitter;
 };
 
 #endif  // GALLOCY_CONSENSUS_TIMER_H_

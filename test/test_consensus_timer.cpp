@@ -6,13 +6,14 @@
 #include "gallocy/consensus/timer.h"
 
 
+// TODO(sholsapp): Does this need to protect against spurious wake ups?
 TEST(ConsensusTimerTests, StartStopReset) {
   std::condition_variable alarm_triggered;
   std::cv_status status;
   std::mutex m;
   uint64_t step = 100;
 
-  Timer t(step, std::addressof(alarm_triggered));
+  Timer t(step, 0, std::addressof(alarm_triggered));
 
   // Start the timer
   t.start();
