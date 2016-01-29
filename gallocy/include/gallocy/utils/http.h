@@ -12,7 +12,7 @@ namespace utils {
  * Upon receiving a majority of responses this function will signal the caller
  * using the supplied pthread_cond_t parameter.
  */
-int multirequest(const gallocy::vector<gallocy::string> &peers, uint16_t port);
+int multirequest(const gallocy::string &path, const gallocy::vector<gallocy::string> &peers, uint16_t port);
 
 }  // namespace utils
 

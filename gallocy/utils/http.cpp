@@ -15,18 +15,22 @@
 
 namespace utils {
 
-int multirequest(const gallocy::vector<gallocy::string> &peers, uint16_t port) {
+int multirequest(const gallocy::string &path, const gallocy::vector<gallocy::string> &peers, uint16_t port) {
   int rsp_count = 0;
   int peer_count = peers.size();
   int peer_majority = peer_count / 2;
 
+  // TODO(sholsapp): Move these to a caller and take them by parameter. The
+  // caller can use these to continue operation when a majority of requests are
+  // complete.
   pthread_mutex_t rsp_count_lock = PTHREAD_MUTEX_INITIALIZER;
   pthread_cond_t rsp_have_majority = PTHREAD_COND_INITIALIZER;
   std::vector<std::future<FutureResponse>> futures;
 
   for (auto peer : peers) {
     std::stringstream s;
-    s << "http://" << peer << ":" << port << "/admin";
+    // TODO(sholsapp): Expose the path to fetch, otherwise this is worthless.
+    s << "http://" << peer << ":" << port << path;
     std::string url = s.str();
     // Create an async thread.
     std::future<FutureResponse> future =
