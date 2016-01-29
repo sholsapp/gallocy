@@ -1,3 +1,6 @@
+#ifndef GALLOCY_CONSENSUS_TIMER_H_
+#define GALLOCY_CONSENSUS_TIMER_H_
+
 #include <chrono>
 #include <condition_variable>
 #include <iostream>
@@ -19,7 +22,7 @@ class Timer {
    */
   void start() {
     is_alive = true;
-    t = std::move(std::thread([this]() { wait(); }));
+    t = std::move(std::thread([this]() { event_loop(); }));
   }
   /**
    * Stop the timer.
@@ -41,18 +44,19 @@ class Timer {
   /**
    * The timer event loop.
    */
-  void wait() {
+  void event_loop() {
     while (is_alive) {
       std::unique_lock<std::mutex> lk(cv_m);
       std::cv_status status = cv.wait_for(lk, std::chrono::milliseconds(_step));
       if (status == std::cv_status::timeout) {
-        std::cout << "> TIMEOUT" << std::endl;
+        // std::cout << "> TIMEOUT" << std::endl;
+        _timed_out->notify_all();
       } else if (status == std::cv_status::no_timeout) {
         if (was_reset) {
           was_reset = false;
-          std::cout << "> RESET" << std::endl;
+          // std::cout << "> RESET" << std::endl;
         } else {
-          std::cout << "> SIGNALED" << std::endl;
+          // std::cout << "> SIGNALED" << std::endl;
         }
       }
     }
@@ -89,3 +93,4 @@ class Timer {
   uint64_t _step;
 };
 
+#endif  // GALLOCY_CONSENSUS_TIMER_H_
