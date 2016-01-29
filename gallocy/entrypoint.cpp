@@ -35,18 +35,18 @@ int initialize_gallocy_framework(const char* config_path) {
 // TODO(sholsapp): We are seeing double free corruption even when compiling
 // libcurl ourselves with minimal library support. Thing about re-enabling this
 // when we can static link standard library usages.
-#if 0
       internal_malloc,
       internal_free,
       internal_realloc,
       internal_strdup,
       internal_calloc)) {
-#endif
+#if 0
       malloc,
       free,
       realloc,
       strdup,
       calloc)) {
+#endif
     LOG_ERROR("Failed to set curl global initiatilization settings.");
   }
 
