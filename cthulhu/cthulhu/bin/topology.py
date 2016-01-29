@@ -62,15 +62,50 @@ class FixtureContext(object):
     self.write_file(self.fixture_control, self.render_control(), perm=0o755)
 
   def render_control(self):
-    return Template('''#!/bin/bash -x
+    return Template("""#!/bin/bash -x
 
 # GENERATED CONTROL SCRIPT
 
-{% for instance in instances %}
-{{ instance.node_control }}
-{% endfor %}
+sub_help() {
+  echo "Usage: control <subcommand> [options]"
+  echo "Subcommands:"
+  echo "    start"
+  echo "    stop"
+}
 
-''').render(
+sub_start() {
+{% for instance in instances %}
+  {{ instance.node_control }}
+{% endfor %}
+}
+
+sub_stop() {
+  RUNNING_CONTAINERS=$(docker ps -q)
+  if [ "$RUNNING_CONTAINERS" != "" ]; then
+    OUT="$(docker stop -t 1 $RUNNING_CONTAINERS)"
+  fi
+
+  OLD_CONTAINERS="$(docker ps -a -q)"
+  if [ "$OLD_CONTAINERS" != "" ]; then
+    OUT="$(docker rm $OLD_CONTAINERS)"
+  fi
+}
+
+SUBCOMMAND=$1
+case $SUBCOMMAND in
+  "" | "-h" | "--help")
+    sub_help
+    ;;
+  *)
+    shift
+    sub_${SUBCOMMAND} $@
+    if [ $? = 127 ]; then
+      echo "Error: '$SUBCOMMAND' is not a known subcommand." >&2
+      exit 1
+    fi
+    ;;
+esac
+""").render(
     instances=self.instances,
   )
 
@@ -152,7 +187,7 @@ PID=$(docker run \\
   --hostname={{ host_name }} \\
   --volume={{ local_etc }}:/home/gallocy/etc \\
   --volume={{ local_var }}:/home/gallocy/var \\
-  --memory=64M \\
+  --memory=16M \\
   {{ docker_container }})
 echo $PID > {{ local_root }}/pid.txt
 
