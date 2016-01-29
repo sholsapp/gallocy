@@ -62,7 +62,7 @@ class FixtureContext(object):
     self.write_file(self.fixture_control, self.render_control(), perm=0o755)
 
   def render_control(self):
-    return Template("""#!/bin/bash -x
+    return Template("""#!/bin/bash
 
 # GENERATED CONTROL SCRIPT
 
