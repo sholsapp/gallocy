@@ -25,7 +25,7 @@ set(GALLOCY_CORE_SRC
   consensus/client.cpp
   consensus/server.cpp
   entrypoint.cpp
-  glibc/time.c
+  #glibc/time.c
   libgallocy.cpp
   models.cpp
   request.cpp
@@ -33,6 +33,7 @@ set(GALLOCY_CORE_SRC
   threads.cpp
   utils/config.cpp
   utils/diff.cpp
+  utils/http.cpp
   utils/logging.cpp
   utils/objutils.cpp
   utils/stringutils.cpp

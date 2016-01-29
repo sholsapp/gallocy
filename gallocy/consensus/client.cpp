@@ -11,11 +11,17 @@
 #include "gallocy/models.h"
 #include "gallocy/stringutils.h"
 #include "gallocy/threads.h"
-
+#include "gallocy/utils/http.h"
 
 /**
- * The work finite state machine.
+ * while alive
+ *   wait for state change or timer to expire
+ *     if timer expired
+ *       move to candidate state
+ *     handle the state change
  */
+
+
 void *GallocyClient::work() {
   LOG_INFO("Starting HTTP client");
   while (alive) {
@@ -26,6 +32,12 @@ void *GallocyClient::work() {
       case IDLE:
         state = state_idle();
         break;
+      case FOLLOWER:
+        break;
+      case LEADER:
+        break;
+      case CANDIDATE:
+        break;
       default:
         LOG_ERROR("Client reached default handler.");
         break;
@@ -35,9 +47,7 @@ void *GallocyClient::work() {
   return nullptr;
 }
 
-/**
- * A joining state.
- */
+
 GallocyClient::State GallocyClient::state_joining() {
   // TODO(sholsapp): don't bug peers that we're already connected to by cross
   // references the peer_info_table.
@@ -79,10 +89,8 @@ GallocyClient::State GallocyClient::state_joining() {
 }
 
 
-/**
- * An idle state.
- */
 GallocyClient::State GallocyClient::state_idle() {
   LOG_INFO("Idle...");
+  utils::multirequest(config.peers, config.port);
   return IDLE;
 }

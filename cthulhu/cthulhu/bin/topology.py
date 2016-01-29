@@ -135,6 +135,7 @@ class InstanceContext(object):
 # GENERATED CONTROL SCRIPT
 
 PID=$(docker run \\
+  --privileged=true \\
   --name {{ name }} \\
   --interactive \\
   --tty \\

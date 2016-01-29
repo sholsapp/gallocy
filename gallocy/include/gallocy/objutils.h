@@ -7,6 +7,7 @@
 
 #include "gallocy/libgallocy.h"
 
+namespace utils {
 
 template <typename T>
 void pretty_print_vector(gallocy::vector<T> v) {
@@ -27,5 +28,7 @@ void pretty_print_map(gallocy::map<K, V> m) {
     std::cout << "    " << it->first << ": " << it->second << std::endl;
   std::cout << "}" << std::endl;
 }
+
+}  // namespace utils
 
 #endif  // GALLOCY_OBJUTILS_H_

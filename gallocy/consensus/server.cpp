@@ -23,12 +23,6 @@ void error_die(const char *sc) {
 }
 
 
-/**
- * Handle a request for /admin.
- *
- * :param args: The route arguments.
- * :param request: The request itself.
- */
 Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
   Response *response = new (internal_malloc(sizeof(Response))) Response();
   response->status_code = 200;
@@ -66,12 +60,6 @@ Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
 }
 
 
-/**
- * Handle a request for /join.
- *
- * :param args: The route arguments.
- * :param request: The request itself.
- */
 Response *GallocyServer::route_join(RouteArguments *args, Request *request) {
   Response *response = new (internal_malloc(sizeof(Response))) Response();
   // TODO(sholsapp): Setup the joining logic here.
@@ -109,16 +97,26 @@ Response *GallocyServer::route_join(RouteArguments *args, Request *request) {
 }
 
 
-/**
- * The primary work loop.
- *
- * Starting the HTTP server binds to the socket, begins listening on the bound
- * socket, then enters the HTTP server's main event loop. The HTTP server's
- * main event loop listens while alive for incoming connections and creates a
- * handler thread for each established connection.
- *
- * To stop the HTTP server set `alive` to false.
- */
+Response *GallocyServer::route_request_vote(RouteArguments *args, Request *request) {
+  Response *response = new (internal_malloc(sizeof(Response))) Response();
+  response->headers["Server"] = "Gallocy-Httpd";
+  response->status_code = 200;
+  args->~RouteArguments();
+  internal_free(args);
+  return response;
+}
+
+
+Response *GallocyServer::route_append_entries(RouteArguments *args, Request *request) {
+  Response *response = new (internal_malloc(sizeof(Response))) Response();
+  response->headers["Server"] = "Gallocy-Httpd";
+  response->status_code = 200;
+  args->~RouteArguments();
+  internal_free(args);
+  return response;
+}
+
+
 void *GallocyServer::work() {
   LOG_INFO("Starting HTTP server on " << address << ":" << port);
 
@@ -187,17 +185,6 @@ void *GallocyServer::work() {
 }
 
 
-/**
- * A static helper for handling requests.
- *
- * This static helper is for use with pthreads and extracts a
- * :class:`RequestContext` pointer from the void pointer argument. When the
- * request is done being handled, the :class:``RequestContext`` should be
- * freed.
- *
- * :param arg: A heap``RequestContext`` argument.
- * :returns: A null pointer.
- */
 void *GallocyServer::handle_entry(void *arg) {
   struct RequestContext *ctx = reinterpret_cast<struct RequestContext *>(arg);
   void *ret = ctx->server->handle(ctx->client_socket, ctx->client_name);
@@ -207,20 +194,6 @@ void *GallocyServer::handle_entry(void *arg) {
 }
 
 
-/**
- * Handle a HTTP request.
- *
- * The handling of the HTTP request is done in a threaded context. Access to
- * the server resources is available, but must be synchronized.
- *
- * The route handler of the HTTP request is done by matching the HTTP request's
- * URI against the map of registered routes. The route handler will be called
- * with the URI arguments and the request object itself. The route handler is
- * responsible for managing memory for all parameters passed to it.
- *
- * :param client_socket: The client's socket id.
- * :returns: A null pointer.
- */
 void *GallocyServer::handle(int client_socket, struct sockaddr_in client_name) {
   Request *request = get_request(client_socket);
   Response *response = routes.match(request->uri)(request);
@@ -250,13 +223,6 @@ void *GallocyServer::handle(int client_socket, struct sockaddr_in client_name) {
 }
 
 
-/**
- * Read an HTTP request from a socket.
- *
- * :param client_socket: The client's socket id.
- * :param request: The string stream to write the request into.
- * :returns: The request object.
- */
 Request *GallocyServer::get_request(int client_socket) {
   gallocy::stringstream request;
   int n;
