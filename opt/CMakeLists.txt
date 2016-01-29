@@ -33,3 +33,15 @@ set_cache_variable(GTEST_LIBRARIES "Location of libgtest")
 set_cache_variable(GTEST_MAIN_LIBRARIES "Location of libgtest-main")
 set_cache_variable(GTEST_BOTH_LIBRARIES "Location of both gtest libraries")
 set_cache_variable(GTEST_INCLUDE_DIRS "Location of gtest include files")
+
+
+# Curl configuration
+add_subdirectory(curl)
+set(CURL_FOUND TRUE)
+set(CURL_LIBRARIES libcurl)
+set(CURL_INCLUDE_DIRS
+    ${CURL_SOURCE_DIR}/include
+    ${CURL_BINARY_DIR}/include/curl)
+set_cache_variable(CURL_FOUND "Set if libcurl is found or built")
+set_cache_variable(CURL_LIBRARIES "Location of libcurl")
+set_cache_variable(CURL_INCLUDE_DIRS "Location of curl include files")

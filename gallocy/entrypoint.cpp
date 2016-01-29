@@ -19,6 +19,37 @@ GallocyState *gallocy_state = nullptr;
 
 int initialize_gallocy_framework(const char* config_path) {
   LOG_INFO("Initializing gallocy framework!");
+  //
+  // Initialize libcurl memory allocator.
+  //
+  if (curl_global_init_mem(
+      // TODO(sholsapp): libcurl causes an invalid free to happen in libcrypto
+      // when this is enabled *and* the wrapper is linked with target
+      // application (note: wrapper is linked means all memory functions have
+      // been interposed in the target application, including libc/libc++ which
+      // gallocy may be using internally). This is likely a problem with either
+      // i) double free or ii) libc is handing a pointer from custom_malloc to
+      // internal_free.
+      //CURL_GLOBAL_ALL,
+      CURL_GLOBAL_NOTHING,
+// TODO(sholsapp): We are seeing double free corruption even when compiling
+// libcurl ourselves with minimal library support. Thing about re-enabling this
+// when we can static link standard library usages.
+#if 0
+      internal_malloc,
+      internal_free,
+      internal_realloc,
+      internal_strdup,
+      internal_calloc)) {
+#endif
+      malloc,
+      free,
+      realloc,
+      strdup,
+      calloc)) {
+    LOG_ERROR("Failed to set curl global initiatilization settings.");
+  }
+
   char *error;
   void *handle;
   //
@@ -65,23 +96,6 @@ int initialize_gallocy_framework(const char* config_path) {
       << reinterpret_cast<uint64_t *>(*__gallocy_pthread_join)
       << "]");
   //
-  // Initialize libcurl memory allocator.
-  //
-  curl_global_init_mem(
-    // TODO(sholsapp): libcurl causes an invalid free to happen in libcrypto
-    // when this is enabled *and* the wrapper is linked with target application
-    // (note: wrapper is linked means all memory functions have been interposed
-    // in the target application, including libc/libc++ which gallocy may be
-    // using internally). This is likely a problem with either i) double free
-    // or ii) libc is handing a pointer from custom_malloc to internal_free.
-    //CURL_GLOBAL_ALL,
-    CURL_GLOBAL_NOTHING,
-    internal_malloc,
-    internal_free,
-    internal_realloc,
-    internal_strdup,
-    internal_calloc);
-  //
   // Initialize SQLite memory allocator.
   //
   e.initialize();
@@ -90,6 +104,11 @@ int initialize_gallocy_framework(const char* config_path) {
   // Load configuration file.
   //
   gallocy_config = load_config(config_path);
+  //
+  // Create the state object.
+  //
+  gallocy_state = new (internal_malloc(sizeof(GallocyState))) GallocyState();
+  //
   //
   // Start the client thread.
   //

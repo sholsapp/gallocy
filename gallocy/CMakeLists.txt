@@ -40,7 +40,7 @@ set(GALLOCY_CORE_SRC
   external/restclient-cpp/restclient.cpp
   external/sqlite3/sqlite3.c)
 add_library(gallocy-core SHARED ${GALLOCY_CORE_SRC})
-target_link_libraries(gallocy-core gallocy-runtime curl pthread dl)
+target_link_libraries(gallocy-core gallocy-runtime ${CURL_LIBRARIES} pthread dl)
 install(TARGETS gallocy-core DESTINATION lib)
 
 # The gallocy-wrapper build

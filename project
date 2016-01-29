@@ -18,7 +18,15 @@ sub_help() {
 
 sub_build() {
   if [ ! -f "Makefile" ]; then
-    cmake -G "Unix Makefiles" || exit 1
+    cmake -G "Unix Makefiles"  \
+      -DBUILD_CURL_EXE=OFF     \
+      -DBUILD_CURL_TESTS=OFF   \
+      -DCMAKE_USE_LIBSSH2=OFF  \
+      -DCMAKE_USE_OPENLDAP=OFF \
+      -DCMAKE_USE_OPENSSL=OFF  \
+      -DCURL_ZLIB=OFF          \
+      -DHTTP_ONLY=ON           \
+      || exit 1
   fi
   make || exit 1
   make install || exit 1
