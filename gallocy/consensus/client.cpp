@@ -7,47 +7,70 @@
 
 #include "./restclient.h"
 #include "gallocy/consensus/client.h"
+#include "gallocy/entrypoint.h"
 #include "gallocy/logging.h"
 #include "gallocy/models.h"
 #include "gallocy/stringutils.h"
 #include "gallocy/threads.h"
 #include "gallocy/utils/http.h"
 
-/**
- * while alive
- *   wait for state change or timer to expire
- *     if timer expired
- *       move to candidate state
- *     handle the state change
- */
-
 
 void *GallocyClient::work() {
   LOG_INFO("Starting HTTP client");
+
+  if (gallocy_state == nullptr) {
+    LOG_ERROR("The gallocy_state object is null.");
+    abort();
+  }
+
+  gallocy_state->start_timer();
+
   while (alive) {
+
+    std::unique_lock<std::mutex> lk(gallocy_state->get_timer_mutex());
+    // Wait here indefinitely until the alarm expires.
+    gallocy_state->get_timer_cv().wait(lk);
+
     switch (state) {
-      case JOINING:
-        state = state_joining();
-        break;
-      case IDLE:
-        state = state_idle();
-        break;
       case FOLLOWER:
+        LOG_DEBUG("I'm a follower.");
+        state = state_candidate();
         break;
       case LEADER:
+        LOG_DEBUG("I'm a leader.");
         break;
       case CANDIDATE:
+        LOG_DEBUG("I'm a candidate.");
+        state = state_candidate();
         break;
       default:
         LOG_ERROR("Client reached default handler.");
         break;
     }
-    sleep(step_time - std::rand() % step_time);
+    // TODO(sholsapp): What to do with this... delete it?
+    // sleep(step_time - std::rand() % step_time);
   }
   return nullptr;
 }
 
 
+GallocyClient::State GallocyClient::state_follower() {
+  return FOLLOWER;
+}
+
+
+GallocyClient::State GallocyClient::state_leader() {
+  return LEADER;
+}
+
+
+GallocyClient::State GallocyClient::state_candidate() {
+  utils::multirequest("/raft/request_vote", config.peers, config.port);
+  return CANDIDATE;
+}
+
+
+#if 0
 GallocyClient::State GallocyClient::state_joining() {
   // TODO(sholsapp): don't bug peers that we're already connected to by cross
   // references the peer_info_table.
@@ -88,9 +111,4 @@ GallocyClient::State GallocyClient::state_joining() {
   }
 }
 
-
-GallocyClient::State GallocyClient::state_idle() {
-  LOG_INFO("Idle...");
-  utils::multirequest(config.peers, config.port);
-  return IDLE;
-}
+#endif

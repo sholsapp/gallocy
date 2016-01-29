@@ -3,8 +3,12 @@
 
 #include <pthread.h>
 
+#include <condition_variable>
+#include <mutex>
+
 #include "gallocy/allocators/internal.h"
 #include "gallocy/consensus/log.h"
+#include "gallocy/consensus/timer.h"
 
 /**
  * The type to identifier peers.
@@ -41,6 +45,12 @@ class GallocyState {
       commit_index(0),
       last_applied(0) {
     lock = PTHREAD_MUTEX_INITIALIZER;
+    timer = new (internal_malloc(sizeof(Timer)))
+      Timer(5, 0, std::addressof(timed_out));
+  }
+  ~GallocyState() {
+    timer->~Timer();
+    internal_free(timer);
   }
   GallocyState(const GallocyState &) = delete;
   GallocyState &operator=(const GallocyState &) = delete;
@@ -183,6 +193,27 @@ class GallocyState {
    * A lock to synchronize all get/set access to private member data.
    */
   pthread_mutex_t lock;
+  Timer *timer;
+  std::condition_variable timed_out;
+  std::mutex timed_out_mutex;
+ public:
+  /**
+   * Start the timer event loop.
+   */
+  void start_timer() {
+    Guard(std::addressof(lock));
+    if (!timer->is_timer_running())
+      timer->start();
+  }
+
+  std::mutex &get_timer_mutex() {
+    return timed_out_mutex;
+  }
+
+  std::condition_variable &get_timer_cv() {
+    return timed_out;
+  }
+
 };
 
 #endif  // GALLOCY_CONSENSUS_STATE_H_

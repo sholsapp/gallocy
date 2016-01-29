@@ -12,9 +12,6 @@
 class GallocyClient : public ThreadedDaemon {
  public:
   enum State {
-    JOINING,
-    IDLE,
-    // Raft
     FOLLOWER,
     LEADER,
     CANDIDATE,
@@ -22,16 +19,8 @@ class GallocyClient : public ThreadedDaemon {
  public:
   explicit GallocyClient(GallocyConfig &config) :
     config(config),
-    state(JOINING),
+    state(FOLLOWER),
     step_time(5) {}
-  /**
-   * An idle state.
-   */
-  State state_idle();
-  /**
-   * A joining state.
-   */
-  State state_joining();
   /**
    * A Raft follower state.
    */

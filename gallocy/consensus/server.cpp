@@ -101,6 +101,7 @@ Response *GallocyServer::route_request_vote(RouteArguments *args, Request *reque
   Response *response = new (internal_malloc(sizeof(Response))) Response();
   response->headers["Server"] = "Gallocy-Httpd";
   response->status_code = 200;
+  //
   args->~RouteArguments();
   internal_free(args);
   return response;
@@ -111,6 +112,7 @@ Response *GallocyServer::route_append_entries(RouteArguments *args, Request *req
   Response *response = new (internal_malloc(sizeof(Response))) Response();
   response->headers["Server"] = "Gallocy-Httpd";
   response->status_code = 200;
+  //
   args->~RouteArguments();
   internal_free(args);
   return response;
