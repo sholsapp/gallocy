@@ -79,11 +79,13 @@ extern "C" int pthread_create(pthread_t *thread,
   pthread_create_function __library_pthread_create =
     reinterpret_cast<pthread_create_function>
     (reinterpret_cast<uint64_t *>(dlsym(RTLD_NEXT, "pthread_create")));
+#if 0
   LOG_DEBUG("Using intercepted pthread_create (wrapping "
       << reinterpret_cast<uint64_t *>(__library_pthread_create)
       << " with "
       << reinterpret_cast<uint64_t *>(pthread_create)
       << ")");
+#endif
   return __library_pthread_create(thread, attr, start_routine, arg);
 }
 
@@ -92,10 +94,12 @@ extern "C" int pthread_join(pthread_t thread, void **value_ptr) {
   pthread_join_function __library_pthread_join =
     reinterpret_cast<pthread_join_function>
     (reinterpret_cast<uint64_t *>(dlsym(RTLD_NEXT, "pthread_join")));
+#if 0
   LOG_DEBUG("Using intercepted pthread_join (wrapping "
       << &__library_pthread_join
       << " with "
       << reinterpret_cast<uint64_t *>(pthread_join)
       << ")");
+#endif
   return __library_pthread_join(thread, value_ptr);
 }
