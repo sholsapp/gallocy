@@ -6,3 +6,6 @@
 	path = opt/curl
 	url = https://github.com/sholsapp/curl.git
 	ignore = all
+[submodule "opt/restclient-cpp"]
+	path = opt/restclient-cpp
+	url = https://github.com/mrtazz/restclient-cpp

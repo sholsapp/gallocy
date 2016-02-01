@@ -6,84 +6,59 @@
  * @date 2010-10-11
  */
 
-#ifndef INCLUDE_RESTCLIENT_H_
-#define INCLUDE_RESTCLIENT_H_
+#ifndef INCLUDE_RESTCLIENT_CPP_RESTCLIENT_H_
+#define INCLUDE_RESTCLIENT_CPP_RESTCLIENT_H_
 
 #include <curl/curl.h>
 #include <string>
 #include <map>
 #include <cstdlib>
-#include "meta.h"
-#include <algorithm>
 
-class RestClient
-{
-  public:
-    /**
-     * public data definitions
-     */
-    typedef std::map<std::string, std::string> headermap;
+#include "version.h"
 
-    /** response struct for queries */
-    typedef struct
-    {
-      int code;
-      std::string body;
-      headermap headers;
-    } response;
-    /** struct used for uploading data */
-    typedef struct
-    {
-      const char* data;
-      size_t length;
-    } upload_object;
+/**
+ * @brief namespace for all RestClient definitions
+ */
+namespace RestClient {
 
-    /** public methods */
-    // Auth
-    static void clearAuth();
-    static void setAuth(const std::string& user,const std::string& password);
-    // HTTP GET
-    static response get(const std::string& url);
-    // HTTP POST
-    static response post(const std::string& url, const std::string& ctype,
-                         const std::string& data);
-    // HTTP PUT
-    static response put(const std::string& url, const std::string& ctype,
-                        const std::string& data);
-    // HTTP DELETE
-    static response del(const std::string& url);
+/**
+  * public data definitions
+  */
+typedef std::map<std::string, std::string> HeaderFields;
 
-  private:
-    // writedata callback function
-    static size_t write_callback(void *ptr, size_t size, size_t nmemb,
-                                 void *userdata);
+/** @struct Response
+  *  @brief This structure represents the HTTP response data
+  *  @var Response::code
+  *  Member 'code' contains the HTTP response code
+  *  @var Response::body
+  *  Member 'body' contains the HTTP response body
+  *  @var Response::headers
+  *  Member 'headers' contains the HTTP response headers
+  */
+typedef struct {
+  int code;
+  std::string body;
+  HeaderFields headers;
+} Response;
 
-    // header callback function
-    static size_t header_callback(void *ptr, size_t size, size_t nmemb,
-				  void *userdata);
-    // read callback function
-    static size_t read_callback(void *ptr, size_t size, size_t nmemb,
-                                void *userdata);
-    static const char* user_agent;
-    static std::string user_pass;
+// init and disable functions
+int init();
+void disable();
 
-    // trim from start
-    static inline std::string &ltrim(std::string &s) {
-      s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
-      return s;
-    }
+/**
+  * public methods for the simple API. These don't allow a lot of
+  * configuration but are meant for simple HTTP calls.
+  *
+  */
+Response get(const std::string& url);
+Response post(const std::string& url,
+              const std::string& content_type,
+              const std::string& data);
+Response put(const std::string& url,
+              const std::string& content_type,
+              const std::string& data);
+Response del(const std::string& url);
 
-    // trim from end
-    static inline std::string &rtrim(std::string &s) {
-      s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
-      return s;
-    }
+};  // namespace RestClient
 
-    // trim from both ends
-    static inline std::string &trim(std::string &s) {
-      return ltrim(rtrim(s));
-    }
-
-};
-
-#endif  // INCLUDE_RESTCLIENT_H_
+#endif  // INCLUDE_RESTCLIENT_CPP_RESTCLIENT_H_
