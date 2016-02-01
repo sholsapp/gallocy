@@ -47,7 +47,7 @@ class GallocyServer : public ThreadedDaemon {
         [this](RouteArguments *args, Request *request) { return route_join(args, request); });
       routes.register_handler("/raft/request_vote",
         [this](RouteArguments *args, Request *request) { return route_request_vote(args, request); });
-      routes.register_handler("/raft/append_entires",
+      routes.register_handler("/raft/append_entries",
         [this](RouteArguments *args, Request *request) { return route_append_entries(args, request); });
   }
   GallocyServer(const GallocyServer &) = delete;

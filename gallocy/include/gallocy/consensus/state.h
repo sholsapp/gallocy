@@ -46,7 +46,7 @@ class GallocyState {
       last_applied(0) {
     lock = PTHREAD_MUTEX_INITIALIZER;
     timer = new (internal_malloc(sizeof(Timer)))
-      Timer(5, 0, std::addressof(timed_out));
+      Timer(5000, 3000, std::addressof(timed_out));
   }
   ~GallocyState() {
     timer->~Timer();
@@ -196,6 +196,7 @@ class GallocyState {
   Timer *timer;
   std::condition_variable timed_out;
   std::mutex timed_out_mutex;
+
  public:
   /**
    * Start the timer event loop.
@@ -205,15 +206,28 @@ class GallocyState {
     if (!timer->is_timer_running())
       timer->start();
   }
-
+  /**
+   * Stop the timer event loop.
+   */
+  void stop_timer() {
+    Guard(std::addressof(lock));
+    if (timer->is_timer_running())
+      timer->stop();
+  }
+  /**
+   * Get the timer's mutex.
+   */
   std::mutex &get_timer_mutex() {
     return timed_out_mutex;
   }
-
+  /**
+   * Get the timer condition variable.
+   *
+   * To get this timer's mutex, use :meth:`get_timer_mutex`.
+   */
   std::condition_variable &get_timer_cv() {
     return timed_out;
   }
-
 };
 
 #endif  // GALLOCY_CONSENSUS_STATE_H_

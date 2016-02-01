@@ -2,17 +2,25 @@
 #define GALLOCY_UTILS_HTTP_H_
 
 #include "gallocy/allocators/internal.h"
+#include "restclient.h"
 
 typedef uint64_t FutureResponse;
 
 namespace utils {
 /**
- * Make many requests asynchronously.
+ * Make many get requests asynchronously.
  *
  * Upon receiving a majority of responses this function will signal the caller
  * using the supplied pthread_cond_t parameter.
  */
-int multirequest(const gallocy::string &path, const gallocy::vector<gallocy::string> &peers, uint16_t port);
+int get_many(const gallocy::string &path, const gallocy::vector<gallocy::string> &peers, uint16_t port);
+/**
+ * Make many post requests asynchronously.
+ *
+ * Upon receiving a majority of responses this function will signal the caller
+ * using the supplied pthread_cond_t parameter.
+ */
+int post_many(const gallocy::string &path, const gallocy::vector<gallocy::string> &peers, uint16_t port, gallocy::string json_body, std::function<bool(const RestClient::response &)>);
 
 }  // namespace utils
 

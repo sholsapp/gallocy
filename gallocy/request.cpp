@@ -137,3 +137,10 @@ gallocy::string Response::str() {
 uint64_t Response::size() {
   return str().size();
 }
+
+/**
+ * Print the response as a string.
+ */
+std::ostream& operator<<(std::ostream& stream, const Response& response) {
+  return stream << "Response(" << response.status_code << ")";
+}

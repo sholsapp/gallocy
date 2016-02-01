@@ -57,14 +57,14 @@ class Timer {
       std::unique_lock<std::mutex> lk(cv_m);
       std::cv_status status = cv.wait_for(lk, calculate_wait_time());
       if (status == std::cv_status::timeout) {
-        // std::cout << "> TIMEOUT" << std::endl;
+        std::cout << "> TIMEOUT" << std::endl;
         timed_out->notify_all();
       } else if (status == std::cv_status::no_timeout) {
         if (was_reset) {
           was_reset = false;
-          // std::cout << "> RESET" << std::endl;
+          std::cout << "> RESET" << std::endl;
         } else {
-          // std::cout << "> SIGNALED" << std::endl;
+          std::cout << "> SIGNALED" << std::endl;
         }
       }
     }

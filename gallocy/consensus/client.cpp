@@ -5,7 +5,7 @@
 #include <ctime>
 #include <iostream>
 
-#include "./restclient.h"
+#include "restclient.h"
 #include "gallocy/consensus/client.h"
 #include "gallocy/entrypoint.h"
 #include "gallocy/logging.h"
@@ -38,6 +38,7 @@ void *GallocyClient::work() {
         break;
       case LEADER:
         LOG_DEBUG("I'm a leader.");
+        state = state_leader();
         break;
       case CANDIDATE:
         LOG_DEBUG("I'm a candidate.");
@@ -60,12 +61,60 @@ GallocyClient::State GallocyClient::state_follower() {
 
 
 GallocyClient::State GallocyClient::state_leader() {
+  LOG_ERROR("Leader state!");
+
+  uint64_t leader_term = gallocy_state->get_current_term();
+  uint64_t leader_last_applied = gallocy_state->get_last_applied();
+  uint64_t leader_commit_index = gallocy_state->get_commit_index();
+
+  std::function<bool(const RestClient::response &)> callback = [](const RestClient::response &rsp) {
+    if (rsp.code == 200) {
+      LOG_INFO("Response " << rsp.body.c_str());
+      gallocy::string body = rsp.body.c_str();
+      gallocy::json response_json = gallocy::json::parse(body);
+      return static_cast<bool>(response_json["success"]);
+    }
+    return false;
+  };
+
+  gallocy::json j = {
+    { "current_term", leader_term },
+  };
+
+  uint64_t votes = utils::post_many("/raft/append_entries", config.peers, config.port, j.dump(), callback);
+  LOG_ERROR("Received responses from " << votes << "/" << config.peers.size() << " peers");
   return LEADER;
 }
 
 
 GallocyClient::State GallocyClient::state_candidate() {
-  utils::multirequest("/raft/request_vote", config.peers, config.port);
+  // Increment our term.
+  gallocy_state->set_current_term(gallocy_state->get_current_term() + 1);
+
+  uint64_t candidate_term = gallocy_state->get_current_term();
+  uint64_t candidate_last_applied = gallocy_state->get_last_applied();
+  uint64_t candidate_commit_index = gallocy_state->get_commit_index();
+
+  std::function<bool(const RestClient::response &)> callback = [](const RestClient::response &rsp) {
+    if (rsp.code == 200) {
+      gallocy::string body = rsp.body.c_str();
+      gallocy::json response_json = gallocy::json::parse(body);
+      return static_cast<bool>(response_json["vote_granted"]);
+    }
+    return false;
+  };
+
+  gallocy::json j = {
+    { "current_term", candidate_term },
+    { "last_applied", candidate_last_applied },
+    { "commit_index", candidate_commit_index },
+  };
+
+  uint64_t votes = utils::post_many("/raft/request_vote", config.peers, config.port, j.dump(), callback);
+  LOG_ERROR("Received votes from " << votes << "/" << config.peers.size() << " peers");
+  if (votes > config.peers.size() / 2) {
+    return state_leader();
+  }
   return CANDIDATE;
 }
 

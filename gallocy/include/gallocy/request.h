@@ -20,18 +20,25 @@ class Request {
     Parameters;
 
   // Constructors
+  // TODO(sholsapp) We need to pass in the client's socket name here so we can
+  // reason about the client, if required, e.g., in consensus module.
   explicit Request(gallocy::string raw);
   Request(const Request &) = delete;
   Request &operator=(const Request &) = delete;
 
+  // TODO(sholsapp): Here be dragons: whenever I change the ordering of these
+  // definitions we get sporadic failures, segfault, wtf.
+
   // Members
   Headers headers;
-  gallocy::json &get_json();
   Parameters &get_params();
+  gallocy::json &get_json();
   gallocy::string method;
-  gallocy::string uri;
   gallocy::string protocol;
   gallocy::string raw_body;
+  gallocy::string uri;
+  uint64_t peer_ip;
+
   void pretty_print();
 
  private:
@@ -58,9 +65,10 @@ class Response {
 
   // Members
   Headers headers;
-  gallocy::string protocol;
-  uint64_t status_code;
   gallocy::string body;
+  gallocy::string protocol;
+  uint64_t peer_ip;
+  uint64_t status_code;
 
   gallocy::string str();
   uint64_t size();

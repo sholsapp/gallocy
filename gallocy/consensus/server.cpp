@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "gallocy/consensus/server.h"
+#include "gallocy/entrypoint.h"
 #include "gallocy/logging.h"
 #include "gallocy/models.h"
 #include "gallocy/request.h"
@@ -98,10 +99,51 @@ Response *GallocyServer::route_join(RouteArguments *args, Request *request) {
 
 
 Response *GallocyServer::route_request_vote(RouteArguments *args, Request *request) {
+  gallocy::json request_json = request->get_json();
+  uint64_t candidate_commit_index = request_json["commit_index"];
+  uint64_t candidate_current_term = request_json["current_term"];
+  uint64_t candidate_last_applied = request_json["last_applied"];
+  uint64_t candidate_voted_for = request->peer_ip;
+  uint64_t local_commit_index = gallocy_state->get_commit_index();
+  uint64_t local_current_term = gallocy_state->get_current_term();
+  uint64_t local_last_applied = gallocy_state->get_last_applied();
+  uint64_t local_voted_for = gallocy_state->get_voted_for();
+
+  gallocy::json response_json = {
+    { "peer", gallocy_config->address.c_str() },
+    { "term", gallocy_state->get_current_term() },
+    { "vote_granted", false },
+  };
+
+  if (candidate_current_term < local_current_term) {
+    // This candidate is in an old term and thus does not earn a vote from us.
+    response_json["vote_granted"] = false;
+
+  } else if (local_voted_for == 0
+      || local_voted_for == candidate_voted_for) {
+
+    if (candidate_last_applied >= local_last_applied
+        && candidate_commit_index >= local_commit_index) {
+
+      LOG_INFO("Granting vote to "
+          << candidate_voted_for
+          << " in term " << candidate_current_term);
+
+      gallocy_state->set_voted_for(candidate_voted_for);
+
+      // This candidate is in current term, is eligable for our vote, and is at
+      // least as up to date as us.
+      response_json["vote_granted"] = true;
+    } else {
+      LOG_ERROR("This is an odd candidate state to be in and *may* be a logic error.");
+    }
+  }
+
   Response *response = new (internal_malloc(sizeof(Response))) Response();
   response->headers["Server"] = "Gallocy-Httpd";
+  response->headers["Content-Type"] = "application/json";
   response->status_code = 200;
-  //
+  response->body = response_json.dump();
   args->~RouteArguments();
   internal_free(args);
   return response;
@@ -111,8 +153,30 @@ Response *GallocyServer::route_request_vote(RouteArguments *args, Request *reque
 Response *GallocyServer::route_append_entries(RouteArguments *args, Request *request) {
   Response *response = new (internal_malloc(sizeof(Response))) Response();
   response->headers["Server"] = "Gallocy-Httpd";
+  response->headers["Content-Type"] = "application/json";
   response->status_code = 200;
-  //
+
+  gallocy::json request_json = request->get_json();
+
+  gallocy::json response_json = {
+    { "peer", gallocy_config->address.c_str() },
+    { "success", false },
+  };
+
+  if (request_json["current_term"] < gallocy_state->get_current_term()) {
+
+    LOG_INFO("Rejecting leader " << request->peer_ip
+        << " because term is outdated (" << request_json["current_term"])
+
+    response_json["success"] = false;
+  } else {
+    response_json["success"] = true;
+    // TODO(sholsapp): We need to adjust the client's state here. We should
+    // move the state variable into gallocy_state.
+    gallocy_state->stop_timer();
+  }
+
+  response->body = response_json.dump();
   args->~RouteArguments();
   internal_free(args);
   return response;
@@ -198,7 +262,9 @@ void *GallocyServer::handle_entry(void *arg) {
 
 void *GallocyServer::handle(int client_socket, struct sockaddr_in client_name) {
   Request *request = get_request(client_socket);
+  request->peer_ip = utils::parse_internet_address(inet_ntoa(client_name.sin_addr));
   Response *response = routes.match(request->uri)(request);
+
   if (send(client_socket, response->str().c_str(), response->size(), 0) == -1) {
     error_die("send");
   }
@@ -209,7 +275,7 @@ void *GallocyServer::handle(int client_socket, struct sockaddr_in client_name) {
     << " - "
     << "HTTP " << response->status_code
     << " - "
-    << inet_ntoa(client_name.sin_addr) << " "
+    << inet_ntoa(client_name.sin_addr) << " (" << request->peer_ip << ")" << " "
     << request->headers["User-Agent"]);
 
   // Teardown
