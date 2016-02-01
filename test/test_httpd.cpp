@@ -6,7 +6,7 @@
 #include "gallocy/request.h"
 
 
-gallocy::string GET_REQUEST(
+std::string GET_REQUEST(
   "GET /get HTTP/1.1\r\n"
   "Host: 127.0.0.1\r\n"
   "User-Agent: gallocy\r\n"
@@ -15,7 +15,7 @@ gallocy::string GET_REQUEST(
 );
 
 
-gallocy::string GET_REQUEST_QUERY(
+std::string GET_REQUEST_QUERY(
   "GET /get?query=1 HTTP/1.1\r\n"
   "Host: 127.0.0.1\r\n"
   "User-Agent: gallocy\r\n"
@@ -24,7 +24,7 @@ gallocy::string GET_REQUEST_QUERY(
 );
 
 
-gallocy::string POST_REQUEST(
+std::string POST_REQUEST(
   "POST /post HTTP/1.1\r\n"
   "Host: 127.0.0.1:8000\r\n"
   "Connection: Keep-Alive\r\n"
@@ -37,7 +37,7 @@ gallocy::string POST_REQUEST(
 );
 
 
-gallocy::string RESPONSE(
+std::string RESPONSE(
   "HTTP/1.0 200 OK\r\n"
   "Content-Type: application/json\r\n"
   "Server: Gallocy-Httpd\r\n"
