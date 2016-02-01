@@ -18,7 +18,7 @@ namespace utils {
 int get_many(const gallocy::string &path, const gallocy::vector<gallocy::string> &peers, uint16_t port) {
   int rsp_count = 0;
   int peer_count = peers.size();
-  int peer_majority = peer_count / 2;
+  int peer_majority = peer_count / 2 - 1;
 
   // TODO(sholsapp): Move these to a caller and take them by parameter. The
   // caller can use these to continue operation when a majority of requests are
@@ -70,9 +70,10 @@ int get_many(const gallocy::string &path, const gallocy::vector<gallocy::string>
     if (status == std::future_status::deferred) {
       // no-op
     } else if (status == std::future_status::timeout) {
-      LOG_DEBUG("Need to keep waiting...");
+      LOG_WARNING("Need to keep waiting... this thread won't be cleaned up!");
     } else if (status == std::future_status::ready) {
-      LOG_DEBUG("Cleaning up an std::future: " << f.get());
+      f.get();
+      // LOG_DEBUG("Cleaning up an std::future: " << f.get());
     }
   }
 
@@ -83,7 +84,7 @@ int get_many(const gallocy::string &path, const gallocy::vector<gallocy::string>
 int post_many(const gallocy::string &path, const gallocy::vector<gallocy::string> &peers, uint16_t port, gallocy::string json_body, std::function<bool(const RestClient::response &)> callback) {
   int rsp_count = 0;
   int peer_count = peers.size();
-  int peer_majority = peer_count / 2;
+  int peer_majority = peer_count / 2 - 1;
 
   // TODO(sholsapp): Move these to a caller and take them by parameter. The
   // caller can use these to continue operation when a majority of requests are
@@ -138,7 +139,8 @@ int post_many(const gallocy::string &path, const gallocy::vector<gallocy::string
     } else if (status == std::future_status::timeout) {
       LOG_WARNING("Need to keep waiting... this thread won't be cleaned up!");
     } else if (status == std::future_status::ready) {
-      LOG_DEBUG("Cleaning up an std::future: " << f.get());
+      f.get();
+      // LOG_DEBUG("Cleaning up an std::future: " << f.get());
     }
   }
 
