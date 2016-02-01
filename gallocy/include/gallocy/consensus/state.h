@@ -10,6 +10,12 @@
 #include "gallocy/consensus/log.h"
 #include "gallocy/consensus/timer.h"
 
+
+#define FOLLOWER_STEP_TIME 5000
+#define FOLLOWER_JITTER_TIME 3000
+#define LEADER_STEP_TIME 3000
+
+
 /**
  * The type to identifier peers.
  */
@@ -26,6 +32,13 @@ class Guard {
   }
  private:
   pthread_mutex_t *_lock;
+};
+
+
+enum RaftState {
+  FOLLOWER,
+  LEADER,
+  CANDIDATE,
 };
 
 /**
@@ -46,7 +59,8 @@ class GallocyState {
       last_applied(0) {
     lock = PTHREAD_MUTEX_INITIALIZER;
     timer = new (internal_malloc(sizeof(Timer)))
-      Timer(5000, 3000, std::addressof(timed_out));
+      Timer(FOLLOWER_STEP_TIME, FOLLOWER_JITTER_TIME, std::addressof(timed_out));
+    state = RaftState::FOLLOWER;
   }
   ~GallocyState() {
     timer->~Timer();
@@ -192,6 +206,7 @@ class GallocyState {
   /**
    * A lock to synchronize all get/set access to private member data.
    */
+  RaftState state;
   pthread_mutex_t lock;
   Timer *timer;
   std::condition_variable timed_out;
@@ -215,6 +230,14 @@ class GallocyState {
       timer->stop();
   }
   /**
+   * Reset the timer event loop.
+   */
+  void reset_timer() {
+    Guard(std::addressof(lock));
+    if (timer->is_timer_running())
+      timer->reset();
+  }
+  /**
    * Get the timer's mutex.
    */
   std::mutex &get_timer_mutex() {
@@ -227,6 +250,24 @@ class GallocyState {
    */
   std::condition_variable &get_timer_cv() {
     return timed_out;
+  }
+  /**
+   * Get the current state of this node.
+   */
+  RaftState get_state() {
+    Guard(std::addressof(lock));
+    return state;
+  }
+  /**
+   * Set the current state of this node.
+   */
+  void set_state(RaftState new_state) {
+    Guard(std::addressof(lock));
+    if (new_state == RaftState::LEADER)
+      timer->set_step(LEADER_STEP_TIME);
+    else
+      timer->set_step(FOLLOWER_STEP_TIME);
+    state = new_state;
   }
 };
 

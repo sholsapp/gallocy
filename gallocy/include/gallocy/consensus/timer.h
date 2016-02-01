@@ -42,6 +42,14 @@ class Timer {
     cv.notify_all();
   }
   /**
+   * Set a new step time.
+   *
+   * :param new_step: The new step time in milliseconds.
+   */
+  void set_step(uint64_t new_step) {
+    step = new_step;
+  }
+  /**
    * True if the timer is currently running.
    */
   bool is_timer_running() {

@@ -151,31 +151,31 @@ Response *GallocyServer::route_request_vote(RouteArguments *args, Request *reque
 
 
 Response *GallocyServer::route_append_entries(RouteArguments *args, Request *request) {
-  Response *response = new (internal_malloc(sizeof(Response))) Response();
-  response->headers["Server"] = "Gallocy-Httpd";
-  response->headers["Content-Type"] = "application/json";
-  response->status_code = 200;
-
   gallocy::json request_json = request->get_json();
+  uint64_t leader_term = request_json["current_term"];
+  uint64_t local_term = gallocy_state->get_current_term();
 
   gallocy::json response_json = {
     { "peer", gallocy_config->address.c_str() },
     { "success", false },
   };
 
-  if (request_json["current_term"] < gallocy_state->get_current_term()) {
+  if (leader_term < local_term) {
 
     LOG_INFO("Rejecting leader " << request->peer_ip
-        << " because term is outdated (" << request_json["current_term"])
+        << " because term is outdated (" << request_json["current_term"] << ")");
 
     response_json["success"] = false;
   } else {
     response_json["success"] = true;
-    // TODO(sholsapp): We need to adjust the client's state here. We should
-    // move the state variable into gallocy_state.
-    gallocy_state->stop_timer();
+    gallocy_state->set_state(RaftState::FOLLOWER);
+    gallocy_state->reset_timer();
   }
 
+  Response *response = new (internal_malloc(sizeof(Response))) Response();
+  response->headers["Server"] = "Gallocy-Httpd";
+  response->headers["Content-Type"] = "application/json";
+  response->status_code = 200;
   response->body = response_json.dump();
   args->~RouteArguments();
   internal_free(args);

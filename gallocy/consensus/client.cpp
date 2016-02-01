@@ -26,50 +26,53 @@ void *GallocyClient::work() {
   gallocy_state->start_timer();
 
   while (alive) {
-
     std::unique_lock<std::mutex> lk(gallocy_state->get_timer_mutex());
     // Wait here indefinitely until the alarm expires.
     gallocy_state->get_timer_cv().wait(lk);
+    // If the timer expires the condition will be signaled, which indicates
+    // that our leader failed to contact us in a timely manner. When this
+    // happens, transition to a candidate state.
+    if (gallocy_state->get_state() == RaftState::FOLLOWER)
+      gallocy_state->set_state(RaftState::CANDIDATE);
 
-    switch (state) {
-      case FOLLOWER:
-        LOG_DEBUG("I'm a follower.");
-        state = state_candidate();
+    switch (gallocy_state->get_state()) {
+      case RaftState::FOLLOWER:
+        gallocy_state->set_state(state_candidate());
         break;
-      case LEADER:
-        LOG_DEBUG("I'm a leader.");
-        state = state_leader();
+      case RaftState::LEADER:
+        gallocy_state->set_state(state_leader());
         break;
-      case CANDIDATE:
-        LOG_DEBUG("I'm a candidate.");
-        state = state_candidate();
+      case RaftState::CANDIDATE:
+        gallocy_state->set_state(state_candidate());
         break;
       default:
         LOG_ERROR("Client reached default handler.");
         break;
     }
-    // TODO(sholsapp): What to do with this... delete it?
-    // sleep(step_time - std::rand() % step_time);
   }
   return nullptr;
 }
 
 
-GallocyClient::State GallocyClient::state_follower() {
-  return FOLLOWER;
+RaftState GallocyClient::state_follower() {
+  return RaftState::FOLLOWER;
 }
 
 
-GallocyClient::State GallocyClient::state_leader() {
-  LOG_ERROR("Leader state!");
-
+RaftState GallocyClient::state_leader() {
   uint64_t leader_term = gallocy_state->get_current_term();
   uint64_t leader_last_applied = gallocy_state->get_last_applied();
   uint64_t leader_commit_index = gallocy_state->get_commit_index();
 
+  LOG_INFO("Running as leader "
+      << "("
+      << "term=" << leader_term << ", "
+      << "l.a.=" << leader_last_applied << ", "
+      << "c.i.=" << leader_commit_index
+      << ")");
+
   std::function<bool(const RestClient::response &)> callback = [](const RestClient::response &rsp) {
     if (rsp.code == 200) {
-      LOG_INFO("Response " << rsp.body.c_str());
       gallocy::string body = rsp.body.c_str();
       gallocy::json response_json = gallocy::json::parse(body);
       return static_cast<bool>(response_json["success"]);
@@ -82,18 +85,28 @@ GallocyClient::State GallocyClient::state_leader() {
   };
 
   uint64_t votes = utils::post_many("/raft/append_entries", config.peers, config.port, j.dump(), callback);
-  LOG_ERROR("Received responses from " << votes << "/" << config.peers.size() << " peers");
-  return LEADER;
+  // LOG_INFO("Received responses from " << votes << "/" << config.peers.size() << " peers");
+  if (votes > config.peers.size() / 2 - 1) {
+    return RaftState::LEADER;
+  }
+  return RaftState::CANDIDATE;
 }
 
 
-GallocyClient::State GallocyClient::state_candidate() {
+RaftState GallocyClient::state_candidate() {
   // Increment our term.
   gallocy_state->set_current_term(gallocy_state->get_current_term() + 1);
 
   uint64_t candidate_term = gallocy_state->get_current_term();
   uint64_t candidate_last_applied = gallocy_state->get_last_applied();
   uint64_t candidate_commit_index = gallocy_state->get_commit_index();
+
+  LOG_INFO("Running as candidate "
+      << "("
+      << "term=" << candidate_term << ", "
+      << "l.a.=" << candidate_last_applied << ", "
+      << "c.i.=" << candidate_commit_index
+      << ")");
 
   std::function<bool(const RestClient::response &)> callback = [](const RestClient::response &rsp) {
     if (rsp.code == 200) {
@@ -111,11 +124,11 @@ GallocyClient::State GallocyClient::state_candidate() {
   };
 
   uint64_t votes = utils::post_many("/raft/request_vote", config.peers, config.port, j.dump(), callback);
-  LOG_ERROR("Received votes from " << votes << "/" << config.peers.size() << " peers");
-  if (votes > config.peers.size() / 2) {
+  // LOG_ERROR("Received votes from " << votes << "/" << config.peers.size() << " peers");
+  if (votes > config.peers.size() / 2 - 1) {
     return state_leader();
   }
-  return CANDIDATE;
+  return RaftState::CANDIDATE;
 }
 
 
