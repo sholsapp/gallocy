@@ -2,12 +2,12 @@
 
 FROM debian
 MAINTAINER Stephen Holsapple <sholsapp@gmail.com>
-RUN apt-get update && apt-get install -y \
+#RUN apt-get update && apt-get install -y \
   # curl \
   # libcurl3-dev \
-  net-tools \
-  tree \
-  && apt-get clean
+  #net-tools \
+  #tree \
+  #&& apt-get clean
 RUN mkdir /home/gallocy
 RUN mkdir /home/gallocy/etc
 RUN mkdir /home/gallocy/var
