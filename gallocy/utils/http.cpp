@@ -1,12 +1,14 @@
 #include <pthread.h>
 
-#include <iostream>
-#include <future>
-#include <thread>
 #include <chrono>
-#include <vector>
-#include <string>
+#include <condition_variable>
+#include <future>
+#include <iostream>
+#include <mutex>
 #include <sstream>
+#include <string>
+#include <thread>
+#include <vector>
 
 #include "gallocy/allocators/internal.h"
 #include "gallocy/logging.h"
@@ -18,7 +20,7 @@ namespace utils {
 int get_many(const gallocy::string &path, const gallocy::vector<gallocy::string> &peers, uint16_t port) {
   int rsp_count = 0;
   int peer_count = peers.size();
-  int peer_majority = peer_count / 2 - 1;
+  int peer_majority = peer_count / 2;
 
   // TODO(sholsapp): Move these to a caller and take them by parameter. The
   // caller can use these to continue operation when a majority of requests are
@@ -45,7 +47,7 @@ int get_many(const gallocy::string &path, const gallocy::vector<gallocy::string>
         std::this_thread::sleep_for(std::chrono::seconds(sleep_duration));
 #endif
         // Do the actual work.
-        RestClient::response rsp = RestClient::get(url);
+        RestClient::Response rsp = RestClient::get(url);
         // Check if we have a majority of repsonses and signal if ready.
         pthread_mutex_lock(std::addressof(rsp_count_lock));
         rsp_count++;
@@ -81,16 +83,17 @@ int get_many(const gallocy::string &path, const gallocy::vector<gallocy::string>
 }
 
 
-int post_many(const gallocy::string &path, const gallocy::vector<gallocy::string> &peers, uint16_t port, gallocy::string json_body, std::function<bool(const RestClient::response &)> callback) {
+int post_many(const gallocy::string &path, const gallocy::vector<gallocy::string> &peers, uint16_t port, gallocy::string json_body, std::function<bool(const RestClient::Response &)> callback) {
   int rsp_count = 0;
   int peer_count = peers.size();
-  int peer_majority = peer_count / 2 - 1;
+  int peer_majority = peer_count / 2;
 
   // TODO(sholsapp): Move these to a caller and take them by parameter. The
   // caller can use these to continue operation when a majority of requests are
   // complete.
-  pthread_mutex_t rsp_count_lock = PTHREAD_MUTEX_INITIALIZER;
-  pthread_cond_t rsp_have_majority = PTHREAD_COND_INITIALIZER;
+  std::condition_variable rsp_have_majority;
+  std::mutex rsp_count_lock;
+
   std::vector<std::future<FutureResponse>> futures;
 
   for (auto peer : peers) {
@@ -110,26 +113,37 @@ int post_many(const gallocy::string &path, const gallocy::vector<gallocy::string
         std::this_thread::sleep_for(std::chrono::seconds(sleep_duration));
 #endif
         // Do the actual work.
-        RestClient::response rsp = RestClient::post(url, "application/json", json_body);
+        RestClient::Response rsp = RestClient::post(url, "application/json", json_body);
+
         // Check if we have a majority of repsonses and signal if ready.
-        pthread_mutex_lock(std::addressof(rsp_count_lock));
-        // Check if the callback received the expected response.
-        if (callback(rsp))
-          rsp_count++;
-        if (rsp_count >= peer_majority)
-          pthread_cond_signal(std::addressof(rsp_have_majority));
-        pthread_mutex_unlock(std::addressof(rsp_count_lock));
+        {
+          std::unique_lock<std::mutex> lk(rsp_count_lock);
+          // Check if the callback received the expected response.
+          if (callback(rsp))
+            rsp_count++;
+          if (rsp_count >= peer_majority)
+            rsp_have_majority.notify_all();
+        }
+
         // Return the HTTP status code.
         return static_cast<FutureResponse>(rsp.code);
       });
     futures.push_back(std::move(future));
   }
-  LOG_DEBUG("Waiting for majority of threads to respond");
-  pthread_mutex_lock(std::addressof(rsp_count_lock));
-  while (rsp_count < peer_majority)
-    pthread_cond_wait(std::addressof(rsp_have_majority), std::addressof(rsp_count_lock));
-  LOG_DEBUG("Has majority at " << rsp_count << " of " << peer_count << "!");
-  pthread_mutex_unlock(std::addressof(rsp_count_lock));
+
+  {
+    LOG_DEBUG("Waiting for majority of threads to respond");
+    std::unique_lock<std::mutex> lk(rsp_count_lock);
+    while (rsp_count < peer_majority) {
+      std::cv_status status = rsp_have_majority.wait_for(lk, std::chrono::milliseconds(3000));
+      if (status == std::cv_status::timeout) {
+        LOG_DEBUG("Failed to get majority at " << rsp_count << " of " << peer_count << "!");
+        return rsp_count;
+      } else if (status == std::cv_status::no_timeout) {
+        LOG_DEBUG("Has majority at " << rsp_count << " of " << peer_count << "!");
+      }
+    }
+  }
 
   for (auto &f : futures) {
     std::future_status status;
