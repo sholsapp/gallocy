@@ -13,13 +13,13 @@ teardown() {
 
 
 @test "http server binary exists" {
-  run ls "${BIN}/httpd"
+  run ls "${BIN}/server"
   [ $status -eq 0 ]
 }
 
 
 @test "http server starts" {
-  ${BIN}/httpd &
+  ${BIN}/server &
   PID=$!
   run kill -s 0 $PID
   kill -9 $PID
@@ -28,7 +28,7 @@ teardown() {
 
 
 @test "http server responds on /admin" {
-  ${BIN}/httpd &
+  ${BIN}/server &
   PID=$!
   echo "Started server on ${PID}"
   run curl --max-time 1 http://localhost:8080/admin

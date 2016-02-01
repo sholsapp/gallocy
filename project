@@ -72,7 +72,7 @@ sub_integration() {
 
 sub_stylecheck() {
   LINT_ARGS=(
-    "--root=gallocy"
+    "--root=gallocy/include"
     "--linelength=160"
     "--filter=-legal/copyright,-runtime/references"
     )
