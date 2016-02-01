@@ -17,6 +17,7 @@
 
 namespace utils {
 
+// TODO(sholsapp): Use C++ primitives instead of pthread directly.
 int get_many(const gallocy::string &path, const gallocy::vector<gallocy::string> &peers, uint16_t port) {
   int rsp_count = 0;
   int peer_count = peers.size();
@@ -132,26 +133,30 @@ int post_many(const gallocy::string &path, const gallocy::vector<gallocy::string
   }
 
   {
-    LOG_DEBUG("Waiting for majority of threads to respond");
+    // LOG_DEBUG("Waiting for majority of threads to respond");
     std::unique_lock<std::mutex> lk(rsp_count_lock);
     while (rsp_count < peer_majority) {
-      std::cv_status status = rsp_have_majority.wait_for(lk, std::chrono::milliseconds(3000));
+      // TODO(sholsapp): What should time out be such that it doesn't interfere
+      // with the leader timeout?
+      std::cv_status status = rsp_have_majority.wait_for(lk, std::chrono::milliseconds(350));
       if (status == std::cv_status::timeout) {
-        LOG_DEBUG("Failed to get majority at " << rsp_count << " of " << peer_count << "!");
+        // LOG_DEBUG("Failed to get majority at " << rsp_count << " of " << peer_count << "!");
         return rsp_count;
       } else if (status == std::cv_status::no_timeout) {
-        LOG_DEBUG("Has majority at " << rsp_count << " of " << peer_count << "!");
+        // LOG_DEBUG("Has majority at " << rsp_count << " of " << peer_count << "!");
       }
     }
   }
 
   for (auto &f : futures) {
     std::future_status status;
-    status = f.wait_for(std::chrono::nanoseconds(500));
+    status = f.wait_for(std::chrono::nanoseconds(150));
     if (status == std::future_status::deferred) {
       // no-op
     } else if (status == std::future_status::timeout) {
-      LOG_WARNING("Need to keep waiting... this thread won't be cleaned up!");
+      // TODO(sholsapp): What should we do here? Are these just zombie threads
+      // at this point that never get cleaned up?
+      // LOG_WARNING("Need to keep waiting... this thread won't be cleaned up!");
     } else if (status == std::future_status::ready) {
       f.get();
       // LOG_DEBUG("Cleaning up an std::future: " << f.get());

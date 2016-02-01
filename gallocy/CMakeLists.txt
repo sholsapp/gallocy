@@ -37,7 +37,12 @@ set(GALLOCY_CORE_SRC
   utils/logging.cpp
   utils/objutils.cpp
   utils/stringutils.cpp
-  external/restclient-cpp/restclient.cpp
+  # TODO(sholsapp): See https://github.com/mrtazz/restclient-cpp/issues/41 to
+  # consider building restclient-cpp propertly.
+  # external/restclient-cpp/restclient.cpp
+  external/restclient-cpp/connection.cc
+  external/restclient-cpp/helpers.cc
+  external/restclient-cpp/restclient.cc
   external/sqlite3/sqlite3.c)
 add_library(gallocy-core SHARED ${GALLOCY_CORE_SRC})
 target_link_libraries(gallocy-core gallocy-runtime ${CURL_LIBRARIES} pthread dl)

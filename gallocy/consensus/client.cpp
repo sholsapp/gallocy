@@ -32,8 +32,10 @@ void *GallocyClient::work() {
     // If the timer expires the condition will be signaled, which indicates
     // that our leader failed to contact us in a timely manner. When this
     // happens, transition to a candidate state.
-    if (gallocy_state->get_state() == RaftState::FOLLOWER)
+    if (gallocy_state->get_state() == RaftState::FOLLOWER) {
+      LOG_INFO("Transitioning to candidate after leader timeout.");
       gallocy_state->set_state(RaftState::CANDIDATE);
+    }
 
     switch (gallocy_state->get_state()) {
       case RaftState::FOLLOWER:
@@ -71,7 +73,7 @@ RaftState GallocyClient::state_leader() {
       << "c.i.=" << leader_commit_index
       << ")");
 
-  std::function<bool(const RestClient::response &)> callback = [](const RestClient::response &rsp) {
+  std::function<bool(const RestClient::Response &)> callback = [](const RestClient::Response &rsp) {
     if (rsp.code == 200) {
       gallocy::string body = rsp.body.c_str();
       gallocy::json response_json = gallocy::json::parse(body);
@@ -86,16 +88,14 @@ RaftState GallocyClient::state_leader() {
 
   uint64_t votes = utils::post_many("/raft/append_entries", config.peers, config.port, j.dump(), callback);
   // LOG_INFO("Received responses from " << votes << "/" << config.peers.size() << " peers");
-  if (votes > config.peers.size() / 2 - 1) {
-    return RaftState::LEADER;
-  }
-  return RaftState::CANDIDATE;
+  return RaftState::LEADER;
 }
 
 
 RaftState GallocyClient::state_candidate() {
   // Increment our term.
   gallocy_state->set_current_term(gallocy_state->get_current_term() + 1);
+  gallocy_state->set_voted_for(utils::parse_internet_address(gallocy_config->address));
 
   uint64_t candidate_term = gallocy_state->get_current_term();
   uint64_t candidate_last_applied = gallocy_state->get_last_applied();
@@ -108,7 +108,7 @@ RaftState GallocyClient::state_candidate() {
       << "c.i.=" << candidate_commit_index
       << ")");
 
-  std::function<bool(const RestClient::response &)> callback = [](const RestClient::response &rsp) {
+  std::function<bool(const RestClient::Response &)> callback = [](const RestClient::Response &rsp) {
     if (rsp.code == 200) {
       gallocy::string body = rsp.body.c_str();
       gallocy::json response_json = gallocy::json::parse(body);
@@ -122,13 +122,17 @@ RaftState GallocyClient::state_candidate() {
     { "last_applied", candidate_last_applied },
     { "commit_index", candidate_commit_index },
   };
-
   uint64_t votes = utils::post_many("/raft/request_vote", config.peers, config.port, j.dump(), callback);
-  // LOG_ERROR("Received votes from " << votes << "/" << config.peers.size() << " peers");
-  if (votes > config.peers.size() / 2 - 1) {
+  LOG_INFO("Received votes from " << votes << "/" << config.peers.size() << " peers");
+  if (votes >= config.peers.size() / 2) {
+    gallocy_state->set_state(RaftState::LEADER);
+    gallocy_state->reset_timer();
     return state_leader();
+  } else {
+    gallocy_state->reset_timer();
+    gallocy_state->set_voted_for(0);
+    return RaftState::CANDIDATE;
   }
-  return RaftState::CANDIDATE;
 }
 
 
@@ -146,7 +150,7 @@ GallocyClient::State GallocyClient::state_joining() {
     json_body["is_master"] = config.master;
     url << "http://" << peer << ":" << config.port << "/join";
 
-    RestClient::response rsp = RestClient::post(
+    RestClient::Response rsp = RestClient::post(
         url.str().c_str(),
         "application/json",
         json_body.dump());

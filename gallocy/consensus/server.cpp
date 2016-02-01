@@ -108,17 +108,11 @@ Response *GallocyServer::route_request_vote(RouteArguments *args, Request *reque
   uint64_t local_current_term = gallocy_state->get_current_term();
   uint64_t local_last_applied = gallocy_state->get_last_applied();
   uint64_t local_voted_for = gallocy_state->get_voted_for();
-
-  gallocy::json response_json = {
-    { "peer", gallocy_config->address.c_str() },
-    { "term", gallocy_state->get_current_term() },
-    { "vote_granted", false },
-  };
+  bool granted = false;
 
   if (candidate_current_term < local_current_term) {
     // This candidate is in an old term and thus does not earn a vote from us.
-    response_json["vote_granted"] = false;
-
+    granted = false;
   } else if (local_voted_for == 0
       || local_voted_for == candidate_voted_for) {
 
@@ -129,16 +123,23 @@ Response *GallocyServer::route_request_vote(RouteArguments *args, Request *reque
           << candidate_voted_for
           << " in term " << candidate_current_term);
 
+      gallocy_state->set_current_term(candidate_current_term);
       gallocy_state->set_voted_for(candidate_voted_for);
+      gallocy_state->reset_timer();
 
       // This candidate is in current term, is eligable for our vote, and is at
       // least as up to date as us.
-      response_json["vote_granted"] = true;
+      granted = true;
     } else {
       LOG_ERROR("This is an odd candidate state to be in and *may* be a logic error.");
     }
   }
 
+  gallocy::json response_json = {
+    { "peer", gallocy_config->address.c_str() },
+    { "term", gallocy_state->get_current_term() },
+    { "vote_granted", granted },
+  };
   Response *response = new (internal_malloc(sizeof(Response))) Response();
   response->headers["Server"] = "Gallocy-Httpd";
   response->headers["Content-Type"] = "application/json";
@@ -154,24 +155,27 @@ Response *GallocyServer::route_append_entries(RouteArguments *args, Request *req
   gallocy::json request_json = request->get_json();
   uint64_t leader_term = request_json["current_term"];
   uint64_t local_term = gallocy_state->get_current_term();
-
-  gallocy::json response_json = {
-    { "peer", gallocy_config->address.c_str() },
-    { "success", false },
-  };
+  bool success = false;
 
   if (leader_term < local_term) {
-
-    LOG_INFO("Rejecting leader " << request->peer_ip
-        << " because term is outdated (" << request_json["current_term"] << ")");
-
-    response_json["success"] = false;
+    LOG_INFO("Rejecting leader "
+        << request->peer_ip
+        << " because term is outdated ("
+        << leader_term
+        << ")");
+    success = false;
   } else {
-    response_json["success"] = true;
+    success = true;
+    gallocy_state->set_current_term(leader_term);
     gallocy_state->set_state(RaftState::FOLLOWER);
+    gallocy_state->set_voted_for(request->peer_ip);
     gallocy_state->reset_timer();
   }
-
+  gallocy::json response_json = {
+    { "peer", gallocy_config->address.c_str() },
+    { "term", gallocy_state->get_current_term() },
+    { "success", success },
+  };
   Response *response = new (internal_malloc(sizeof(Response))) Response();
   response->headers["Server"] = "Gallocy-Httpd";
   response->headers["Content-Type"] = "application/json";

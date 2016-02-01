@@ -20,7 +20,7 @@ int main(void) {
 
   gallocy::string peer = "http://localhost:8080";
 
-  RestClient::response r = RestClient::post(peer.c_str(),
+  RestClient::Response r = RestClient::post(peer.c_str(),
       "text/json", "{\"foo\": \"bla\"}");
   std::cout << "[" << r.code << "] " << peer << std::endl;
   if (r.code == 200) {
@@ -38,7 +38,7 @@ int main(void) {
   read_config(host, port, me, peers);
 
   for (auto peer : peers) {
-    RestClient::response r = RestClient::post(peer.c_str(),
+    RestClient::Response r = RestClient::post(peer.c_str(),
         "text/json", "{\"foo\": \"bla\"}");
     std::cout << "[" << r.code << "] " << peer << std::endl;
     if (r.code == 200) {

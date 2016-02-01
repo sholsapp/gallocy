@@ -9,11 +9,13 @@
 #include "gallocy/allocators/internal.h"
 #include "gallocy/consensus/log.h"
 #include "gallocy/consensus/timer.h"
+#include "gallocy/logging.h"
 
 
-#define FOLLOWER_STEP_TIME 5000
-#define FOLLOWER_JITTER_TIME 3000
-#define LEADER_STEP_TIME 3000
+#define FOLLOWER_STEP_TIME 2000
+#define FOLLOWER_JITTER_TIME 500
+#define LEADER_STEP_TIME 500
+#define LEADER_JITTER_TIME 0
 
 
 /**
@@ -77,10 +79,20 @@ class GallocyState {
   }
   /**
    * Set the current term.
+   *
+   * In setting a new current term, the state that tracks the candidate we
+   * last voted for is implicitly reset.
    */
   void set_current_term(uint64_t value) {
     Guard(std::addressof(lock));
+    if (value < current_term)
+      LOG_ERROR("Regressing current term from "
+          << current_term
+          << " to "
+          << value
+          << ". This is a logic error.");
     current_term = value;
+    voted_for = 0;
   }
   /**
    * Get candidate that received vote in current term.
@@ -263,10 +275,13 @@ class GallocyState {
    */
   void set_state(RaftState new_state) {
     Guard(std::addressof(lock));
-    if (new_state == RaftState::LEADER)
+    if (new_state == RaftState::LEADER) {
       timer->set_step(LEADER_STEP_TIME);
-    else
+      timer->set_jitter(LEADER_JITTER_TIME);
+    } else {
       timer->set_step(FOLLOWER_STEP_TIME);
+      timer->set_jitter(FOLLOWER_JITTER_TIME);
+    }
     state = new_state;
   }
 };
