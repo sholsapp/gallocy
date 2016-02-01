@@ -28,3 +28,5 @@
 - [glibc malloc hook deprecation considered harmful](https://sourceware.org/ml/libc-alpha/2011-07/msg00136.html)
 - [musl - libc](http://www.musl-libc.org/)
 - [musl - replacing malloc](http://www.openwall.com/lists/musl/2014/08/08/11)
+- [Grappa](http://grappa.io/) - A software distributed shared memory system.
+- [The Log - What every software engineer should know ...](https://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying)
