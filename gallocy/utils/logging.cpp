@@ -13,15 +13,15 @@ gallocy::string level_string(const char *level) {
   gallocy::string log_level = level;
   gallocy::stringstream s;
   if (log_level.compare("DEBUG") == 0) {
-    s << L_GREY("[" << level << "]");
+    s << L_GREY("  [" << level << "]");
   } else if (log_level.compare("INFO") == 0) {
-    s << L_GREEN("[" << level << "]");
+    s << L_GREEN("   [" << level << "]");
   } else if (log_level.compare("WARNING") == 0) {
     s << L_YELLOW("[" << level << "]");
   } else if (log_level.compare("ERROR") == 0) {
-    s << L_RED("[" << level << "]");
+    s << L_RED("  [" << level << "]");
   } else if (log_level.compare("APP") == 0) {
-    s << L_BLUE("[" << level << "]");
+    s << L_BLUE("    [" << level << "]");
   } else {
     s << level;
   }
@@ -47,7 +47,7 @@ void __log(const char *module, const char *level, const char *raw_message) {
        << " - "
        << utils::trim(_utc_now)
        << " - "
-       << utils::trim(path_parts.at(path_parts.size() - 1))
+       << utils::trim(path_parts.at(path_parts.size() - 1)).substr(0, 6)
        << " - "
        << utils::trim(message)
        << std::endl;
