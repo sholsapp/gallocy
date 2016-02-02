@@ -38,9 +38,8 @@ void __log(const char *module, const char *level, const char *raw_message) {
   gmtime_r(&t, &now);
   // See gmtime_r(3)
   char utc_now[256] = {0};
-  asctime_r(&now, utc_now);
+  strftime(utc_now, 256, "%x %X", &now);
   gallocy::string _utc_now = utc_now;
-
   gallocy::stringstream line;
   line << level_string(level).c_str()
        << " - "
