@@ -50,7 +50,7 @@ sub_test() {
   INSTALL_PATH="$(pwd)/install"
 
   export ${LIBRARY_PATH}="${INSTALL_PATH}/lib"
-  ${INSTALL_PATH}/bin/gallocy_tests
+  ${INSTALL_PATH}/bin/gallocy_tests 2>/dev/null
 }
 
 
