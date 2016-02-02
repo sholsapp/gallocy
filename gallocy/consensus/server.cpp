@@ -64,7 +64,7 @@ Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
 Response *GallocyServer::route_request_vote(RouteArguments *args, Request *request) {
   gallocy::json request_json = request->get_json();
   uint64_t candidate_commit_index = request_json["commit_index"];
-  uint64_t candidate_current_term = request_json["current_term"];
+  uint64_t candidate_current_term = request_json["term"];
   uint64_t candidate_last_applied = request_json["last_applied"];
   uint64_t candidate_voted_for = request->peer_ip;
   uint64_t local_commit_index = gallocy_state->get_commit_index();
@@ -112,7 +112,7 @@ Response *GallocyServer::route_request_vote(RouteArguments *args, Request *reque
 
 Response *GallocyServer::route_append_entries(RouteArguments *args, Request *request) {
   gallocy::json request_json = request->get_json();
-  uint64_t leader_term = request_json["current_term"];
+  uint64_t leader_term = request_json["term"];
   uint64_t local_term = gallocy_state->get_current_term();
   bool success = false;
 

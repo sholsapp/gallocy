@@ -90,7 +90,11 @@ RaftState GallocyClient::state_leader() {
   };
 
   gallocy::json j = {
-    { "current_term", leader_term },
+    { "entries", { } },
+    { "leader_commit", leader_commit_index },
+    { "previous_log_index", 0 },
+    { "previous_log_term", 0 },
+    { "term", leader_term },
   };
 
   // TODO(sholsapp): How we handle this is busted and needs to be refactored so
@@ -134,7 +138,7 @@ RaftState GallocyClient::state_candidate() {
   };
 
   gallocy::json j = {
-    { "current_term", candidate_term },
+    { "term", candidate_term },
     { "last_applied", candidate_last_applied },
     { "commit_index", candidate_commit_index },
   };
