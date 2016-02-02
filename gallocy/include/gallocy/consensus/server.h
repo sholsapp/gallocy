@@ -43,8 +43,6 @@ class GallocyServer : public ThreadedDaemon {
     server_socket(-1) {
       routes.register_handler("/admin",
         [this](RouteArguments *args, Request *request) { return route_admin(args, request); });
-      routes.register_handler("/join",
-        [this](RouteArguments *args, Request *request) { return route_join(args, request); });
       routes.register_handler("/raft/request_vote",
         [this](RouteArguments *args, Request *request) { return route_request_vote(args, request); });
       routes.register_handler("/raft/append_entries",
@@ -112,13 +110,6 @@ class GallocyServer : public ThreadedDaemon {
    * :param request: The request itself.
    */
   Response *route_admin(RouteArguments *args, Request *request);
-  /**
-   * Handle a request for /join.
-   *
-   * :param args: The route arguments.
-   * :param request: The request itself.
-   */
-  Response *route_join(RouteArguments *args, Request *request);
   /**
    * Handle a request for /raft/request_vote.
    *

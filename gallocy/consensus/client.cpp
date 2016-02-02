@@ -77,7 +77,14 @@ RaftState GallocyClient::state_leader() {
     if (rsp.code == 200) {
       gallocy::string body = rsp.body.c_str();
       gallocy::json response_json = gallocy::json::parse(body);
-      return static_cast<bool>(response_json["success"]);
+      bool success = response_json["success"];
+      uint64_t supporter_term = response_json["term"];
+      uint64_t local_term = gallocy_state->get_current_term();
+      if (supporter_term > local_term) {
+        gallocy_state->set_state(RaftState::FOLLOWER);
+        gallocy_state->set_current_term(supporter_term);
+      }
+      return success;
     }
     return false;
   };
@@ -86,6 +93,8 @@ RaftState GallocyClient::state_leader() {
     { "current_term", leader_term },
   };
 
+  // TODO(sholsapp): How we handle this is busted and needs to be refactored so
+  // that the cv is usable here. This is also blocking, which is probably bad?
   uint64_t votes = utils::post_many("/raft/append_entries", config.peers, config.port, j.dump(), callback);
   // LOG_INFO("Received responses from " << votes << "/" << config.peers.size() << " peers");
   return RaftState::LEADER;
@@ -112,7 +121,14 @@ RaftState GallocyClient::state_candidate() {
     if (rsp.code == 200) {
       gallocy::string body = rsp.body.c_str();
       gallocy::json response_json = gallocy::json::parse(body);
-      return static_cast<bool>(response_json["vote_granted"]);
+      bool granted = response_json["vote_granted"];
+      uint64_t supporter_term = response_json["term"];
+      uint64_t local_term = gallocy_state->get_current_term();
+      if (supporter_term > local_term) {
+        gallocy_state->set_state(RaftState::FOLLOWER);
+        gallocy_state->set_current_term(supporter_term);
+      }
+      return granted;
     }
     return false;
   };
@@ -122,6 +138,9 @@ RaftState GallocyClient::state_candidate() {
     { "last_applied", candidate_last_applied },
     { "commit_index", candidate_commit_index },
   };
+
+  // TODO(sholsapp): How we handle this is busted and needs to be refactored so
+  // that the cv is usable here. This is also blocking, which is probably bad?
   uint64_t votes = utils::post_many("/raft/request_vote", config.peers, config.port, j.dump(), callback);
   LOG_INFO("Received votes from " << votes << "/" << config.peers.size() << " peers");
   if (votes >= config.peers.size() / 2) {
@@ -134,47 +153,3 @@ RaftState GallocyClient::state_candidate() {
     return RaftState::CANDIDATE;
   }
 }
-
-
-#if 0
-GallocyClient::State GallocyClient::state_joining() {
-  // TODO(sholsapp): don't bug peers that we're already connected to by cross
-  // references the peer_info_table.
-  for (auto peer : config.peers) {
-    gallocy::stringstream url;
-    gallocy::json json_body;
-    // TODO(sholsapp): This isn't implicitly converting to a
-    // gallocy::json::string_t? Without this c_str(), the JSON payload turns
-    // into an array of characters.
-    json_body["ip_address"] = config.address.c_str();
-    json_body["is_master"] = config.master;
-    url << "http://" << peer << ":" << config.port << "/join";
-
-    RestClient::Response rsp = RestClient::post(
-        url.str().c_str(),
-        "application/json",
-        json_body.dump());
-
-    if (rsp.code == 200) {
-      gallocy::string body = rsp.body.c_str();
-      body = utils::trim(body);
-      LOG_INFO(url.str()
-        << " - "
-        << rsp.code
-        << " - "
-        << body);
-    } else {
-      LOG_INFO(url.str()
-        << " - "
-        << rsp.code);
-    }
-  }
-
-  if (peer_info_table.all().size() != config.peers.size()) {
-    return JOINING;
-  } else {
-    return IDLE;
-  }
-}
-
-#endif

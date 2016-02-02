@@ -61,43 +61,6 @@ Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
 }
 
 
-Response *GallocyServer::route_join(RouteArguments *args, Request *request) {
-  Response *response = new (internal_malloc(sizeof(Response))) Response();
-  // TODO(sholsapp): Setup the joining logic here.
-
-  gallocy::json peer_info = request->get_json();
-
-  // TODO(sholsapp): We need a serialization framework so that we're not doing
-  // random JSON building/parsing. Maybe the models should have a codec build
-  // into them?
-  int ret = e.execute(
-    PeerInfo(
-      utils::parse_internet_address(peer_info["ip_address"]),
-      std::time(nullptr),
-      std::time(nullptr),
-      static_cast<gallocy::json::boolean_t>(peer_info["is_master"])).insert());
-
-  response->headers["Server"] = "Gallocy-Httpd";
-  response->headers["Content-Type"] = "application/json";
-
-  if (ret) {
-    response->status_code = 200;
-    gallocy::json j = {
-      {"status", "JOINED" },
-    };
-    response->body = j.dump();
-  } else {
-    response->status_code = 500;
-    response->body = "";
-  }
-
-  args->~RouteArguments();
-  internal_free(args);
-
-  return response;
-}
-
-
 Response *GallocyServer::route_request_vote(RouteArguments *args, Request *request) {
   gallocy::json request_json = request->get_json();
   uint64_t candidate_commit_index = request_json["commit_index"];
@@ -111,11 +74,9 @@ Response *GallocyServer::route_request_vote(RouteArguments *args, Request *reque
   bool granted = false;
 
   if (candidate_current_term < local_current_term) {
-    // This candidate is in an old term and thus does not earn a vote from us.
     granted = false;
   } else if (local_voted_for == 0
       || local_voted_for == candidate_voted_for) {
-
     if (candidate_last_applied >= local_last_applied
         && candidate_commit_index >= local_commit_index) {
 
@@ -126,15 +87,13 @@ Response *GallocyServer::route_request_vote(RouteArguments *args, Request *reque
       gallocy_state->set_current_term(candidate_current_term);
       gallocy_state->set_voted_for(candidate_voted_for);
       gallocy_state->reset_timer();
-
-      // This candidate is in current term, is eligable for our vote, and is at
-      // least as up to date as us.
       granted = true;
     } else {
-      LOG_ERROR("This is an odd candidate state to be in and *may* be a logic error.");
+      // TODO(sholsapp): Implement logic to reject candidates that don't have
+      // an up to date log.
+      LOG_ERROR("Handling of out-of-date log is unimplemented");
     }
   }
-
   gallocy::json response_json = {
     { "peer", gallocy_config->address.c_str() },
     { "term", gallocy_state->get_current_term() },
