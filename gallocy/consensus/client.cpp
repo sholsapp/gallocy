@@ -16,7 +16,7 @@
 
 
 void *GallocyClient::work() {
-  LOG_INFO("Starting HTTP client");
+  LOG_DEBUG("Starting HTTP client");
 
   if (gallocy_state == nullptr) {
     LOG_ERROR("The gallocy_state object is null.");

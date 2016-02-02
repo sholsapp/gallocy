@@ -18,7 +18,7 @@ GallocyServer *gallocy_server = nullptr;
 GallocyState *gallocy_state = nullptr;
 
 int initialize_gallocy_framework(const char* config_path) {
-  LOG_INFO("Initializing gallocy framework!");
+  LOG_DEBUG("Initializing gallocy framework!");
   //
   // Initialize libcurl memory allocator.
   //
@@ -76,7 +76,7 @@ int initialize_gallocy_framework(const char* config_path) {
   if ((error = dlerror()) != NULL)  {
     LOG_ERROR("Failed to set pthread_create: " << error);
   }
-  LOG_INFO("Initialized __gallocy_pthread_create ["
+  LOG_DEBUG("Initialized __gallocy_pthread_create ["
       << &__gallocy_pthread_create
       << "] from pthread_create ["
       << reinterpret_cast<uint64_t *>(*__gallocy_pthread_create)
@@ -90,7 +90,7 @@ int initialize_gallocy_framework(const char* config_path) {
   if ((error = dlerror()) != NULL) {
     LOG_ERROR("Failed to set pthread_join: " << error);
   }
-  LOG_INFO("Initialized __gallocy_pthread_join ["
+  LOG_DEBUG("Initialized __gallocy_pthread_join ["
       << &__gallocy_pthread_join
       << "] from pthread_join ["
       << reinterpret_cast<uint64_t *>(*__gallocy_pthread_join)

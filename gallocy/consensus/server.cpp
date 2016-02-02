@@ -147,7 +147,7 @@ Response *GallocyServer::route_append_entries(RouteArguments *args, Request *req
 
 
 void *GallocyServer::work() {
-  LOG_INFO("Starting HTTP server on " << address << ":" << port);
+  LOG_DEBUG("Starting HTTP server on " << address << ":" << port);
 
   struct sockaddr_in name;
   int optval = 1;
@@ -238,7 +238,7 @@ void *GallocyServer::handle(int client_socket, struct sockaddr_in client_name) {
     << " - "
     << "HTTP " << response->status_code
     << " - "
-    << inet_ntoa(client_name.sin_addr) << " (" << request->peer_ip << ")" << " "
+    << inet_ntoa(client_name.sin_addr)
     << request->headers["User-Agent"]);
 
   // Teardown
