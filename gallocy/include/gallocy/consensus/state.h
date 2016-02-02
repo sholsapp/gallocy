@@ -37,11 +37,21 @@ class Guard {
 };
 
 
+/**
+ * Raft states.
+ */
 enum RaftState {
   FOLLOWER,
   LEADER,
   CANDIDATE,
 };
+
+
+/**
+ * Convert a raft state to a string representation.
+ */
+const gallocy::string raft_state_to_string(RaftState state);
+
 
 /**
  * State to implement the Raft consensus protocol.
@@ -273,6 +283,20 @@ class GallocyState {
    */
   void set_state(RaftState new_state) {
     Guard(std::addressof(lock));
+
+    // Only log state changes.
+    if (new_state != state)
+      LOG_INFO("Changing state from "
+          << L_ORANGE(raft_state_to_string(state))
+          << " to "
+          << L_ORANGE(raft_state_to_string(new_state))
+          << " in "
+          << "("
+          << "term=" << current_term << ", "
+          << "l.a.=" << last_applied << ", "
+          << "c.i.=" << commit_index
+          << ")");
+
     if (new_state == RaftState::LEADER) {
       timer->set_step(LEADER_STEP_TIME);
       timer->set_jitter(LEADER_JITTER_TIME);

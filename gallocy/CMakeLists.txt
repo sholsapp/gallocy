@@ -25,6 +25,7 @@ set(GALLOCY_CORE_SRC
   allocators/shared.cpp
   consensus/client.cpp
   consensus/server.cpp
+  consensus/state.cpp
   entrypoint.cpp
   http/request.cpp
   http/response.cpp

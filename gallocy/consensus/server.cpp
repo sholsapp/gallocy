@@ -239,6 +239,7 @@ void *GallocyServer::handle(int client_socket, struct sockaddr_in client_name) {
     << "HTTP " << response->status_code
     << " - "
     << inet_ntoa(client_name.sin_addr)
+    << " "
     << request->headers["User-Agent"]);
 
   // Teardown

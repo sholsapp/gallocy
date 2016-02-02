@@ -33,7 +33,6 @@ void *GallocyClient::work() {
     // that our leader failed to contact us in a timely manner. When this
     // happens, transition to a candidate state.
     if (gallocy_state->get_state() == RaftState::FOLLOWER) {
-      LOG_INFO("Transitioning to candidate after leader timeout.");
       gallocy_state->set_state(RaftState::CANDIDATE);
     }
 
@@ -67,13 +66,6 @@ RaftState GallocyClient::state_leader() {
   uint64_t leader_commit_index = gallocy_state->get_commit_index();
   uint64_t leader_prev_log_index = gallocy_state->get_log()->get_previous_log_index();
   uint64_t leader_prev_log_term = gallocy_state->get_log()->get_previous_log_term();
-
-  LOG_INFO("Running as leader "
-      << "("
-      << "term=" << leader_term << ", "
-      << "l.a.=" << leader_last_applied << ", "
-      << "c.i.=" << leader_commit_index
-      << ")");
 
   std::function<bool(const RestClient::Response &)> callback = [](const RestClient::Response &rsp) {
     if (rsp.code == 200) {
@@ -115,13 +107,6 @@ RaftState GallocyClient::state_candidate() {
   uint64_t candidate_term = gallocy_state->get_current_term();
   uint64_t candidate_last_applied = gallocy_state->get_last_applied();
   uint64_t candidate_commit_index = gallocy_state->get_commit_index();
-
-  LOG_INFO("Running as candidate "
-      << "("
-      << "term=" << candidate_term << ", "
-      << "l.a.=" << candidate_last_applied << ", "
-      << "c.i.=" << candidate_commit_index
-      << ")");
 
   std::function<bool(const RestClient::Response &)> callback = [](const RestClient::Response &rsp) {
     if (rsp.code == 200) {

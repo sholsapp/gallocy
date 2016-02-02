@@ -33,6 +33,11 @@
   __log(__FILE__, "APP", s.str().c_str()); \
 }
 
+//
+// Maintainers, see http://misc.flogisoft.com/bash/tip_colors_and_formatting
+// for a list of color codes that you can use if what you want is missing.
+//
+
 #define L_RED(message) \
   "\033[0;31m" << message << "\033[0m"
 
@@ -47,6 +52,9 @@
 
 #define L_GREY(message) \
   "\033[0;37m" << message << "\033[0m"
+
+#define L_ORANGE(message) \
+  "\033[38;5;208m" << message << "\033[0m"
 
 void __log(const char *module, const char *level, const char *raw_message);
 
