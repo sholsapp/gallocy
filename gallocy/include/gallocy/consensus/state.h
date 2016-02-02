@@ -226,6 +226,12 @@ class GallocyState {
 
  public:
   /**
+   * Get the state machine log.
+   */
+  GallocyLog &get_log() {
+    return log;
+  }
+  /**
    * Start the timer event loop.
    */
   void start_timer() {

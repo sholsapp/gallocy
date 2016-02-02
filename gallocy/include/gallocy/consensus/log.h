@@ -30,11 +30,13 @@ class LogEntry {
  public:
   LogEntry(Command command, uint64_t term) :
     command(command),
+    committed(false),
     term(term) {}
   LogEntry(const LogEntry &) = delete;
   LogEntry &operator=(const LogEntry &) = delete;
  public:
   Command command;
+  bool committed;
   uint64_t term;
 };
 
@@ -43,7 +45,7 @@ class LogEntry {
  * A replicated state machine log.
  *
  * A log is the primary data structure that we use to build a replicated state
- * machine. A log is a consistent datastructure accross all peers that
+ * machine. A log is a consistent data structure across all peers that
  * represents a sequence of commands.
  */
 class GallocyLog {
@@ -51,6 +53,30 @@ class GallocyLog {
   GallocyLog() {}
   GallocyLog(const GallocyLog &) = delete;
   GallocyLog &operator=(const GallocyLog &) = delete;
+  /**
+   * Get the index of the last committed log entry.
+   *
+   * Gets the index of log entry immediately preceding any uncommitted log
+   * entries, suitable for sending to peers during an append entries request.
+   */
+  uint64_t get_previous_log_index() {
+    for (int i = log.size() - 1; i >= 0; ++i) {
+    if (!log[i].committed)
+      return i;
+    }
+  }
+  /**
+   * Get the term of the last committed log entry.
+   *
+   * Gets the term of the log entry immediately preceding any uncommitted log
+   * entries, suitable for sending to peers during an append entries request.
+   */
+  uint64_t get_previous_log_term() {
+    for (int i = log.size() - 1; i >= 0; ++i) {
+    if (!log[i].committed)
+      return log[i].term;
+    }
+  }
  public:
   gallocy::vector<LogEntry> log;
 };

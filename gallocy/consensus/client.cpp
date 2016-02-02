@@ -65,6 +65,8 @@ RaftState GallocyClient::state_leader() {
   uint64_t leader_term = gallocy_state->get_current_term();
   uint64_t leader_last_applied = gallocy_state->get_last_applied();
   uint64_t leader_commit_index = gallocy_state->get_commit_index();
+  uint64_t leader_prev_log_index = gallocy_state->get_log().get_previous_log_index();
+  uint64_t leader_prev_log_term = gallocy_state->get_log().get_previous_log_term();
 
   LOG_INFO("Running as leader "
       << "("
@@ -92,8 +94,8 @@ RaftState GallocyClient::state_leader() {
   gallocy::json j = {
     { "entries", { } },
     { "leader_commit", leader_commit_index },
-    { "previous_log_index", 0 },
-    { "previous_log_term", 0 },
+    { "previous_log_index", leader_prev_log_index },
+    { "previous_log_term", leader_prev_log_term },
     { "term", leader_term },
   };
 
