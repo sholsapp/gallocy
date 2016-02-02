@@ -138,7 +138,7 @@ int post_many(const gallocy::string &path, const gallocy::vector<gallocy::string
     while (rsp_count < peer_majority) {
       // TODO(sholsapp): What should time out be such that it doesn't interfere
       // with the leader timeout?
-      std::cv_status status = rsp_have_majority.wait_for(lk, std::chrono::milliseconds(350));
+      std::cv_status status = rsp_have_majority.wait_for(lk, std::chrono::milliseconds(50));
       if (status == std::cv_status::timeout) {
         // LOG_DEBUG("Failed to get majority at " << rsp_count << " of " << peer_count << "!");
         return rsp_count;

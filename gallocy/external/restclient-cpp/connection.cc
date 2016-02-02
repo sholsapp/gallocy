@@ -215,7 +215,7 @@ RestClient::Connection::performCurlRequest(const std::string& uri) {
 
   // set timeout
   if (this->timeout) {
-    curl_easy_setopt(this->curlHandle, CURLOPT_TIMEOUT, this->timeout);
+    curl_easy_setopt(this->curlHandle, CURLOPT_TIMEOUT_MS, this->timeout);
     // dont want to get a sig alarm on timeout
     curl_easy_setopt(this->curlHandle, CURLOPT_NOSIGNAL, 1);
   }

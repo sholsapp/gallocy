@@ -48,7 +48,7 @@ void RestClient::disable() {
 RestClient::Response RestClient::get(const std::string& url) {
   RestClient::Response ret;
   RestClient::Connection *conn = new RestClient::Connection("");
-  conn->SetTimeout(1);
+  conn->SetTimeout(50);
   ret = conn->get(url);
   delete conn;
   return ret;
@@ -68,7 +68,7 @@ RestClient::Response RestClient::post(const std::string& url,
                                       const std::string& data) {
   RestClient::Response ret;
   RestClient::Connection *conn = new RestClient::Connection("");
-  conn->SetTimeout(1);
+  conn->SetTimeout(50);
   conn->AppendHeader("Content-Type", ctype);
   ret = conn->post(url, data);
   delete conn;
