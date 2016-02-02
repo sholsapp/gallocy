@@ -31,7 +31,7 @@ operating system released after 2015, but if not, setup one in a virtual
 machine and remote in for your development work (hint: we develop on OS X and
 remote into a Debian 8.2 (glibc 2.19) virtual machine running in VirtualBox).
 
-This project uses [https://github.com/sholsapp/cthulhu](cthulhu) as a
+This project uses [cthulhu](https://github.com/sholsapp/cthulhu) as a
 distributed testing framework.
 
 ## getting started
