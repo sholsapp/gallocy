@@ -86,7 +86,7 @@ Response *GallocyServer::route_request_vote(RouteArguments *args, Request *reque
 
       gallocy_state->set_current_term(candidate_current_term);
       gallocy_state->set_voted_for(candidate_voted_for);
-      gallocy_state->reset_timer();
+      gallocy_state->get_timer()->reset();
       granted = true;
     } else {
       // TODO(sholsapp): Implement logic to reject candidates that don't have
@@ -128,7 +128,7 @@ Response *GallocyServer::route_append_entries(RouteArguments *args, Request *req
     gallocy_state->set_current_term(leader_term);
     gallocy_state->set_state(RaftState::FOLLOWER);
     gallocy_state->set_voted_for(request->peer_ip);
-    gallocy_state->reset_timer();
+    gallocy_state->get_timer()->reset();
   }
   gallocy::json response_json = {
     { "peer", gallocy_config->address.c_str() },

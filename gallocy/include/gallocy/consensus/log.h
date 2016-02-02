@@ -58,24 +58,32 @@ class GallocyLog {
    *
    * Gets the index of log entry immediately preceding any uncommitted log
    * entries, suitable for sending to peers during an append entries request.
+   *
+   * :returns: The index of the last committed log entry, or -1 if no committed
+   * log entry exists.
    */
-  uint64_t get_previous_log_index() {
+  int64_t get_previous_log_index() {
     for (int i = log.size() - 1; i >= 0; ++i) {
     if (!log[i].committed)
       return i;
     }
+    return -1;
   }
   /**
    * Get the term of the last committed log entry.
    *
    * Gets the term of the log entry immediately preceding any uncommitted log
    * entries, suitable for sending to peers during an append entries request.
+   *
+   * :returns: The term of the last committed log entry, or -1 if no committed
+   * log entry exists.
    */
-  uint64_t get_previous_log_term() {
+  int64_t get_previous_log_term() {
     for (int i = log.size() - 1; i >= 0; ++i) {
     if (!log[i].committed)
       return log[i].term;
     }
+    return -1;
   }
  public:
   gallocy::vector<LogEntry> log;

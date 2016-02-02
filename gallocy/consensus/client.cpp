@@ -23,7 +23,7 @@ void *GallocyClient::work() {
     abort();
   }
 
-  gallocy_state->start_timer();
+  gallocy_state->get_timer()->start();
 
   while (alive) {
     std::unique_lock<std::mutex> lk(gallocy_state->get_timer_mutex());
@@ -65,8 +65,8 @@ RaftState GallocyClient::state_leader() {
   uint64_t leader_term = gallocy_state->get_current_term();
   uint64_t leader_last_applied = gallocy_state->get_last_applied();
   uint64_t leader_commit_index = gallocy_state->get_commit_index();
-  uint64_t leader_prev_log_index = gallocy_state->get_log().get_previous_log_index();
-  uint64_t leader_prev_log_term = gallocy_state->get_log().get_previous_log_term();
+  uint64_t leader_prev_log_index = gallocy_state->get_log()->get_previous_log_index();
+  uint64_t leader_prev_log_term = gallocy_state->get_log()->get_previous_log_term();
 
   LOG_INFO("Running as leader "
       << "("
@@ -151,10 +151,10 @@ RaftState GallocyClient::state_candidate() {
   LOG_INFO("Received votes from " << votes << "/" << config.peers.size() << " peers");
   if (votes >= config.peers.size() / 2) {
     gallocy_state->set_state(RaftState::LEADER);
-    gallocy_state->reset_timer();
+    gallocy_state->get_timer()->reset();
     return state_leader();
   } else {
-    gallocy_state->reset_timer();
+    gallocy_state->get_timer()->reset();
     gallocy_state->set_voted_for(0);
     return RaftState::CANDIDATE;
   }

@@ -62,6 +62,8 @@ class GallocyState {
     lock = PTHREAD_MUTEX_INITIALIZER;
     timer = new (internal_malloc(sizeof(Timer)))
       Timer(FOLLOWER_STEP_TIME, FOLLOWER_JITTER_TIME, std::addressof(timed_out));
+    log = new (internal_malloc(sizeof(GallocyLog)))
+      GallocyLog();
     state = RaftState::FOLLOWER;
   }
   ~GallocyState() {
@@ -183,7 +185,7 @@ class GallocyState {
    * Each entry contains a command for the state machine and the term when the
    * entry was received by the leader.
    */
-  GallocyLog log;
+  GallocyLog *log;
 
  //
  //Volatile state on all servers.
@@ -220,6 +222,14 @@ class GallocyState {
    */
   RaftState state;
   pthread_mutex_t lock;
+  /**
+   * The timer.
+   *
+   * This timer is used to implement the Raft consensus module and repeatedly
+   * counts down from a randomized starting time. If the count down ever
+   * reaches zero, which indicates a leader timeout, the `timed_out` condition
+   * variable is signaled.
+   */
   Timer *timer;
   std::condition_variable timed_out;
   std::mutex timed_out_mutex;
@@ -228,32 +238,14 @@ class GallocyState {
   /**
    * Get the state machine log.
    */
-  GallocyLog &get_log() {
+  GallocyLog *get_log() {
     return log;
   }
   /**
-   * Start the timer event loop.
+   * Get the timer.
    */
-  void start_timer() {
-    Guard(std::addressof(lock));
-    if (!timer->is_timer_running())
-      timer->start();
-  }
-  /**
-   * Stop the timer event loop.
-   */
-  void stop_timer() {
-    Guard(std::addressof(lock));
-    if (timer->is_timer_running())
-      timer->stop();
-  }
-  /**
-   * Reset the timer event loop.
-   */
-  void reset_timer() {
-    Guard(std::addressof(lock));
-    if (timer->is_timer_running())
-      timer->reset();
+  Timer *get_timer() {
+    return timer;
   }
   /**
    * Get the timer's mutex.
