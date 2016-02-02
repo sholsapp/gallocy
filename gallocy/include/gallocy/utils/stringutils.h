@@ -16,6 +16,7 @@ namespace utils {
   bool startswith(gallocy::string hackstack, gallocy::string needle);
   bool endswith(gallocy::string hackstack, gallocy::string needle);
   uint64_t parse_internet_address(const gallocy::string &ip_address);
+  const gallocy::string unparse_internet_address(uint64_t ip_address);
 }  // namespace utils
 
 #endif  // GALLOCY_STRINGUTILS_H_

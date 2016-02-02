@@ -81,7 +81,7 @@ Response *GallocyServer::route_request_vote(RouteArguments *args, Request *reque
         && candidate_commit_index >= local_commit_index) {
 
       LOG_INFO("Granting vote to "
-          << candidate_voted_for
+          << utils::unparse_internet_address(candidate_voted_for)
           << " in term " << candidate_current_term);
 
       gallocy_state->set_current_term(candidate_current_term);
