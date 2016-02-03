@@ -1,3 +1,9 @@
+if(CMAKE_COMPILER_IS_GNUCXX)
+  include(CodeCoverage)
+  setup_target_for_coverage(${PROJECT_NAME}_coverage gallocy_tests coverage)
+endif()
+
+
 set (GALLOCY_INCLUDE
   ../gallocy
   ../gallocy/include
