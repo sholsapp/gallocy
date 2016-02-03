@@ -19,7 +19,7 @@ GallocyServer *gallocy_server = nullptr;
 class ConsensusServerTests: public ::testing::Test {
  protected:
   /**
-   *
+   * Starts a GallocyServer.
    */
   virtual void SetUp() {
     gallocy::string address = "127.0.0.1";
@@ -33,7 +33,7 @@ class ConsensusServerTests: public ::testing::Test {
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
   /**
-   *
+   * Stops a GallocyServer.
    */
   virtual void TearDown() {
     // TODO(sholsapp): The server's join implementation blocks forever

@@ -30,7 +30,6 @@ if(GENERATE_COVERAGE)
   #  "")
 endif()
 
-# Custom compile flags for memory allocator
 set(CMAKE_CXX_FLAGS "-std=c++0x -g -Wall -fstack-protector-all -Wstack-protector -fno-omit-frame-pointer ${CMAKE_CXX_FLAGS_COVERAGE}")
 
 set(test_sources
@@ -52,7 +51,7 @@ set(test_sources
   test_stringutils.cpp
   test_threads.cpp
 )
+
 add_executable(gallocy_tests ${test_sources})
 target_link_libraries(gallocy_tests gtest_main gallocy-core gallocy-runtime pthread "dl" ${CURL_LIBRARIES})
-
 install(TARGETS gallocy_tests DESTINATION bin)

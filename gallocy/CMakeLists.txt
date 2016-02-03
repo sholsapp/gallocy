@@ -1,8 +1,6 @@
-# The directories that must be included for build
 set(GALLOCY_INCLUDE
   .
   include
-  # TODO(sholsapp): Remove this and refactor include paths
   include/gallocy
   heaplayers
   external/restclient-cpp
@@ -33,7 +31,6 @@ endif()
 # Custom compile flags for memory allocator
 set(CMAKE_CXX_FLAGS "-std=c++0x -g -Wall -fstack-protector-all -Wstack-protector -fno-omit-frame-pointer ${CMAKE_CXX_FLAGS_COVERAGE}")
 
-# The gallocy-core build
 set(GALLOCY_CORE_SRC
   allocators/internal.cpp
   allocators/shared.cpp
@@ -55,7 +52,6 @@ set(GALLOCY_CORE_SRC
   utils/stringutils.cpp
   # TODO(sholsapp): See https://github.com/mrtazz/restclient-cpp/issues/41 to
   # consider building restclient-cpp propertly.
-  # external/restclient-cpp/restclient.cpp
   external/restclient-cpp/connection.cc
   external/restclient-cpp/helpers.cc
   external/restclient-cpp/restclient.cc
@@ -64,7 +60,6 @@ add_library(gallocy-core SHARED ${GALLOCY_CORE_SRC})
 target_link_libraries(gallocy-core gallocy-runtime ${CURL_LIBRARIES} pthread dl)
 install(TARGETS gallocy-core DESTINATION lib)
 
-# The gallocy-wrapper build
 set (GALLOCY_WRAPPER_SOURCE
   wrapper.cpp)
 add_library(gallocy-wrapper SHARED ${GALLOCY_WRAPPER_SOURCE})
@@ -77,12 +72,20 @@ install(TARGETS gallocy-runtime DESTINATION lib)
 
 # A sample application
 add_executable(server bin/server.cpp)
-# TODO(sholsapp): Sort out the libc/libc++ static linking issue to keep
-# standard library usage between internal and application uses seperate before
-# continuing down this path.
-#target_link_libraries(server ${CURL_LIBRARIES} gallocy-core gallocy-runtime gallocy-wrapper)
 target_link_libraries(server ${CURL_LIBRARIES} gallocy-core gallocy-runtime)
 install(TARGETS server DESTINATION bin)
+
+# The sample application that uses the *explicit* api, i.e., it does not
+# redefine memory allocator and gallocy memory must be explicitly asked for.
+add_executable(application-explicit bin/server.cpp)
+target_link_libraries(application-explicit ${CURL_LIBRARIES} gallocy-core gallocy-runtime)
+install(TARGETS application-explicit DESTINATION bin)
+
+# The sample application that uses the *implicit* api, i.e., it does redefine
+# memory allocator and gallocy memory is implicitly used.
+add_executable(application-implicit bin/server.cpp)
+target_link_libraries(application-implicit ${CURL_LIBRARIES} gallocy-core gallocy-runtime gallocy-wrapper)
+install(TARGETS application-implicit DESTINATION bin)
 
 add_executable(sizes bin/sizes.cpp)
 install(TARGETS sizes DESTINATION bin)

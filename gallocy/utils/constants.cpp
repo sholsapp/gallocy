@@ -36,7 +36,6 @@ uint64_t *&global_base() {
 void *get_heap_location(uint64_t purpose) {
   switch (purpose) {
     case PURPOSE_DEVELOPMENT_HEAP:
-      std::cout << "[development heap]" << std::endl;
       return nullptr;
       break;
     case PURPOSE_INTERNAL_HEAP:
@@ -49,7 +48,6 @@ void *get_heap_location(uint64_t purpose) {
       return reinterpret_cast<void *>(global_base() + ZONE_SZ * 2);
       break;
     default:
-      std::cout << "[unknown heap]" << std::endl;
       return nullptr;
       break;
   }
