@@ -49,6 +49,7 @@ Usage: project <subcommand> [options]
 Subcommands:
     build - invoke cmake/make to build the code
     clean - clean things up
+    coverage - run the system test suite and collect coverage data
     docker - build a docker
     integration - run the system test suite
     leakcheck - run the unit test suite under valgrind
