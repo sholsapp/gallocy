@@ -7,48 +7,18 @@
 
 #include "gallocy/utils/constants.h"
 
-
-#define ZONE_SZ   4096 * 4096 * 2
 #define MMAP_PROT PROT_READ|PROT_WRITE
 #define MMAP_FLAG MAP_ANON|MAP_SHARED
-
-#define PURPOSE_DEVELOPMENT_HEAP  100
-#define PURPOSE_INTERNAL_HEAP     101
-#define PURPOSE_SHARED_HEAP       102
-#define PURPOSE_APPLICATION_HEAP  103
-
 
 namespace HL {
 
 template <uint64_t Purpose>
 class SourceMmapHeap {
  public:
-  void *get_location(uint64_t purpose) {
-    switch (purpose) {
-      case PURPOSE_DEVELOPMENT_HEAP:
-        std::cout << "[development heap]" << std::endl;
-        return nullptr;
-        break;
-      case PURPOSE_INTERNAL_HEAP:
-        return reinterpret_cast<void *>(global_base() + ZONE_SZ * 0);
-        break;
-      case PURPOSE_SHARED_HEAP:
-        return reinterpret_cast<void *>(global_base() + ZONE_SZ * 1);
-        break;
-      case PURPOSE_APPLICATION_HEAP:
-        return reinterpret_cast<void *>(global_base() + ZONE_SZ * 2);
-        break;
-      default:
-        std::cout << "[unknown heap]" << std::endl;
-        return nullptr;
-        break;
-    }
-  }
-
   inline void *malloc(size_t sz) {
     void *mem = NULL;
     if (!zone) {
-      if ((zone = mmap(get_location(Purpose), ZONE_SZ,
+      if ((zone = mmap(get_heap_location(Purpose), ZONE_SZ,
               MMAP_PROT, MMAP_FLAG, -1, 0)) == MAP_FAILED) {
         std::cout << "---ENOMEM---" << std::endl;
         abort();
