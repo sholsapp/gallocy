@@ -15,6 +15,7 @@ TEST(ConstantsTests, Addresses) {
 
 TEST(ConstantsTests, HeapLocations) {
   ASSERT_EQ(get_heap_location(PURPOSE_DEVELOPMENT_HEAP), nullptr);
+  ASSERT_EQ(get_heap_location(0), nullptr);
   // TODO(sholsapp): Is there a more meaningful way to test this function?
   ASSERT_NE(get_heap_location(PURPOSE_INTERNAL_HEAP), nullptr);
   ASSERT_NE(get_heap_location(PURPOSE_SHARED_HEAP), nullptr);

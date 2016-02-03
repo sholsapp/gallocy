@@ -35,7 +35,13 @@ TEST(StringutilsTests, Trim) {
 }
 
 
+TEST(StringutilsTests, StringToHex) {
+  ASSERT_EQ(utils::string_to_hex("TESTING123"), "54455354494E47313233");
+}
+
+
 TEST(StringutilsTests, ParseInternetAddress) {
+  ASSERT_EQ(utils::parse_internet_address("a.a.a.a"), 0);
   ASSERT_EQ(utils::parse_internet_address("0.0.0.0"), 0);
   ASSERT_EQ(utils::parse_internet_address("127.0.0.1"), 2130706433);
 }
