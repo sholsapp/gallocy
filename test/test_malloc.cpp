@@ -40,7 +40,7 @@ TEST_F(MallocTests, SimpleMalloc) {
 TEST_F(MallocTests, SmallMalloc) {
   char* ptr = (char*) custom_malloc(1);
   ASSERT_TRUE(ptr != NULL);
-  ASSERT_EQ(custom_malloc_usable_size(ptr), static_cast<size_t>(1));
+  ASSERT_EQ(custom_malloc_usable_size(ptr), static_cast<size_t>(sizeof(size_t) * 2));
   ptr[0] = 'A';
   ASSERT_EQ(*ptr, 'A');
 }
@@ -116,7 +116,7 @@ TEST_F(MallocTests, ReuseOldAllocations) {
   ASSERT_TRUE(ptr != NULL);
 
   ASSERT_NE(ptr, _ptr);
-  ASSERT_EQ(custom_malloc_usable_size(ptr), static_cast<size_t>(156));
+  ASSERT_GE(custom_malloc_usable_size(ptr), static_cast<size_t>(156));
 
   custom_free(ptr);
 }

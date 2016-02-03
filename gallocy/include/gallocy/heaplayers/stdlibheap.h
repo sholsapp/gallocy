@@ -11,6 +11,9 @@ template <class Super>
 class StdlibHeap : public Super {
  public:
   void *malloc(size_t sz) {
+    if (sz < 2 * sizeof(size_t))
+      sz = 2 * sizeof(size_t);
+    sz = align(sz);
     return Super::malloc(sz);
   }
 
@@ -19,6 +22,9 @@ class StdlibHeap : public Super {
   }
 
   void* realloc(void* ptr, size_t sz) {
+    if (sz < 2 * sizeof(size_t))
+      sz = 2 * sizeof(size_t);
+    sz = align(sz);
     if (ptr == NULL) {
       return Super::malloc(sz);
     }
@@ -41,6 +47,10 @@ class StdlibHeap : public Super {
     void *ptr = Super::malloc(count * size);
     memset(ptr, 0, count * size);
     return ptr;
+  }
+ private:
+  inline static size_t align (size_t sz) {
+    return (sz + (sizeof(uint64_t) - 1)) & ~(sizeof(uint64_t) - 1);
   }
 };
 
