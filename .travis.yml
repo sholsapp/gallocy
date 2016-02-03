@@ -19,6 +19,8 @@ matrix:
     # Only check clang on OS X
     - os: osx
       compiler: gcc
+    - os: linux
+      compiler: clang
 
 addons:
   apt:
