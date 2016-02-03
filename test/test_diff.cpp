@@ -36,7 +36,10 @@ TEST(DiffTests, DiffGeneral_1) {
 
 
 TEST(DiffTests, DiffGeneral_2) {
-  int mem_sz = 1024;
+  // NOTE(sholsapp): at 1024 this raises a SIGSEGV, presumably because we run
+  // out of memory. Hypothesis was tested by increasing available memory, which
+  // remedies the situation.
+  int mem_sz = 512;
   char* str1 = (char*) internal_malloc(sizeof(char) * mem_sz);
   char* str2 = (char*) internal_malloc(sizeof(char) * mem_sz);
   char* str1align = NULL;

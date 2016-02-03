@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <thread>
+#include <vector>
+
 #include "gtest/gtest.h"
 
 #include "libgallocy.h"
@@ -243,4 +246,44 @@ TEST_F(MallocTests, LeakCheck) {
     custom_free(r);
   }
   ASSERT_TRUE((uint64_t) high - (uint64_t) low < 4096 * 2);
+}
+
+
+void parallel_test_work() {
+  const int rand_sz = 4096 * 1;
+  const size_t arr_sz = 256;
+  char* small_ptrs[arr_sz];
+  size_t small_ptrs_sz[arr_sz];
+
+  for (uint64_t i = 0; i < arr_sz; i++) {
+    small_ptrs_sz[i] = rand() % rand_sz;
+    small_ptrs[i] = (char*) custom_malloc(sizeof(char) * small_ptrs_sz[i]);
+    ASSERT_NE(small_ptrs[i], (void*) NULL);
+    memset(&small_ptrs[i][0], (char) i % 255, small_ptrs_sz[i]);
+  }
+
+  for (uint64_t i = 0; i < arr_sz; i++) {
+    ASSERT_NE(small_ptrs[i], (void*) NULL);
+    for (uint64_t j = 0; j < small_ptrs_sz[i]; j++) {
+      char target = (char) i % 255;
+      ASSERT_EQ(small_ptrs[i][j], target) << "Failed at iteration [" << i << "] at offset [" << j << "].";
+    }
+  }
+
+  for (uint64_t i = 0; i < arr_sz; i++) {
+    custom_free(small_ptrs[i]);
+  }
+
+  return;
+}
+
+TEST_F(MallocTests, ParallelCheck) {
+  std::vector<std::thread> threads;
+  for (int i = 0; i < 32; i++) {
+    threads.push_back(std::thread(parallel_test_work));
+  }
+  for (auto &thread : threads) {
+    std::cout << "Joining" << std::endl;
+    thread.join();
+  }
 }
