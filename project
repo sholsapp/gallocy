@@ -11,6 +11,7 @@ sub_help() {
   echo "    clean - clean things up"
   echo "    docker - build a docker"
   echo "    integration - run the system test suite"
+  echo "    leakcheck - run the unit test suite under valgrind"
   echo "    stylecheck - run the style checker"
   echo "    test - run the unit test suite"
 }
@@ -67,6 +68,24 @@ sub_integration() {
 
   export ${LIBRARY_PATH}="${INSTALL_PATH}/lib"
   ${BATS} ./integration/test.sh
+}
+
+
+sub_leakcheck() {
+  if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    LIBRARY_PATH="LD_LIBRARY_PATH"
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    LIBRARY_PATH="DYLD_LIBRARY_PATH"
+  fi
+
+  INSTALL_PATH="$(pwd)/install"
+
+  export ${LIBRARY_PATH}="${INSTALL_PATH}/lib"
+  valgrind \
+    --leak-check=full \
+    --show-leak-kinds=all \
+    ${INSTALL_PATH}/bin/gallocy_tests \
+      --gtest_filter="-ThreadsTest.*"
 }
 
 

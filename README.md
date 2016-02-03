@@ -49,7 +49,9 @@ Usage: project <subcommand> [options]
 Subcommands:
     build - invoke cmake/make to build the code
     clean - clean things up
+    docker - build a docker
     integration - run the system test suite
+    leakcheck - run the unit test suite under valgrind
     stylecheck - run the style checker
     test - run the unit test suite
 ```
