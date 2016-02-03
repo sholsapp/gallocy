@@ -36,10 +36,12 @@ set(test_sources
   gtest.cpp
   test_config.cpp
   test_consensus_timer.cpp
+  test_constants.cpp
   test_diff.cpp
   test_free.cpp
   test_httpd.cpp
   test_json.cpp
+  test_logging.cpp
   test_malloc.cpp
   test_mmult.cpp
   test_models.cpp

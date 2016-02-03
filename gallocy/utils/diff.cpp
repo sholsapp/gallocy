@@ -26,6 +26,7 @@ class Cost {
 };
 
 
+#if 0
 void print_matrix(Element **matrix, size_t matrix_y, size_t matrix_x) {
   fprintf(stderr, "y dim: %lu\n", matrix_y);
   fprintf(stderr, "x dim: %lu\n", matrix_x);
@@ -36,8 +37,10 @@ void print_matrix(Element **matrix, size_t matrix_y, size_t matrix_x) {
     fprintf(stderr, "\n");
   }
 }
+#endif
 
 
+#if 0
 void print_diff(const char *mem1, size_t mem1_len, const char* mem2, size_t mem2_len) {
   fprintf(stderr, "-> %s\n", mem1);
   fprintf(stderr, "-> %s\n", mem2);
@@ -64,6 +67,7 @@ void print_diff(const char *mem1, size_t mem1_len, const char* mem2, size_t mem2
     }
   }
 }
+#endif
 
 
 int diff(
