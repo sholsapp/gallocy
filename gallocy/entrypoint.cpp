@@ -18,6 +18,10 @@ GallocyServer *gallocy_server = nullptr;
 GallocyState *gallocy_state = nullptr;
 
 int initialize_gallocy_framework(const char* config_path) {
+  if (!config_path) {
+    LOG_ERROR("No configuration file provided!");
+    abort();
+  }
   LOG_DEBUG("Initializing gallocy framework!");
   //
   // Initialize libcurl memory allocator.
