@@ -1,6 +1,10 @@
 #ifndef GALLOCY_HEAPLAYERS_GUARD_H_
 #define GALLOCY_HEAPLAYERS_GUARD_H_
+
+#include <pthread.h>
+
 #include <iostream>
+
 namespace HL {
 
 template <class LockType>
@@ -8,11 +12,13 @@ class Guard {
  public:
   inline explicit Guard(LockType &l)
       : _lock(l) {
-    _lock.lock();
+    pthread_mutex_lock(&_lock);
+    //_lock.lock();
   }
 
   inline ~Guard(void) {
-    _lock.unlock();
+    //_lock.unlock();
+    pthread_mutex_unlock(&_lock);
   }
  private:
   LockType &_lock;
