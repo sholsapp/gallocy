@@ -39,6 +39,8 @@ set_cache_variable(GTEST_INCLUDE_DIRS "Location of gtest include files")
 add_subdirectory(curl)
 set(CURL_FOUND TRUE)
 set(CURL_LIBRARIES libcurl)
+#set(ENABLE_THREADED_RESOLVER ON)
+set(_THREAD_SAFE ON)
 set(CURL_INCLUDE_DIRS
     ${CURL_SOURCE_DIR}/include
     ${CURL_BINARY_DIR}/include/curl)

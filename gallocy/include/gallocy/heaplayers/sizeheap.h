@@ -16,9 +16,9 @@ class UseSizeHeap : public Super {
   }
 
  protected:
-  union freeObject {
-    size_t sz;
-    double _dummy;  // for alignment.
+  struct freeObject {
+    uint64_t _dummy;  // for alignment.
+    uint64_t sz;
   };
 };
 

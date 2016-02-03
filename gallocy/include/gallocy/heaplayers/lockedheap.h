@@ -27,6 +27,21 @@ class LockedHeap : public Super {
     Super::free(ptr);
   }
 
+  inline void *realloc(void *ptr, size_t sz) {
+    Guard<pthread_mutex_t> l(alock);
+    return Super::realloc(ptr, sz);
+  }
+
+  inline char *strdup(const char *s1) {
+    Guard<pthread_mutex_t> l(alock);
+    return Super::strdup(s1);
+  }
+
+  inline void *calloc(size_t count, size_t size) {
+    Guard<pthread_mutex_t> l(alock);
+    return Super::calloc(count, size);
+  }
+
   inline size_t getSize(void *ptr) {
     //Guard<LockType> l(thelock);
     Guard<pthread_mutex_t> l(alock);

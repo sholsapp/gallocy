@@ -2,6 +2,7 @@
 #define GALLOCY_HEAPLAYERS_FIRSTFITHEAP_H_
 
 #include <cstdio>
+#include <cstdint>
 
 namespace HL {
 
@@ -18,7 +19,7 @@ class FirstFitHeap : public Super {
 
   inline void *malloc(size_t sz) {
     // Check the free list first.
-    void * ptr = myFreeList;
+    void *ptr = myFreeList;
     if (ptr == NULL) {
       ptr = Super::malloc(sz);
     } else {
@@ -86,14 +87,8 @@ class FirstFitHeap : public Super {
   }
 
  private:
-  int classInvariant() {
-    return (((myFreeList == NULL) && (nObjects == 0))
-        || ((myFreeList != NULL) && (nObjects > 0)));
-  }
-
-  class freeObject {
-   public:
-    freeObject * next;
+  struct freeObject {
+    freeObject *next;
   };
 
   freeObject *myFreeList;

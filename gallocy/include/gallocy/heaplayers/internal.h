@@ -15,9 +15,9 @@
 namespace HL {
 
 typedef
-  HL::StdlibHeap<
   HL::LockedHeap<
   HL::SpinLockType,
+    HL::StdlibHeap<
     HL::FirstFitHeap<
       HL::SizeHeap<
         HL::ZoneHeap<
