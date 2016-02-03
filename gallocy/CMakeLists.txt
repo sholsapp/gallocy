@@ -66,6 +66,9 @@ add_executable(server bin/server.cpp)
 # TODO(sholsapp): Sort out the libc/libc++ static linking issue to keep
 # standard library usage between internal and application uses seperate before
 # continuing down this path.
-#target_link_libraries(server gallocy-core gallocy-runtime gallocy-wrapper)
+#target_link_libraries(server ${CURL_LIBRARIES} gallocy-core gallocy-runtime gallocy-wrapper)
 target_link_libraries(server ${CURL_LIBRARIES} gallocy-core gallocy-runtime)
 install(TARGETS server DESTINATION bin)
+
+add_executable(sizes bin/sizes.cpp)
+install(TARGETS sizes DESTINATION bin)
