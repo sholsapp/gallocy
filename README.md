@@ -90,3 +90,5 @@ to support new features or coherency protocols, reach out to us to let us know!
 We also have a ton of fun ideas for group projects, M.S. thesis projects, and
 even Ph.D. dissertation areas in the fields of binary rewriting and live
 process migration.
+
+[![Analytics](https://ga-beacon.appspot.com/UA-73936402-2/gallocy/readme?pixel)](https://github.com/sholsapp/gallocy)
