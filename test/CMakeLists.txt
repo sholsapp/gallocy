@@ -6,10 +6,11 @@ endif()
 
 
 set (GALLOCY_INCLUDE
+  ${CURL_INCLUDE_DIRS}
   ../gallocy
   ../gallocy/include
   ../gallocy/include/gallocy
-  ../gallocy/external/frozen
+  ../gallocy/external/restclient-cpp
   ../gallocy/external/sqlite3)
 include_directories(${GALLOCY_INCLUDE})
 include_directories(${GTEST_INCLUDE_DIRS})
@@ -36,6 +37,7 @@ set(test_sources
   gtest.cpp
   test_config.cpp
   test_consensus_timer.cpp
+  test_consensus_server.cpp
   test_constants.cpp
   test_diff.cpp
   test_free.cpp
@@ -51,6 +53,6 @@ set(test_sources
   test_threads.cpp
 )
 add_executable(gallocy_tests ${test_sources})
-target_link_libraries(gallocy_tests gtest_main gallocy-core gallocy-runtime pthread "dl")
+target_link_libraries(gallocy_tests gtest_main gallocy-core gallocy-runtime pthread "dl" ${CURL_LIBRARIES})
 
 install(TARGETS gallocy_tests DESTINATION bin)

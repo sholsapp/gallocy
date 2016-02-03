@@ -18,15 +18,23 @@ GallocyServer *gallocy_server = nullptr;
 
 class ConsensusServerTests: public ::testing::Test {
  protected:
+  /**
+   *
+   */
   virtual void SetUp() {
     gallocy::string address = "127.0.0.1";
     gallocy::vector<gallocy::string> peers;
+    // Add oneself as a peer for testing routes.
+    peers.push_back("http://127.0.0.1:8080");
     gallocy_config = new (internal_malloc(sizeof(GallocyConfig))) GallocyConfig(address, peers, 8080);
     gallocy_server = new (internal_malloc(sizeof(GallocyServer))) GallocyServer(*gallocy_config);
     gallocy_server->start();
     // TODO(sholsapp): Replace this with a "ready" implementation.
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
+  /**
+   *
+   */
   virtual void TearDown() {
     // TODO(sholsapp): The server's join implementation blocks forever
     // because, although we've set alive = false, it is blocked indefinitly
@@ -35,6 +43,7 @@ class ConsensusServerTests: public ::testing::Test {
     // down. Fix by using select in the server with a timeout.
     std::thread([&]{ gallocy_server->stop(); }).detach();
     RestClient::Response rsp = RestClient::get("http://127.0.0.1:8080/admin");
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     // Clean up
     gallocy_config->~GallocyConfig();
@@ -46,5 +55,9 @@ class ConsensusServerTests: public ::testing::Test {
 
 
 TEST_F(ConsensusServerTests, StartStop) {
-  utils::post_many("/admin", gallocy_config->peers, 8080, "", [](const RestClient::Response &rsp) { return true; });
+  uint64_t rsp = utils::post_many("/admin", gallocy_config->peers, 8080, "",
+      [](const RestClient::Response &rsp) {
+        return true;
+      });
+  ASSERT_GE(rsp, 0);
 }

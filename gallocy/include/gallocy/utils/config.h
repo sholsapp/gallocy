@@ -17,6 +17,11 @@
  */
 class GallocyConfig {
  public:
+  GallocyConfig(gallocy::string &address, gallocy::vector<gallocy::string> &peers, uint16_t port)
+    : address(address),
+      peers(peers),
+      port(port)
+  {}
   explicit GallocyConfig(gallocy::json j) {
     port = j["port"];
 

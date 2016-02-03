@@ -283,7 +283,6 @@ TEST_F(MallocTests, ParallelCheck) {
     threads.push_back(std::thread(parallel_test_work));
   }
   for (auto &thread : threads) {
-    std::cout << "Joining" << std::endl;
     thread.join();
   }
 }
