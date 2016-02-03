@@ -12,7 +12,7 @@ include_directories(${GALLOCY_INCLUDE})
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -undefined dynamic_lookup")
-  endif()
+endif()
 
 
 # Custom compile flags for memory allocator
