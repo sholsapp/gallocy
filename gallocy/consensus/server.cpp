@@ -30,6 +30,7 @@ Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
   response->headers["Server"] = "Gallocy-Httpd";
   response->headers["Content-Type"] = "application/json";
 
+#if 0
   gallocy::json j = {
     {"status", "GOOD" },
     {"master", is_master},
@@ -53,6 +54,9 @@ Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
   }
 
   response->body = j.dump();
+#endif
+
+  response->body = "GOOD";
 
   args->~RouteArguments();
   internal_free(args);
@@ -197,13 +201,13 @@ void *GallocyServer::work() {
     ctx->client_socket = client_sock;
     ctx->client_name = client_name;
 
-    if (__gallocy_pthread_create(&newthread, NULL, handle_entry, reinterpret_cast<void *>(ctx)) != 0) {
+    if (get_pthread_create_impl()(&newthread, NULL, handle_entry, reinterpret_cast<void *>(ctx)) != 0) {
       perror("pthread_create1");
     }
 
     // TODO(sholsapp): This shouldn't block, and we shouldn't just try to
     // join this thread.
-    if (__gallocy_pthread_join(newthread, nullptr)) {
+    if (get_pthread_join_impl()(newthread, nullptr)) {
       perror("pthread_join1");
     }
   }

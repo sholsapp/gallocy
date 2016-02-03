@@ -22,7 +22,7 @@ class ThreadedDaemon {
    */
   void start() {
     alive = true;
-    if (__gallocy_pthread_create(&thread, nullptr, handle_work, reinterpret_cast<void *>(this))) {
+    if (get_pthread_create_impl()(&thread, nullptr, handle_work, reinterpret_cast<void *>(this))) {
       perror("pthread_create");
     }
   }
@@ -31,7 +31,7 @@ class ThreadedDaemon {
    */
   void stop() {
     alive = false;
-    if (__gallocy_pthread_join(thread, nullptr)) {
+    if (get_pthread_join_impl()(thread, nullptr)) {
       perror("pthread_join");
     }
   }
@@ -55,7 +55,38 @@ class ThreadedDaemon {
    * True if the daemon is alive.
    */
   bool alive;
+  /**
+   * Get the pthread_create implementation to use.
+   */
+  pthread_create_function get_pthread_create_impl() {
+    if (__gallocy_pthread_create != nullptr) {
+      return __gallocy_pthread_create;
+    } else {
+      LOG_WARNING("Using default pthread_create implementation should only be used for testing!");
+      return pthread_create;
+    }
+  }
+  /**
+   * Get the pthread_join implementation to use.
+   */
+  pthread_join_function get_pthread_join_impl() {
+    if (__gallocy_pthread_join != nullptr) {
+      return __gallocy_pthread_join;
+    } else {
+      LOG_WARNING("Using default pthread_join implementation should only be used for testing!");
+      return pthread_join;
+    }
+  }
+
  private:
+  /**
+   * The pthread_create implementation to use.
+   */
+  pthread_create_function pthread_create_impl;
+  /**
+   * The pthread_join implementation to use;
+   */
+  pthread_join_function pthread_join_impl;
   /**
    * The pthread identifier for this daemon.
    */
