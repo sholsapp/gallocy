@@ -120,15 +120,22 @@ Response *GallocyServer::route_request_vote(RouteArguments *args, Request *reque
 
 Response *GallocyServer::route_append_entries(RouteArguments *args, Request *request) {
   gallocy::json request_json = request->get_json();
-  // TODO(sholsapp): This should actually be a gallocy::vector<Command> (from
-  // the consensus log module).
-  gallocy::vector<gallocy::string> leader_entries = request_json["entries"];
+  gallocy::vector<LogEntry> leader_entries;
   uint64_t leader_commit_index = request_json["leader_commit"];
   uint64_t leader_prev_log_index = request_json["previous_log_index"];
   uint64_t leader_prev_log_term = request_json["previous_log_term"];
   uint64_t leader_term = request_json["term"];
   uint64_t local_term = gallocy_state->get_current_term();
   bool success = false;
+
+  for (auto entry_json : request_json["entries"]) {
+    // TODO(sholsapp): Implicit conversion issue.
+    gallocy::string tmp = entry_json["command"];
+    uint64_t term = entry_json["term"];
+    Command command(tmp);
+    LogEntry entry(command, term);
+    leader_entries.push_back(entry);
+  }
 
   if (leader_term < local_term) {
     LOG_INFO("Rejecting leader "
@@ -166,7 +173,12 @@ Response *GallocyServer::route_append_entries(RouteArguments *args, Request *req
 // TODO(sholsapp): This is just a route that we can hit to trigger an append
 // entries action. Once we're done testing, we can remove this route.
 Response *GallocyServer::route_request(RouteArguments *args, Request *request) {
-  gallocy_client->send_append_entries();
+  Command command("hello world");
+  LogEntry entry(command, gallocy_state->get_current_term());
+  gallocy::vector<LogEntry> entries;
+  entries.push_back(entry);
+
+  gallocy_client->send_append_entries(entries);
 
   Response *response = new (internal_malloc(sizeof(Response))) Response();
   response->headers["Server"] = "Gallocy-Httpd";
@@ -300,12 +312,12 @@ void *GallocyServer::handle(int client_socket, struct sockaddr_in client_name) {
 Request *GallocyServer::get_request(int client_socket) {
   gallocy::stringstream request;
   int n;
-  char buf[256] = {0};
+  char buf[512] = {0};
   n = recv(client_socket, buf, 16, 0);
   request << buf;
   while (n > 0) {
-    memset(buf, 0, 256);
-    n = recv(client_socket, buf, 256, MSG_DONTWAIT);
+    memset(buf, 0, 512);
+    n = recv(client_socket, buf, 512, MSG_DONTWAIT);
     request << buf;
   }
   return new (internal_malloc(sizeof(Request))) Request(request.str());

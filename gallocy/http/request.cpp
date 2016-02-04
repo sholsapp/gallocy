@@ -96,4 +96,5 @@ void Request::pretty_print() {
               << ": " << it.second
               << std::endl;
   }
+  std::cout << raw_body << std::endl;;
 }

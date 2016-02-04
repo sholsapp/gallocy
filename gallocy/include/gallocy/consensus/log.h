@@ -35,12 +35,13 @@ class LogEntry {
     command(command),
     committed(false),
     term(term) {}
-  LogEntry(const LogEntry &) = delete;
-  LogEntry &operator=(const LogEntry &) = delete;
+  // LogEntry(const LogEntry &) = delete;
+  // LogEntry &operator=(const LogEntry &) = delete;
   gallocy::json to_json() const {
     gallocy::json j = {
       { "term", term },
-      { "command", command.command }
+      // TODO(sholsapp): Implicit conversion issue.
+      { "command", command.command.c_str() }
     };
     return j;
   }
@@ -78,7 +79,7 @@ class GallocyLog {
     if (!log[i].committed)
       return i;
     }
-    return -1;
+    return 0;
   }
   /**
    * Get the term of the last committed log entry.
@@ -94,7 +95,7 @@ class GallocyLog {
     if (!log[i].committed)
       return log[i].term;
     }
-    return -1;
+    return 0;
   }
 
  public:
