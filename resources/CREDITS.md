@@ -21,4 +21,4 @@ process migration.
 
 > If you've contributed, add your alma mater here!
 
-![Go Mustangs.](./resources/images/cal-poly.png)
+![Go Mustangs.](./images/cal-poly.png)
