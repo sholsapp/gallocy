@@ -1,7 +1,7 @@
 #ifndef GALLOCY_ENTRYPOINT_H_
 #define GALLOCY_ENTRYPOINT_H_
 
-#include "gallocy/consensus/client.h"
+#include "gallocy/consensus/machine.h"
 #include "gallocy/consensus/server.h"
 #include "gallocy/consensus/state.h"
 #include "gallocy/utils/config.h"
@@ -42,9 +42,9 @@ int teardown_gallocy_framework();
 extern GallocyServer *gallocy_server;
 
 /**
- * The global handle to the client.
+ * The global handle to the state machine.
  */
-extern GallocyClient *gallocy_client;
+extern GallocyMachine *gallocy_machine;
 
 /**
  * The global handle to the state.

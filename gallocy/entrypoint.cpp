@@ -5,7 +5,7 @@
 #include <iostream>
 #include <thread>
 
-#include "gallocy/consensus/client.h"
+#include "gallocy/consensus/machine.h"
 #include "gallocy/consensus/server.h"
 #include "gallocy/consensus/state.h"
 #include "gallocy/entrypoint.h"
@@ -15,7 +15,7 @@
 #include "gallocy/utils/constants.h"
 #include "gallocy/utils/logging.h"
 
-GallocyClient *gallocy_client = nullptr;
+GallocyMachine *gallocy_machine = nullptr;
 GallocyConfig *gallocy_config = nullptr;
 GallocyServer *gallocy_server = nullptr;
 GallocyState *gallocy_state = nullptr;
@@ -125,8 +125,8 @@ int initialize_gallocy_framework(const char* config_path) {
   //
   // Start the client thread.
   //
-  gallocy_client = new (internal_malloc(sizeof(GallocyClient))) GallocyClient(*gallocy_config);
-  gallocy_client->start();
+  gallocy_machine = new (internal_malloc(sizeof(GallocyMachine))) GallocyMachine(*gallocy_config);
+  gallocy_machine->start();
   //
   // Start the server thread.
   //
@@ -141,7 +141,7 @@ int initialize_gallocy_framework(const char* config_path) {
 
 int teardown_gallocy_framework() {
   gallocy_server->stop();
-  gallocy_client->stop();
+  gallocy_machine->stop();
   // TODO(sholsapp): Destroy the SQLite objects.
   // TODO(sholsapp): Destroy server, client, config objects and free memory.
   return 0;
