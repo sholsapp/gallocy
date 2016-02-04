@@ -38,7 +38,7 @@ sub_build() {
 
 
 sub_clean() {
-  make clean
+  git clean -fxd --exclude cthulhu-fixture
 }
 
 
