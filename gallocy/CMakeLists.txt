@@ -38,6 +38,7 @@ set(GALLOCY_CORE_SRC
   consensus/server.cpp
   consensus/state.cpp
   entrypoint.cpp
+  http/client.cpp
   http/request.cpp
   http/response.cpp
   libgallocy.cpp

@@ -26,9 +26,6 @@ class Request {
   Request(const Request &) = delete;
   Request &operator=(const Request &) = delete;
 
-  // TODO(sholsapp): Here be dragons: whenever I change the ordering of these
-  // definitions we get sporadic failures, segfault, wtf.
-
   // Members
   Headers headers;
   Parameters &get_params();
