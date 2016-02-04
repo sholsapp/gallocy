@@ -5,6 +5,8 @@
 #include <utility>
 #include <vector>
 
+#include "gallocy/consensus/client.h"
+#include "gallocy/consensus/log.h"
 #include "gallocy/consensus/server.h"
 #include "gallocy/entrypoint.h"
 #include "gallocy/http/request.h"
@@ -175,6 +177,15 @@ Response *GallocyServer::route_request(RouteArguments *args, Request *request) {
   internal_free(args);
   return response;
 }
+
+
+// TODO(rverdon): This needs an abstraction so that we can swap out the
+// underlying transport mechanism for the server *at the same time* as the
+// client. What about libevent, here?
+
+//
+// The server socket implementation
+//
 
 
 void *GallocyServer::work() {
