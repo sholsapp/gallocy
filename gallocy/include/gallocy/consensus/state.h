@@ -79,6 +79,8 @@ class GallocyState {
   ~GallocyState() {
     timer->~Timer();
     internal_free(timer);
+    log->~GallocyLog();
+    internal_free(log);
   }
   GallocyState(const GallocyState &) = delete;
   GallocyState &operator=(const GallocyState &) = delete;

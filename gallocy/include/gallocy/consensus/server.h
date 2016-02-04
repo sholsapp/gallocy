@@ -48,6 +48,8 @@ class GallocyServer : public ThreadedDaemon {
         [this](RouteArguments *args, Request *request) { return route_request_vote(args, request); });
       routes.register_handler("/raft/append_entries",
         [this](RouteArguments *args, Request *request) { return route_append_entries(args, request); });
+      routes.register_handler("/raft/request",
+        [this](RouteArguments *args, Request *request) { return route_request(args, request); });
   }
   GallocyServer(const GallocyServer &) = delete;
   GallocyServer &operator=(const GallocyServer &) = delete;
@@ -125,6 +127,18 @@ class GallocyServer : public ThreadedDaemon {
    * :param request: The request itself.
    */
   Response *route_append_entries(RouteArguments *args, Request *request);
+  /**
+   * Handle a request for /raft/request.
+   *
+   * .. note::
+   *
+   *   This route is used for testing the Raft consensus algorithm and commits
+   *   a dummy log entry to the log.
+   *
+   * :param args: The route arguments.
+   * :param request: The request itself.
+   */
+  Response *route_request(RouteArguments *args, Request *request);
 
  private:
   GallocyConfig &config;

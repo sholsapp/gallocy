@@ -9,8 +9,10 @@
 #include "gallocy/http/request.h"
 #include "gallocy/models.h"
 #include "gallocy/threads.h"
+#include "gallocy/utils/http.h"
 #include "gallocy/utils/logging.h"
 #include "gallocy/utils/stringutils.h"
+#include "restclient.h"
 
 
 /**
@@ -116,6 +118,12 @@ Response *GallocyServer::route_request_vote(RouteArguments *args, Request *reque
 
 Response *GallocyServer::route_append_entries(RouteArguments *args, Request *request) {
   gallocy::json request_json = request->get_json();
+  // TODO(sholsapp): This should actually be a gallocy::vector<Command> (from
+  // the consensus log module).
+  gallocy::vector<gallocy::string> leader_entries = request_json["entries"];
+  uint64_t leader_commit_index = request_json["leader_commit"];
+  uint64_t leader_prev_log_index = request_json["previous_log_index"];
+  uint64_t leader_prev_log_term = request_json["previous_log_term"];
   uint64_t leader_term = request_json["term"];
   uint64_t local_term = gallocy_state->get_current_term();
   bool success = false;
@@ -128,6 +136,9 @@ Response *GallocyServer::route_append_entries(RouteArguments *args, Request *req
         << ")");
     success = false;
   } else {
+    // if (leader_entries.size() > 0) {
+    //   LOG_INFO("Appending " << leader_entries.size() << " new entries!");
+    // }
     success = true;
     gallocy_state->set_current_term(leader_term);
     gallocy_state->set_state(RaftState::FOLLOWER);
@@ -144,6 +155,57 @@ Response *GallocyServer::route_append_entries(RouteArguments *args, Request *req
   response->headers["Content-Type"] = "application/json";
   response->status_code = 200;
   response->body = response_json.dump();
+  args->~RouteArguments();
+  internal_free(args);
+  return response;
+}
+
+
+// TODO(sholsapp): clean this up after we're done testing.
+Response *GallocyServer::route_request(RouteArguments *args, Request *request) {
+
+  // TODO(sholsapp): Factor this code into a GallocyRequestClient that can be
+  // used everywhere.
+  uint64_t leader_term = gallocy_state->get_current_term();
+  uint64_t leader_last_applied = gallocy_state->get_last_applied();
+  uint64_t leader_commit_index = gallocy_state->get_commit_index();
+  uint64_t leader_prev_log_index = gallocy_state->get_log()->get_previous_log_index();
+  uint64_t leader_prev_log_term = gallocy_state->get_log()->get_previous_log_term();
+
+  std::function<bool(const RestClient::Response &)> callback = [](const RestClient::Response &rsp) {
+    if (rsp.code == 200) {
+      gallocy::string body = rsp.body.c_str();
+      gallocy::json response_json = gallocy::json::parse(body);
+      bool success = response_json["success"];
+      uint64_t supporter_term = response_json["term"];
+      uint64_t local_term = gallocy_state->get_current_term();
+      if (supporter_term > local_term) {
+        gallocy_state->set_state(RaftState::FOLLOWER);
+        gallocy_state->set_current_term(supporter_term);
+      }
+      return success;
+    }
+    return false;
+  };
+
+  gallocy::json j = {
+    // TODO(sholsapp): What does a Command look like as JSON?
+    { "entries", { "hello world" } },
+    { "leader_commit", leader_commit_index },
+    { "previous_log_index", leader_prev_log_index },
+    { "previous_log_term", leader_prev_log_term },
+    { "term", leader_term },
+  };
+
+  // TODO(sholsapp): How we handle this is busted and needs to be refactored so
+  // that the cv is usable here. This is also blocking, which is probably bad?
+  uint64_t votes = utils::post_many("/raft/append_entries", config.peers, config.port, j.dump(), callback);
+
+  Response *response = new (internal_malloc(sizeof(Response))) Response();
+  response->headers["Server"] = "Gallocy-Httpd";
+  response->headers["Content-Type"] = "application/json";
+  response->status_code = 200;
+  response->body = "GOOD";
   args->~RouteArguments();
   internal_free(args);
   return response;

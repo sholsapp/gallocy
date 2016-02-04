@@ -84,7 +84,7 @@ RaftState GallocyClient::state_leader() {
   };
 
   gallocy::json j = {
-    { "entries", { } },
+    { "entries", gallocy::json::array() },
     { "leader_commit", leader_commit_index },
     { "previous_log_index", leader_prev_log_index },
     { "previous_log_term", leader_prev_log_term },
