@@ -6,10 +6,10 @@
 
 The gallocy library implements a memory allocator that transparently allocates
 memory across many machines. Combined with a gallocy-aware implementation of
-the pthreads library, this framework can make any pthreads application a
+the POSIX threads library, this framework can make any pthreads application a
 distributed program! The gallocy library exists entirely in
 [userspace](http://www.linfo.org/user_space.html), so not kernel modifications
-are necessary!
+are necessary.
 
 The gallocy library is *under active development* and is not ready for use. The
 gallocy library is in a pre-alpha state, and probably will be for a very, very
