@@ -1,16 +1,18 @@
+#include <map>
 #include <vector>
 
 #include "gallocy/consensus/client.h"
 #include "gallocy/consensus/log.h"
 #include "gallocy/entrypoint.h"
-#include "gallocy/utils/http.h"
-#include "restclient.h"  // NOLINT
+#include "gallocy/http/client.h"
+#include "gallocy/http/request.h"
+#include "gallocy/http/response.h"
 
 
-std::function<bool(const RestClient::Response &)> request_vote_callback = [](const RestClient::Response &rsp) {
-  if (rsp.code == 200) {
+std::function<bool(const Response &)> request_vote_callback = [](const Response &rsp) {
+  if (rsp.status_code == 200) {
     gallocy::string body = rsp.body.c_str();
-    gallocy::json response_json = gallocy::json::parse(body);
+    gallocy::json response_json = gallocy::json::parse(body.c_str());
     bool granted = response_json["vote_granted"];
     uint64_t supporter_term = response_json["term"];
     uint64_t local_term = gallocy_state->get_current_term();
@@ -37,18 +39,24 @@ bool GallocyClient::send_request_vote() {
 
   // TODO(sholsapp): How we handle this is busted and needs to be refactored so
   // that the cv is usable here. This is also blocking, which is probably bad?
-  uint64_t votes = utils::post_many("/raft/request_vote", config.peers, config.port,
-                                    j.dump(), request_vote_callback);
+  gallocy::vector<Request> requests;
+  gallocy::map<gallocy::string, gallocy::string> headers;
+  headers["Content-Type"] = "application/json";
+  for (auto &peer : config.peers)
+    requests.push_back(Request("POST", peer, "/raft/request_vote", j.dump(), headers));
+  // TODO(sholsapp): How we handle this is busted and needs to be refactored so
+  // that the cv is usable here. This is also blocking, which is probably bad?
+  uint64_t votes = CurlClient().multirequest(requests, request_vote_callback, nullptr, nullptr);
 
   LOG_INFO("Received votes from " << votes << "/" << config.peers.size() << " peers");
   return votes >= config.peers.size() / 2;
 }
 
 
-std::function<bool(const RestClient::Response &)> append_entries_callback = [](const RestClient::Response &rsp) {
-  if (rsp.code == 200) {
+std::function<bool(const Response &)> append_entries_callback = [](const Response &rsp) {
+  if (rsp.status_code == 200) {
     gallocy::string body = rsp.body.c_str();
-    gallocy::json response_json = gallocy::json::parse(body);
+    gallocy::json response_json = gallocy::json::parse(body.c_str());
     bool success = response_json["success"];
     uint64_t supporter_term = response_json["term"];
     uint64_t local_term = gallocy_state->get_current_term();
@@ -80,8 +88,14 @@ bool GallocyClient::send_append_entries() {
 
   // TODO(sholsapp): How we handle this is busted and needs to be refactored so
   // that the cv is usable here. This is also blocking, which is probably bad?
-  uint64_t votes = utils::post_many("/raft/append_entries", config.peers, config.port,
-                                    j.dump(), append_entries_callback);
+  gallocy::vector<Request> requests;
+  gallocy::map<gallocy::string, gallocy::string> headers;
+  headers["Content-Type"] = "application/json";
+  for (auto &peer : config.peers)
+    requests.push_back(Request("POST", peer, "/raft/append_entries", j.dump(), headers));
+  // TODO(sholsapp): How we handle this is busted and needs to be refactored so
+  // that the cv is usable here. This is also blocking, which is probably bad?
+  uint64_t votes = CurlClient().multirequest(requests, append_entries_callback, nullptr, nullptr);
 
   return true;
 }
@@ -106,10 +120,14 @@ bool GallocyClient::send_append_entries(const gallocy::vector<LogEntry> &entries
     j["entries"].push_back(entry.to_json());
   }
 
+  gallocy::vector<Request> requests;
+  gallocy::map<gallocy::string, gallocy::string> headers;
+  headers["Content-Type"] = "application/json";
+  for (auto &peer : config.peers)
+    requests.push_back(Request("POST", peer, "/raft/append_entries", j.dump(), headers));
   // TODO(sholsapp): How we handle this is busted and needs to be refactored so
   // that the cv is usable here. This is also blocking, which is probably bad?
-  uint64_t votes = utils::post_many("/raft/append_entries", config.peers, config.port,
-                                    j.dump(), append_entries_callback);
+  uint64_t votes = CurlClient().multirequest(requests, append_entries_callback, nullptr, nullptr);
 
   return true;
 }

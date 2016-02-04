@@ -36,67 +36,10 @@ class AbstractClient {
    * \param cv The condition to signal when a majority of responses have been processed.
    * \param cv_m The lock assosciated with the condition.
    */
-  virtual void multirequest(const gallocy::vector<const Request &> requests,
-                            std::function<bool(const Response &)> callback,
-                            std::condition_variable *cv,
-                            std::mutex *cv_m) = 0;
-};
-
-
-/**
- * A request client that uses a raw TCP transport protocol.
- */
-// TODO(sholsapp): Implement me.
-class TCPClient : public AbstractClient {
-  /**
-   * See \ref AbstractClient::request.
-   */
-  virtual Response *request(const Request &request) = 0;
-  /**
-   * See \ref AbstractClient::multirequest.
-   */
-  virtual void multirequest(const gallocy::vector<const Request &> requests,
-                            std::function<bool(const Response &)> callback,
-                            std::condition_variable *cv,
-                            std::mutex *cv_m) = 0;
-};
-
-
-/**
- * A request client that uses a raw UDP transport protocol.
- */
-// TODO(sholsapp): Implement me.
-class UDPClient : public AbstractClient {
-  /**
-   * See \ref AbstractClient::request.
-   */
-  virtual Response *request(const Request &request) = 0;
-  /**
-   * See \ref AbstractClient::multirequest.
-   */
-  virtual void multirequest(const gallocy::vector<const Request &> requests,
-                            std::function<bool(const Response &)> callback,
-                            std::condition_variable *cv,
-                            std::mutex *cv_m) = 0;
-};
-
-
-/**
- * A request client that uses a raw RDP transport protocol.
- */
-// TODO(sholsapp): Implement me.
-class RDPClient : public AbstractClient {
-  /**
-   * See \ref AbstractClient::request.
-   */
-  virtual Response *request(const Request &request) = 0;
-  /**
-   * See \ref AbstractClient::multirequest.
-   */
-  virtual void multirequest(const gallocy::vector<const Request &> requests,
-                            std::function<bool(const Response &)> callback,
-                            std::condition_variable *cv,
-                            std::mutex *cv_m) = 0;
+  virtual uint64_t multirequest(const gallocy::vector<Request> requests,
+                                std::function<bool(const Response &)> callback,
+                                std::condition_variable *cv,
+                                std::mutex *cv_m) = 0;
 };
 
 
@@ -104,17 +47,18 @@ class RDPClient : public AbstractClient {
  * A request client that uses restclient-cpp (and cURL) under the hood.
  */
 class CurlClient : public AbstractClient {
+ public:
   /**
    * See \ref AbstractClient::request.
    */
-  virtual Response *request(const Request &request) = 0;
+  Response *request(const Request &request);
   /**
    * See \ref AbstractClient::multirequest.
    */
-  virtual void multirequest(const gallocy::vector<const Request &> requests,
-                            std::function<bool(const Response &)> callback,
-                            std::condition_variable *cv,
-                            std::mutex *cv_m) = 0;
+  uint64_t multirequest(const gallocy::vector<Request> requests,
+                        std::function<bool(const Response &)> callback,
+                        std::condition_variable *cv,
+                        std::mutex *cv_m);
 };
 
 

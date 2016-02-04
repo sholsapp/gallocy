@@ -5,11 +5,6 @@
 #include "gallocy/utils/stringutils.h"
 
 
-/**
- * Create a HTTP request object from the raw request.
- *
- * :param raw: The raw request string.
- */
 Request::Request(gallocy::string raw) {
   // Parse the raw request into lines
   gallocy::vector<gallocy::string> lines;
@@ -42,6 +37,24 @@ Request::Request(gallocy::string raw) {
       break;
     raw_body = utils::trim(*it);
   }
+}
+
+
+Request::Request(gallocy::string method, gallocy::string peer, gallocy::string uri) {
+  this->method = method;
+  this->peer = peer;
+  this->uri = uri;
+}
+
+
+Request::Request(gallocy::string method, gallocy::string peer, gallocy::string uri,
+                 gallocy::string body, Headers headers) {
+  this->method = method;
+  this->peer = peer;
+  this->uri = uri;
+  this->raw_body = body;
+  for (auto &it : headers)
+    this->headers[it.first] = it.second;
 }
 
 
@@ -85,7 +98,7 @@ Request::Parameters &Request::get_params() {
  *
  * Prints directly to standard output.
  */
-void Request::pretty_print() {
+void Request::pretty_print() const {
   std::cout << "Request (" << this << ")" << std::endl
             << "  " << method
             << " " << uri

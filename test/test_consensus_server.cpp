@@ -7,9 +7,10 @@
 
 #include "gallocy/allocators/internal.h"
 #include "gallocy/consensus/server.h"
+#include "gallocy/http/client.h"
+#include "gallocy/http/request.h"
+#include "gallocy/http/response.h"
 #include "gallocy/utils/config.h"
-#include "gallocy/utils/http.h"
-#include "restclient.h"
 
 
 GallocyConfig *gallocy_config = nullptr;
@@ -42,7 +43,9 @@ class ConsensusServerTests: public ::testing::Test {
     // and then executes one last request to prompt the server to actually shut
     // down. Fix by using select in the server with a timeout.
     std::thread([&]{ gallocy_server->stop(); }).detach();
-    RestClient::Response rsp = RestClient::get("http://127.0.0.1:8080/admin");
+    Response *rsp = CurlClient().request(Request("GET", "127.0.0.1", "/admin"));
+    rsp->~Response();
+    internal_free(rsp);
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     // Clean up
@@ -55,9 +58,12 @@ class ConsensusServerTests: public ::testing::Test {
 
 
 TEST_F(ConsensusServerTests, StartStop) {
-  uint64_t rsp = utils::post_many("/admin", gallocy_config->peers, 8080, "",
-      [](const RestClient::Response &rsp) {
+  gallocy::vector<Request> requests;
+  gallocy::map<gallocy::string, gallocy::string> headers;
+  requests.push_back(Request("POST", "127.0.0.1", "/admin", "", headers));
+  uint64_t rsp = CurlClient().multirequest(requests,
+      [](const Response &rsp) {
         return true;
-      });
+      }, nullptr, nullptr);
   ASSERT_GE(rsp, 0);
 }

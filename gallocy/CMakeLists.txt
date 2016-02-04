@@ -49,7 +49,6 @@ set(GALLOCY_CORE_SRC
   threads.cpp
   utils/config.cpp
   utils/diff.cpp
-  utils/http.cpp
   utils/logging.cpp
   utils/objutils.cpp
   utils/stringutils.cpp
