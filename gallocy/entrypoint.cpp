@@ -5,6 +5,7 @@
 #include <iostream>
 #include <thread>
 
+#include "gallocy/consensus/client.h"
 #include "gallocy/consensus/machine.h"
 #include "gallocy/consensus/server.h"
 #include "gallocy/consensus/state.h"
@@ -15,8 +16,9 @@
 #include "gallocy/utils/constants.h"
 #include "gallocy/utils/logging.h"
 
-GallocyMachine *gallocy_machine = nullptr;
+GallocyClient *gallocy_client = nullptr;
 GallocyConfig *gallocy_config = nullptr;
+GallocyMachine *gallocy_machine = nullptr;
 GallocyServer *gallocy_server = nullptr;
 GallocyState *gallocy_state = nullptr;
 
@@ -121,6 +123,10 @@ int initialize_gallocy_framework(const char* config_path) {
   // Create the state object.
   //
   gallocy_state = new (internal_malloc(sizeof(GallocyState))) GallocyState();
+  //
+  // Create the client object.
+  //
+  gallocy_client = new (internal_malloc(sizeof(GallocyClient))) GallocyClient(*gallocy_config);
   //
   //
   // Start the client thread.
