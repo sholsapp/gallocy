@@ -37,6 +37,13 @@ class LogEntry {
     term(term) {}
   LogEntry(const LogEntry &) = delete;
   LogEntry &operator=(const LogEntry &) = delete;
+  gallocy::json to_json() const {
+    gallocy::json j = {
+      { "term", term },
+      { "command", command.command }
+    };
+    return j;
+  }
 
  public:
   Command command;
