@@ -48,8 +48,9 @@ class StdlibHeap : public Super {
     memset(ptr, 0, count * size);
     return ptr;
   }
+
  private:
-  inline static size_t align (size_t sz) {
+  inline static size_t align(size_t sz) {
     return (sz + (sizeof(uint64_t) - 1)) & ~(sizeof(uint64_t) - 1);
   }
 };

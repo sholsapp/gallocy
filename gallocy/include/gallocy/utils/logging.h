@@ -1,5 +1,5 @@
-#ifndef GALLOCY_LOGGING_H_
-#define GALLOCY_LOGGING_H_
+#ifndef GALLOCY_UTILS_LOGGING_H_
+#define GALLOCY_UTILS_LOGGING_H_
 
 #include "allocators/internal.h"
 
@@ -58,4 +58,4 @@
 
 void __log(const char *module, const char *level, const char *raw_message);
 
-#endif  // GALLOCY_LOGGING_H_
+#endif  // GALLOCY_UTILS_LOGGING_H_

@@ -1,5 +1,5 @@
-#ifndef GALLOCY_REQUEST_H_
-#define GALLOCY_REQUEST_H_
+#ifndef GALLOCY_HTTP_REQUEST_H_
+#define GALLOCY_HTTP_REQUEST_H_
 
 #include <map>
 
@@ -44,5 +44,4 @@ class Request {
   Parameters params;
 };
 
-#endif  // GALLOCY_REQUEST_H_
-
+#endif  // GALLOCY_HTTP_REQUEST_H_

@@ -1,5 +1,5 @@
-#ifndef GALLOCY_CONSTANTS_H_
-#define GALLOCY_CONSTANTS_H_
+#ifndef GALLOCY_UTILS_CONSTANTS_H_
+#define GALLOCY_UTILS_CONSTANTS_H_
 
 
 #include <unistd.h>
@@ -34,4 +34,4 @@ extern uint64_t *&global_base();
  */
 void *get_heap_location(uint64_t purpose);
 
-#endif  // GALLOCY_CONSTANTS_H_
+#endif  // GALLOCY_UTILS_CONSTANTS_H_

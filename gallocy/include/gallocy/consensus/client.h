@@ -1,10 +1,7 @@
 #ifndef GALLOCY_CONSENSUS_CLIENT_H_
 #define GALLOCY_CONSENSUS_CLIENT_H_
 
-
 class GallocyClient {
-
 };
-
 
 #endif  // GALLOCY_CONSENSUS_CLIENT_H_

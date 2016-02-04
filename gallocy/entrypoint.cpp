@@ -52,7 +52,7 @@ int initialize_gallocy_framework(const char* config_path) {
   curl_global_init(CURL_GLOBAL_NOTHING);
 #if 0
   if (curl_global_init_mem(
-      //CURL_GLOBAL_ALL,
+      // CURL_GLOBAL_ALL,
       CURL_GLOBAL_NOTHING,
       malloc,
       free,

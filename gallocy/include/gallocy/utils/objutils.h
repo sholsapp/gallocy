@@ -1,5 +1,5 @@
-#ifndef GALLOCY_OBJUTILS_H_
-#define GALLOCY_OBJUTILS_H_
+#ifndef GALLOCY_UTILS_OBJUTILS_H_
+#define GALLOCY_UTILS_OBJUTILS_H_
 
 #include <iostream>
 #include <map>
@@ -31,4 +31,4 @@ void pretty_print_map(gallocy::map<K, V> m) {
 
 }  // namespace utils
 
-#endif  // GALLOCY_OBJUTILS_H_
+#endif  // GALLOCY_UTILS_OBJUTILS_H_

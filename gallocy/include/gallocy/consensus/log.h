@@ -1,6 +1,8 @@
 #ifndef GALLOCY_CONSENSUS_LOG_H_
 #define GALLOCY_CONSENSUS_LOG_H_
 
+#include <vector>
+
 #include "gallocy/allocators/internal.h"
 
 /**
@@ -12,9 +14,10 @@
 class Command {
  public:
   explicit Command(gallocy::string command) :
-    command(command) {};
+    command(command) {}
   // Command(const Command &) = delete;
   // Command &operator=(const Command &) = delete;
+
  public:
   gallocy::string command;
 };
@@ -34,6 +37,7 @@ class LogEntry {
     term(term) {}
   LogEntry(const LogEntry &) = delete;
   LogEntry &operator=(const LogEntry &) = delete;
+
  public:
   Command command;
   bool committed;
@@ -85,6 +89,7 @@ class GallocyLog {
     }
     return -1;
   }
+
  public:
   gallocy::vector<LogEntry> log;
 };

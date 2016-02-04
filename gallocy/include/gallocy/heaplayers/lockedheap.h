@@ -10,19 +10,18 @@ namespace HL {
 template <class LockType, class Super>
 class LockedHeap : public Super {
  public:
-
-   LockedHeap() {
-     alock = PTHREAD_MUTEX_INITIALIZER;
-   }
+  LockedHeap() {
+    alock = PTHREAD_MUTEX_INITIALIZER;
+  }
 
   inline void *malloc(size_t sz) {
-    //Guard<LockType> l(thelock);
+    // Guard<LockType> l(thelock);
     Guard<pthread_mutex_t> l(alock);
     return Super::malloc(sz);
   }
 
   inline void free(void *ptr) {
-    //Guard<LockType> l(thelock);
+    // Guard<LockType> l(thelock);
     Guard<pthread_mutex_t> l(alock);
     Super::free(ptr);
   }
@@ -43,18 +42,18 @@ class LockedHeap : public Super {
   }
 
   inline size_t getSize(void *ptr) {
-    //Guard<LockType> l(thelock);
+    // Guard<LockType> l(thelock);
     Guard<pthread_mutex_t> l(alock);
     return Super::getSize(ptr);
   }
 
   inline void lock() {
-    //thelock.lock();
+    // thelock.lock();
     pthread_mutex_lock(&alock);
   }
 
   inline void unlock() {
-    //thelock.unlock();
+    // thelock.unlock();
     pthread_mutex_unlock(&alock);
   }
 

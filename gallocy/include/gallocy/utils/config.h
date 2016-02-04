@@ -1,5 +1,5 @@
-#ifndef GALLOCY_CONFIG_H_
-#define GALLOCY_CONFIG_H_
+#ifndef GALLOCY_UTILS_CONFIG_H_
+#define GALLOCY_UTILS_CONFIG_H_
 
 #include <cstdio>
 #include <cstdlib>
@@ -50,4 +50,4 @@ class GallocyConfig {
 
 GallocyConfig *load_config(const gallocy::string &);
 
-#endif  // GALLOCY_CONFIG_H_
+#endif  // GALLOCY_UTILS_CONFIG_H_

@@ -1,5 +1,5 @@
-#ifndef GALLOCY_RESPONSE_H_
-#define GALLOCY_RESPONSE_H_
+#ifndef GALLOCY_HTTP_RESPONSE_H_
+#define GALLOCY_HTTP_RESPONSE_H_
 
 #include <map>
 
@@ -31,4 +31,4 @@ class Response {
   uint64_t size();
 };
 
-#endif  // GALLOCY_RESPONSE_H_
+#endif  // GALLOCY_HTTP_RESPONSE_H_

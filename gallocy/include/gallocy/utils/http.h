@@ -1,8 +1,10 @@
 #ifndef GALLOCY_UTILS_HTTP_H_
 #define GALLOCY_UTILS_HTTP_H_
 
+#include <vector>
+
 #include "gallocy/allocators/internal.h"
-#include "restclient.h"
+#include "restclient.h"  // NOLINT
 
 typedef uint64_t FutureResponse;
 
@@ -20,7 +22,8 @@ int get_many(const gallocy::string &path, const gallocy::vector<gallocy::string>
  * Upon receiving a majority of responses this function will signal the caller
  * using the supplied pthread_cond_t parameter.
  */
-int post_many(const gallocy::string &path, const gallocy::vector<gallocy::string> &peers, uint16_t port, gallocy::string json_body, std::function<bool(const RestClient::Response &)>);
+int post_many(const gallocy::string &path, const gallocy::vector<gallocy::string> &peers,
+              uint16_t port, gallocy::string json_body, std::function<bool(const RestClient::Response &)>);
 
 }  // namespace utils
 

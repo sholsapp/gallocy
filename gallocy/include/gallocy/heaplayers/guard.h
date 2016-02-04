@@ -13,11 +13,11 @@ class Guard {
   inline explicit Guard(LockType &l)
       : _lock(l) {
     pthread_mutex_lock(&_lock);
-    //_lock.lock();
+    // _lock.lock();
   }
 
   inline ~Guard(void) {
-    //_lock.unlock();
+    // _lock.unlock();
     pthread_mutex_unlock(&_lock);
   }
  private:

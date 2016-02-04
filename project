@@ -114,7 +114,7 @@ sub_stylecheck() {
   LINT_ARGS=(
     "--root=gallocy/include"
     "--linelength=160"
-    "--filter=-legal/copyright,-runtime/references"
+    "--filter=-legal/copyright,-runtime/references,-build/c++11"
     )
   echo "Using http://google.github.io/styleguide/cppguide.html as guide..."
   if [ "$1" = "" ]; then

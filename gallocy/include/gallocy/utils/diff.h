@@ -1,5 +1,5 @@
-#ifndef GALLOCY_DIFF_H_
-#define GALLOCY_DIFF_H_
+#ifndef GALLOCY_UTILS_DIFF_H_
+#define GALLOCY_UTILS_DIFF_H_
 
 
 #include <cstdio>
@@ -16,4 +16,4 @@ void print_diff(
   const char* mem2, size_t mem2_len);
 
 
-#endif  // GALLOCY_DIFF_H_
+#endif  // GALLOCY_UTILS_DIFF_H_

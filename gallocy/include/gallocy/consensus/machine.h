@@ -1,5 +1,5 @@
-#ifndef GALLOCY_CLIENT_H_
-#define GALLOCY_CLIENT_H_
+#ifndef GALLOCY_CONSENSUS_MACHINE_H_
+#define GALLOCY_CONSENSUS_MACHINE_H_
 
 #include <pthread.h>
 
@@ -41,4 +41,4 @@ class GallocyMachine : public ThreadedDaemon {
   GallocyConfig &config;
 };
 
-#endif  // GALLOCY_CLIENT_H_
+#endif  // GALLOCY_CONSENSUS_MACHINE_H_

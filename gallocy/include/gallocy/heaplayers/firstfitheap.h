@@ -49,9 +49,9 @@ class FirstFitHeap : public Super {
       return;
 
     // Stephen you dumb ass
-    //for (unsigned int i = 0; i < Super::getSize(reinterpret_cast<void *>(ptr)); i++) {
-    //  reinterpret_cast<unsigned char *>(ptr)[i] = 0xED;
-    //}
+    // for (unsigned int i = 0; i < Super::getSize(reinterpret_cast<void *>(ptr)); i++) {
+    //   reinterpret_cast<unsigned char *>(ptr)[i] = 0xED;
+    // }
 
     // Add this object to the free list.
     nObjects++;

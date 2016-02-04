@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "gallocy/consensus/server.h"
 #include "gallocy/entrypoint.h"
@@ -12,7 +13,7 @@
 #include "gallocy/utils/http.h"
 #include "gallocy/utils/logging.h"
 #include "gallocy/utils/stringutils.h"
-#include "restclient.h"
+#include "restclient.h"  // NOLINT
 
 
 /**
@@ -85,7 +86,6 @@ Response *GallocyServer::route_request_vote(RouteArguments *args, Request *reque
       || local_voted_for == candidate_voted_for) {
     if (candidate_last_applied >= local_last_applied
         && candidate_commit_index >= local_commit_index) {
-
       LOG_INFO("Granting vote to "
           << utils::unparse_internet_address(candidate_voted_for)
           << " in term " << candidate_current_term);
@@ -163,7 +163,6 @@ Response *GallocyServer::route_append_entries(RouteArguments *args, Request *req
 
 // TODO(sholsapp): clean this up after we're done testing.
 Response *GallocyServer::route_request(RouteArguments *args, Request *request) {
-
   // TODO(sholsapp): Factor this code into a GallocyRequestClient that can be
   // used everywhere.
   uint64_t leader_term = gallocy_state->get_current_term();

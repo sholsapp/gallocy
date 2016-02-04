@@ -1,5 +1,5 @@
-#ifndef GALLOCY_SERVER_H_
-#define GALLOCY_SERVER_H_
+#ifndef GALLOCY_CONSENSUS_SERVER_H_
+#define GALLOCY_CONSENSUS_SERVER_H_
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -162,4 +162,4 @@ struct RequestContext {
   struct sockaddr_in client_name;
 };
 
-#endif  // GALLOCY_SERVER_H_
+#endif  // GALLOCY_CONSENSUS_SERVER_H_

@@ -4,6 +4,7 @@
 #include <pthread.h>
 
 #include <condition_variable>
+#include <map>
 #include <mutex>
 
 #include "gallocy/allocators/internal.h"
@@ -179,9 +180,9 @@ class GallocyState {
     match_index[peer] = value;
   }
 
- //
- // Persistent state on all servers.
- //
+  //
+  // Persistent state on all servers.
+  //
  private:
   /**
    * The latest term this server has seen.
@@ -199,9 +200,9 @@ class GallocyState {
    */
   GallocyLog *log;
 
- //
- //Volatile state on all servers.
- //
+  //
+  // Volatile state on all servers.
+  //
  private:
   /**
    * Index of highest log entry known to be committed.
@@ -212,9 +213,9 @@ class GallocyState {
    */
   uint64_t last_applied;
 
- //
- // Volatile state on leaders.
- //
+  //
+  // Volatile state on leaders.
+  //
  private:
   /**
    * Mapping of peer to next log entry to send to the peer.
@@ -225,9 +226,9 @@ class GallocyState {
    */
   gallocy::map<PeerId, uint64_t> match_index;
 
- //
- // Internal implementation details.
- //
+  //
+  // Internal implementation details.
+  //
  private:
   /**
    * A lock to synchronize all get/set access to private member data.

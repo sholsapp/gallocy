@@ -12,7 +12,7 @@
 #include "gallocy/utils/http.h"
 #include "gallocy/utils/logging.h"
 #include "gallocy/utils/stringutils.h"
-#include "restclient.h"
+#include "restclient.h"  // NOLINT
 
 
 void *GallocyMachine::work() {

@@ -1,5 +1,5 @@
-#ifndef GALLOCY_STRINGUTILS_H_
-#define GALLOCY_STRINGUTILS_H_
+#ifndef GALLOCY_UTILS_STRINGUTILS_H_
+#define GALLOCY_UTILS_STRINGUTILS_H_
 
 #include <vector>
 
@@ -19,4 +19,4 @@ namespace utils {
   const gallocy::string unparse_internet_address(uint64_t ip_address);
 }  // namespace utils
 
-#endif  // GALLOCY_STRINGUTILS_H_
+#endif  // GALLOCY_UTILS_STRINGUTILS_H_

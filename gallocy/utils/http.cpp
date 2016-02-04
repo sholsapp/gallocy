@@ -13,7 +13,7 @@
 #include "gallocy/allocators/internal.h"
 #include "gallocy/utils/http.h"
 #include "gallocy/utils/logging.h"
-#include "restclient.h"
+#include "restclient.h"  // NOLINT
 
 namespace utils {
 
@@ -84,7 +84,8 @@ int get_many(const gallocy::string &path, const gallocy::vector<gallocy::string>
 }
 
 
-int post_many(const gallocy::string &path, const gallocy::vector<gallocy::string> &peers, uint16_t port, gallocy::string json_body, std::function<bool(const RestClient::Response &)> callback) {
+int post_many(const gallocy::string &path, const gallocy::vector<gallocy::string> &peers,
+              uint16_t port, gallocy::string json_body, std::function<bool(const RestClient::Response &)> callback) {
   int rsp_count = 0;
   int peer_count = peers.size();
   int peer_majority = peer_count / 2;
