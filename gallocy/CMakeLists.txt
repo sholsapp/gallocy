@@ -45,6 +45,7 @@ set(GALLOCY_CORE_SRC
   http/transport.cpp
   libgallocy.cpp
   models.cpp
+  peer.cpp
   sqlite.cpp
   threads.cpp
   utils/config.cpp
