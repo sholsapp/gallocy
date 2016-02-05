@@ -6,7 +6,8 @@
 #include <cstring>
 #include <vector>
 
-#include "gallocy/libgallocy.h"
+#include "gallocy/allocators/internal.h"
+#include "gallocy/peer.h"
 
 
 /**
