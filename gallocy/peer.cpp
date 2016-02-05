@@ -4,19 +4,19 @@
 #include "gallocy/peer.h"
 
 
-const gallocy::string Peer::get_string() const {
+const gallocy::string gallocy::common::Peer::get_string() const {
   return unparse_internet_address(internet_address_integer);
 }
 
 
-const uint64_t Peer::get_canonical_id() const {
+const uint64_t gallocy::common::Peer::get_canonical_id() const {
   // TODO(sholsapp): When we wish to run two peers on the same machine, we'll
   // need to adjust this so that we include the port as well.
   return internet_address_integer;
 }
 
 
-const uint64_t Peer::parse_internet_address(const gallocy::string &ip_address) const {
+const uint64_t gallocy::common::Peer::parse_internet_address(const gallocy::string &ip_address) const {
   uint64_t ip = 0;
   uint8_t buf[4];
   int r = inet_pton(AF_INET, ip_address.c_str(), buf);
@@ -31,7 +31,7 @@ const uint64_t Peer::parse_internet_address(const gallocy::string &ip_address) c
 }
 
 
-const gallocy::string Peer::unparse_internet_address(uint64_t ip_address) const {
+const gallocy::string gallocy::common::Peer::unparse_internet_address(uint64_t ip_address) const {
   // HACK off half of the uint64_t representation after converting it to
   // network order.
   uint32_t half_of_long = static_cast<uint32_t>(htonl(ip_address));

@@ -5,6 +5,10 @@
 
 #include "gallocy/allocators/internal.h"
 
+namespace gallocy {
+
+namespace common {
+
 /**
  * A peer abstraction.
  *
@@ -84,18 +88,21 @@ class Peer {
   uint16_t port_integer;
 };
 
+}  // namespace common
+
+}  // namespace gallocy
+
 
 namespace std {
 
 // COMPLETE specialization allows the Peer type to be used as a key in map and
 // set objects.
-template<> struct less<Peer> {
-  bool operator() (const Peer &lhs, const Peer &rhs) const {
+template<> struct less<gallocy::common::Peer> {
+  bool operator() (const gallocy::common::Peer &lhs, const gallocy::common::Peer &rhs) const {
     return lhs.get_canonical_id() < rhs.get_canonical_id();
   }
 };
 
 }  // namespace std
-
 
 #endif  // GALLOCY_PEER_H_
