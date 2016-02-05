@@ -46,18 +46,30 @@ class Timer {
   /**
    * Set a new step time.
    *
-   * :param new_step: The new step time in milliseconds.
+   * \param new_step The new step time in milliseconds.
    */
   void set_step(uint64_t new_step) {
     step = new_step;
   }
   /**
+   * Get the step time.
+   */
+  uint64_t get_step() {
+    return step;
+  }
+  /**
    * Set a new jitter time.
    *
-   * :param new_jitter: The new jitter time in milliseconds.
+   * \param new_jitter The new jitter time in milliseconds.
    */
   void set_jitter(uint64_t new_jitter) {
     jitter = new_jitter;
+  }
+  /**
+   * Get the jitter time.
+   */
+  uint64_t get_jitter() {
+    return jitter;
   }
   /**
    * True if the timer is currently running.

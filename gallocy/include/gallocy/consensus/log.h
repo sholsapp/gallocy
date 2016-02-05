@@ -26,7 +26,7 @@ class Command {
 /**
  * A replicated state machine log entry.
  *
- * A log entry is simply a bundle of :class:`Command` and the term when the
+ * A log entry is simply a bundle of \ref Command and the term when the
  * entry was received by the leader.
  */
 class LogEntry {
@@ -71,7 +71,7 @@ class GallocyLog {
    * Gets the index of log entry immediately preceding any uncommitted log
    * entries, suitable for sending to peers during an append entries request.
    *
-   * :returns: The index of the last committed log entry, or -1 if no committed
+   * \return The index of the last committed log entry, or -1 if no committed
    * log entry exists.
    */
   int64_t get_previous_log_index() {
@@ -87,7 +87,7 @@ class GallocyLog {
    * Gets the term of the log entry immediately preceding any uncommitted log
    * entries, suitable for sending to peers during an append entries request.
    *
-   * :returns: The term of the last committed log entry, or -1 if no committed
+   * \return The term of the last committed log entry, or -1 if no committed
    * log entry exists.
    */
   int64_t get_previous_log_term() {
@@ -96,6 +96,16 @@ class GallocyLog {
       return log[i].term;
     }
     return 0;
+  }
+  /**
+   * Append an entry to the log.
+   *
+   * \param entry The log entry to append to the log.
+   * \return The index at which the entry was inserted.
+   */
+  int64_t append_entry(const LogEntry &entry) {
+    log.push_back(entry);
+    return log.size() - 1;
   }
 
  public:
