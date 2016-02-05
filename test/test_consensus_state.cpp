@@ -37,6 +37,13 @@ TEST(ConsensusStateTests, SetState) {
 }
 
 
+TEST(ConsensusStateTests, TimerConfiguration) {
+  ASSERT_GE(FOLLOWER_STEP_TIME, LEADER_STEP_TIME);
+  float follower_leader_ratio = (FOLLOWER_STEP_TIME - FOLLOWER_JITTER_TIME) / (LEADER_STEP_TIME - LEADER_JITTER_TIME);
+  ASSERT_GE(follower_leader_ratio, 3.0);
+}
+
+
 TEST(ConsensusStateTests, AppendLogEntry) {
   GallocyState state;
   Command command("noop");
