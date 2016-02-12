@@ -11,17 +11,9 @@ distributed program! The gallocy library exists entirely in
 [userspace](http://www.linfo.org/user_space.html), so not kernel modifications
 are necessary!
 
-![This is Exabyte.](./resources/images/exabyte-logo.png)
-
 The gallocy library is *under active development* and is not ready for use. The
 gallocy library is in a pre-alpha state, and probably will be for a very, very
 long time. Reach out to us if you're interested in helping.
-
-## documentation
-
-  - [NUTSHELL](./resources/NUTSHELL.md) *good for learning about allocators*
-  - [DESIGN](./resources/DESIGN.md) *good for learning about distributed shared memory*
-  - [IMPLEMENTATION](./resources/IMPLEMENTATION.md) *good for learning about gallocy implementation*
 
 ## requirements
 
@@ -68,6 +60,12 @@ Building is enough to get you started.
 This will build Unix Makefiles, build library code, build sample application
 code, build the google-test test driver, and then run the library code unit
 tests. Output files will be placed into the `install` directory.
+
+## documentation
+
+  - [NUTSHELL](./resources/NUTSHELL.md) *good for learning about allocators*
+  - [IMPLEMENTATION](./resources/DESIGN.md) *good for learning about distributed shared memory*
+
 
 ## about
 
