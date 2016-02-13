@@ -42,7 +42,8 @@ class string: public gallocy_string {
     *this = string(s.c_str());
   }
   operator const char *() { return this->c_str(); }
-  operator const gallocy_string () { return this->c_str(); }
+  // Clang reports that converting this type to its base type will never be used.
+  // operator const gallocy_string () { return this->c_str(); }
   operator const std::string () { return this->c_str(); }
 };
 
