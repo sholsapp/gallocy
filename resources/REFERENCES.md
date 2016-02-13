@@ -24,9 +24,15 @@
 - [Minix](http://www.cise.ufl.edu/~cop4600/cgi-bin/lxr/http/source.cgi/tools/)
 - [Position Independent Code (PIC) in Shared Libraries](http://eli.thegreenplace.net/2011/11/03/position-independent-code-pic-in-shared-libraries/)
 - [Sanos](http://www.jbox.dk/sanos/)
+- [The Log - What every software engineer should know ...](https://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying)
 - [Working Without Standard Library (C++)](http://www.avabodh.com/cxxin/nostdlib.html)
 - [glibc malloc hook deprecation considered harmful](https://sourceware.org/ml/libc-alpha/2011-07/msg00136.html)
 - [musl - libc](http://www.musl-libc.org/)
 - [musl - replacing malloc](http://www.openwall.com/lists/musl/2014/08/08/11)
-- [Grappa](http://grappa.io/) - A software distributed shared memory system.
-- [The Log - What every software engineer should know ...](https://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying)
+
+### related work
+- [edsm](https://github.com/alex-sherman/edsm)
+- [grappa](http://grappa.io/)
+- [jiajia](https://github.com/claudioscordino/jiajia)
+- [jump-linux](https://github.com/claudioscordino/jump-linux)
+- [ssmp](https://github.com/trigonak/ssmp)

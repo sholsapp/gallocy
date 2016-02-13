@@ -4,75 +4,54 @@ Building a distributed shared memory infrastructure is *easy*.
 
 ## design
 
-At a high level, the thigns a distributed shared memory infrastructure
+At a high level, the things a distributed shared memory infrastructure
 architect cares about are:
 
-  - memory
-  - coherency
-  - communication
-  - ...
+  - state - *what are the major stateful objects*
+  - memory - *what is memory and how does it behave*
+  - consensus - *how does the distributed system coordinate change*
+  - interface - *what does the interface to the application look like*
 
-### memory
+### state
 
-There are fundamentally three different regions of memory that a distributed
-shared memory system needs to consider:
+The single most important object involved in operating a distributed shared
+memory infrastructure is the *virtual memory manager* (VMM). This name was
+respectfully stolen from the context of operating systems because of its
+obvious similarity. Just as an operating system's VMM manages memory on a
+single computer, a distributed shared memory infrastructure VMM  manages memory
+accross many computers.
 
-  - local internal memory
-  - a shared page table
-  - shared application memory
+At its heart a VMM manages a data structure called the *page table*. A page is
+often used to describe a region of memory and is often the most granluar unit
+of address to the system, often 4096 bytes. The page table is a mapping between
+a region of memory and metadata.  The metadata likely contains such data as who
+can read or write to the region of memory. A distributed shared memory
+infrastructure is free to track whatever metadata that it wishes, but beware,
+tracking too much metadata will cause the page table to grow prohibitevly large
+as the heap grows.
 
-Additionally, some type of arbiter needs to coordinate a common address space
-using a shared page table. In traditional operating systems, this would
-probably be called the ``virtual memory manager``.
+The VMM is the brain that powers system calls like `mmap` or `sbrk`, which are
+invoked by standard library functions like `malloc` or `free`. Uses of these
+system calls interact with the VMM and cause the VMM to update its page table
+in some way.
 
-#### local internal memory
+It is crucial to understand that the distributed shared memory infrastructure's
+VMM does not *replace* the operating system's VMM: it enhances it with higher
+level logic.  For example, a distributed shared memory infrastructure, upon a
+call to `mmap` or `sbrk`, would invoke a consensus module to notify others that
+memory has been mapped into the address space, which in turn relies on each of
+the other nodes' operating system VMM's to carry out the actual work in their
+respective kernels. In this way, we do not replace the OS's VMM, we enhance it.
 
-The internal memory region can also be referred to as local internal memory.
-This region of memory is a good place to put local threads, process-specific
-data, and other things that are local to a specific process running the shared
-application.
-
-This is the *only* region of memory that is allowed to differ between local
-processes running the shared application, and it is:
-
-  - not included in the shared page table
-  - not shared with any other process running the shared application
-
-#### shared page table
-
-The page table must be maintained so that the properties of the shared
-application memory can be maintained. This page table can tell us things like
-what memory is currently mapped in the application, which process participating
-in running the shared application owns this memory, or what the local
-permissions on that memory block currently are (e.g., ``PROT_READ``,
-``PROT_WRITE``, ``PROT_EXEC``).
-
-This page table must be maintained in a dedicated memory region so that it may
-easily synchronized between processes running the shared application. The most
-interesting part related to maintaining this shared data structure is how it is
-kept updated, referred to as the *consistency model*, because of its
-implications on *performance* and *correctness*.
-
-#### shared application memory
-
-The application memory is the region of memory that is managed by the page
-table and actually used by the shared application, i.e., this region of memory
-is home to the shared application's *heap*.
-
-This region of memory must also be synchronized between processes running the
-shared application. This region of memory's *consistenty model* need not be the
-same as the model used to maintain the *shared page table* from the previous
-section.
-
-### coherency
+#### coherency
 
 Developers need to know about memory coherency models to write *correct*
 applications. The coherency model is how we expect memory to behave when we
-read and write it.
+read from and write to it.
 
-Memory *coherency* and memory *consistency* often refer to the same things in
-the field of distributed shared memory systems. This document continues that
-trend. Feel free to submit a PR if I'm completely wrong.
+Note, memory *coherency* and memory *consistency* often refer to the same
+things in the field of distributed shared memory systems. This document
+continues that trend. Feel free to submit a PR if I'm completely wrong.
 
 There are lots of different types of memory coherency models:
 
@@ -91,27 +70,45 @@ Weak models often take a more lax model (i.e., a memory will read the value
 that was last written to it *soon*). Such a weak guarantee better *performance*
 at the cost of *correctness*.
 
-It doesn't take a rocket scientist to imagine why keeping memory strictly
-coherent in a distributed shared memory system running 100,000 nodes would be
-expensive. This is why distributed shared memory systems tend to use weaker
-coherency models.
+_TODO(sholsapp):_ Explain how coherency becomes interesting as we scale from
+one execution thread to multiple execution threads, and how it becomes even
+more interesting as we split the address space accross multiple machines. This
+will involve a discussion of the pthread implementation.
 
-### communication
+### consensus
 
-Communication leads to coordination, and that's an important area in
-distributed systems.
-
-This section talks about the nuances of how a process running a shared
-application does things like:
-
-  - join the group
-  - leave the group
-  - create a thread
-  - join a thread
-  - ask for a memory
-  - give up a memory
+All operations against any shared stateful object, i.e., the distributed shared
+memory infrastructure's VMM, must be agreed upon by the implementation-defined
+relevant owner set.
 
 ## implementation
+
+### memory
+
+There are fundamentally two different regions of memory that a distributed
+shared memory system needs to consider:
+
+  - local internal memory
+  - shared application memory
+
+#### local internal memory
+
+The internal memory region can also be referred to as local internal memory.
+This region of memory is a good place to put local threads, process-specific
+data, and other things that are local to a specific process running the shared
+application. Use of memory by the distributed system itself should strive to
+use this memory region for any operations that require memory.
+
+#### shared application memory
+
+The application memory is the region of memory that is managed by the page
+table and actually used by the shared application, i.e., this region of memory
+is home to the shared application's *heap*.
+
+This region of memory must also be synchronized between processes running the
+shared application. This region of memory's *consistenty model* need not be the
+same as the model used to maintain the *shared page table* from the previous
+section.
 
 ### owners and companies
 
