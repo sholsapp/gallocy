@@ -4,7 +4,7 @@
 #include <map>
 #include <vector>
 
-#include "gallocy/request.h"
+#include "gallocy/http/request.h"
 #include "gallocy/utils/objutils.h"
 #include "gallocy/utils/stringutils.h"
 

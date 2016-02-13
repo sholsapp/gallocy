@@ -6,8 +6,8 @@
 
 #include "gallocy/consensus/server.h"
 #include "gallocy/entrypoint.h"
+#include "gallocy/http/request.h"
 #include "gallocy/models.h"
-#include "gallocy/request.h"
 #include "gallocy/threads.h"
 #include "gallocy/utils/logging.h"
 #include "gallocy/utils/stringutils.h"

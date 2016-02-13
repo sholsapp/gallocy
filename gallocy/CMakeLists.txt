@@ -26,9 +26,9 @@ set(GALLOCY_CORE_SRC
   consensus/client.cpp
   consensus/server.cpp
   entrypoint.cpp
+  http/request.cpp
   libgallocy.cpp
   models.cpp
-  request.cpp
   sqlite.cpp
   threads.cpp
   utils/config.cpp
