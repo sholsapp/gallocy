@@ -64,7 +64,7 @@ tests. Output files will be placed into the `install` directory.
 ## documentation
 
   - [NUTSHELL](./resources/NUTSHELL.md) *good for learning about allocators*
-  - [IMPLEMENTATION](./resources/DESIGN.md) *good for learning about distributed shared memory*
+  - [IMPLEMENTATION](./resources/IMPLEMENTATION.md) *good for learning about distributed shared memory*
 
 
 ## about
