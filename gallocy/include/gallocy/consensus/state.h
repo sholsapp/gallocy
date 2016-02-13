@@ -9,7 +9,7 @@
 #include "gallocy/allocators/internal.h"
 #include "gallocy/consensus/log.h"
 #include "gallocy/consensus/timer.h"
-#include "gallocy/logging.h"
+#include "gallocy/utils/logging.h"
 
 
 #define FOLLOWER_STEP_TIME 2000

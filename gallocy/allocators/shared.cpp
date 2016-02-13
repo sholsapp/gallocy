@@ -7,7 +7,7 @@
 
 #include "gallocy/allocators/shared.h"
 #include "gallocy/heaplayers/stl.h"
-#include "gallocy/logging.h"
+#include "gallocy/utils/logging.h"
 
 HL::SingletonSharedHeapType shared_page_table_heap;
 HL::SingletonSharedHeapType HL::SharedPageTableHeap::heap = shared_page_table_heap;

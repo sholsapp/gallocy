@@ -1,5 +1,5 @@
 #include "gallocy/models.h"
-#include "gallocy/logging.h"
+#include "gallocy/utils/logging.h"
 
 
 // TODO(sholsapp): Rename this to "engine" to be clearer outside of this

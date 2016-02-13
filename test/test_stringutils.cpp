@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "gallocy/stringutils.h"
+#include "gallocy/utils/stringutils.h"
 
 
 TEST(StringutilsTests, StartsWith) {

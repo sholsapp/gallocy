@@ -14,9 +14,9 @@
 #include <functional>
 #include <vector>
 
-#include "gallocy/config.h"
 #include "gallocy/http_router.h"
 #include "gallocy/request.h"
+#include "gallocy/utils/config.h"
 #include "gallocy/worker.h"
 
 

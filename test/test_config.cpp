@@ -3,8 +3,7 @@
 
 #include "gtest/gtest.h"
 
-#include "gallocy/config.h"
-#include "gallocy/stringutils.h"
+#include "gallocy/utils/config.h"
 
 
 TEST(ConfigTests, LoadConfig) {

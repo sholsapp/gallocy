@@ -2,8 +2,8 @@
 #include <cstring>
 #include <new>
 
-#include "gallocy/libgallocy.h"
-#include "gallocy/diff.h"
+#include "gallocy/allocators/internal.h"
+#include "gallocy/utils/diff.h"
 
 class Element;
 

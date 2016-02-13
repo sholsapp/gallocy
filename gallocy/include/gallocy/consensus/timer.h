@@ -7,7 +7,7 @@
 #include <iostream>
 #include <thread>
 
-#include "gallocy/logging.h"
+#include "gallocy/utils/logging.h"
 
 class Timer {
  public:

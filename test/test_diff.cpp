@@ -3,8 +3,8 @@
 
 #include "gtest/gtest.h"
 
-#include "libgallocy.h"
-#include "diff.h"
+#include "gallocy/allocators/internal.h"
+#include "gallocy/utils/diff.h"
 
 
 TEST(DiffTests, DiffTinyTest) {

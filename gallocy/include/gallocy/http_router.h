@@ -4,9 +4,9 @@
 #include <map>
 #include <vector>
 
-#include "gallocy/objutils.h"
 #include "gallocy/request.h"
-#include "gallocy/stringutils.h"
+#include "gallocy/utils/objutils.h"
+#include "gallocy/utils/stringutils.h"
 
 
 template <typename HandlerFunction = int>

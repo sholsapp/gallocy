@@ -5,8 +5,8 @@
 
 #include <vector>
 
-#include "gallocy/config.h"
 #include "gallocy/consensus/state.h"
+#include "gallocy/utils/config.h"
 #include "gallocy/worker.h"
 
 

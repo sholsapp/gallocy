@@ -3,8 +3,8 @@
 
 
 #include "allocators/internal.h"
-#include "gallocy/logging.h"
 #include "gallocy/models.h"
+#include "gallocy/utils/logging.h"
 
 
 namespace HL {

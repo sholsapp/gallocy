@@ -4,8 +4,8 @@
 #include <string>
 
 #include "gallocy/allocators/shared.h"
-#include "gallocy/logging.h"
 #include "gallocy/sqlite.h"
+#include "gallocy/utils/logging.h"
 
 
 sqlite3_mem_methods my_mem = {

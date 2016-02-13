@@ -6,11 +6,11 @@
 
 #include "gallocy/consensus/server.h"
 #include "gallocy/entrypoint.h"
-#include "gallocy/logging.h"
 #include "gallocy/models.h"
 #include "gallocy/request.h"
-#include "gallocy/stringutils.h"
 #include "gallocy/threads.h"
+#include "gallocy/utils/logging.h"
+#include "gallocy/utils/stringutils.h"
 
 
 /**

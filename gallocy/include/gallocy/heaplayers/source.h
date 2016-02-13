@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-#include "gallocy/constants.h"
+#include "gallocy/utils/constants.h"
 
 
 #define ZONE_SZ   4096 * 4096 * 2

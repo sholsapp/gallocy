@@ -1,8 +1,8 @@
 #include <string>
 
 #include "gallocy/allocators/internal.h"
-#include "gallocy/config.h"
-#include "gallocy/stringutils.h"
+#include "gallocy/utils/config.h"
+#include "gallocy/utils/stringutils.h"
 
 
 GallocyConfig *load_config(const gallocy::string &path) {

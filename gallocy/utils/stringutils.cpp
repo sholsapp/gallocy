@@ -1,4 +1,4 @@
-#include "gallocy/stringutils.h"
+#include "gallocy/utils/stringutils.h"
 
 #include <arpa/inet.h>
 

@@ -6,7 +6,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "gallocy/logging.h"
+#include "gallocy/utils/logging.h"
 
 
 extern "C" pthread_create_function __gallocy_pthread_create = nullptr;

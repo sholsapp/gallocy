@@ -5,14 +5,14 @@
 #include <ctime>
 #include <iostream>
 
-#include "restclient.h"
 #include "gallocy/consensus/client.h"
 #include "gallocy/entrypoint.h"
-#include "gallocy/logging.h"
 #include "gallocy/models.h"
-#include "gallocy/stringutils.h"
 #include "gallocy/threads.h"
 #include "gallocy/utils/http.h"
+#include "gallocy/utils/logging.h"
+#include "gallocy/utils/stringutils.h"
+#include "restclient.h"
 
 
 void *GallocyClient::work() {

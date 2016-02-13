@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "gallocy/allocators/internal.h"
-#include "gallocy/logging.h"
 #include "gallocy/utils/http.h"
+#include "gallocy/utils/logging.h"
 #include "restclient.h"
 
 namespace utils {

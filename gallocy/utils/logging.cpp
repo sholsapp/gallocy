@@ -4,9 +4,8 @@
 #include <vector>
 
 #include "gallocy/allocators/internal.h"
-//#include "gallocy/glibc/time.h"
-#include "gallocy/logging.h"
-#include "gallocy/stringutils.h"
+#include "gallocy/utils/logging.h"
+#include "gallocy/utils/stringutils.h"
 
 
 gallocy::string level_string(const char *level) {
