@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "gallocy/http/request.h"
+#include "gallocy/http/response.h"
 #include "gallocy/utils/objutils.h"
 #include "gallocy/utils/stringutils.h"
 

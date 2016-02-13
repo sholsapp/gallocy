@@ -3,6 +3,7 @@
 
 #include "gallocy/consensus/server.h"
 #include "gallocy/http/request.h"
+#include "gallocy/http/response.h"
 #include "gallocy/http/router.h"
 
 
