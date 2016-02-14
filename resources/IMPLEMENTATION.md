@@ -45,9 +45,9 @@ respective kernels. In this way, we do not replace the OS's VMM, we enhance it.
 
 #### coherency
 
-Developers need to know about memory coherency models to write *correct*
-applications. The coherency model is how we expect memory to behave when we
-read from and write to it.
+A coherency model describes how we expect memory to behave when we read from
+and write to it. Developers need to know about memory coherency models to write
+*correct* applications.
 
 Note, memory *coherency* and memory *consistency* often refer to the same
 things in the field of distributed shared memory systems. This document
@@ -61,6 +61,10 @@ There are lots of different types of memory coherency models:
   - [release](http://en.wikipedia.org/wiki/Consistency_model#Release_Consistency)
   - [lazy-release](http://en.wikipedia.org/wiki/Consistency_model#Release_Consistency)
   - *[and many, many more...](http://en.wikipedia.org/wiki/Consistency_model)*
+
+New consistency models are being invented even today, as was the case with
+JIAJIA and it's use of a hybrid coherence protocol that employs *home-based*
+software techniques with *lock-based* write notices.
 
 Strong models often guarantee a more atomic model (i.e., a memory will read the
 value that was last written to it). Such strong guarantee come at the cost of
@@ -81,9 +85,27 @@ All operations against any shared stateful object, i.e., the distributed shared
 memory infrastructure's VMM, must be agreed upon by the implementation-defined
 relevant owner set.
 
+Getting consensus is conceptually simple: before responding to a client
+request, notify the majority of relevant peers of the change. In doing this
+conceptually simple action, we can maintain a consistent sequence of client
+requets. This consistent sequence of client requests is referred to as a *log*:
+a primary concept in distributed systems building.
+
+In addition to maintenance of a *log*, consensus also gives us the ability to
+elect a leader. A single leader simplifies the system by limiting the peers
+that are allowed to service client requests.
+
+### allocator
+
+Lorem Ipsum.
+
+### signal handler
+
+Lorem Ipsum.
+
 ## implementation
 
-### memory
+### allocator
 
 There are fundamentally two different regions of memory that a distributed
 shared memory system needs to consider:
@@ -110,7 +132,7 @@ shared application. This region of memory's *consistenty model* need not be the
 same as the model used to maintain the *shared page table* from the previous
 section.
 
-### owners and companies
+### consensus
 
 Every page of memory in the system has an owner, a company, and one or more
 leases.
