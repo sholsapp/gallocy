@@ -14,6 +14,10 @@
 ### memory bound applications
 - [Sieve of Eratosthenes](https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes)
 
+### interesting
+
+- [Warehouse-scale Computing](http://www.morganclaypool.com/doi/abs/10.2200/S00516ED2V01Y201306CAC024)
+
 ### implementation
 - [GNU C Library](https://www.gnu.org/software/libc/)
 - [GNU LD](http://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_node/ld_24.html) - Entry points
