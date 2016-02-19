@@ -9,7 +9,8 @@ sub_help() {
   echo "Subcommands:"
   echo "    build - invoke cmake/make to build the code"
   echo "    clean - clean things up"
-  echo "    docker - build a docker"
+  echo "    coverage - run the system test suite and collect coverage data"
+  echo "    docker - build a docker image named gallocy-example"
   echo "    integration - run the system test suite"
   echo "    leakcheck - run the unit test suite under valgrind"
   echo "    stylecheck - run the style checker"
@@ -68,6 +69,26 @@ sub_integration() {
 
   export ${LIBRARY_PATH}="${INSTALL_PATH}/lib"
   ${BATS} ./integration/test.sh
+}
+
+
+sub_coverage() {
+  if [ ! -f "Makefile" ]; then
+    cmake -G "Unix Makefiles"  \
+      -DBUILD_CURL_EXE=OFF     \
+      -DBUILD_CURL_TESTS=OFF   \
+      -DCMAKE_USE_LIBSSH2=OFF  \
+      -DCMAKE_USE_OPENLDAP=OFF \
+      -DCMAKE_USE_OPENSSL=OFF  \
+      -DCURL_ZLIB=OFF          \
+      -DHTTP_ONLY=ON           \
+      -DGENERATE_COVERAGE=ON   \
+      || exit 1
+  fi
+  make clean
+  make || exit 1
+  make install || exit 1
+  make gallocy_coverage || exit 1
 }
 
 

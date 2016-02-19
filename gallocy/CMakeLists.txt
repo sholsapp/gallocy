@@ -15,9 +15,23 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 endif()
 
 
+if(GENERATE_COVERAGE)
+  message(STATUS "Enabling gcov support")
+  if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    set(COVERAGE_FLAG "--coverage")
+  endif()
+  set(CMAKE_CXX_FLAGS_COVERAGE
+    "-g -O0 ${COVERAGE_FLAG} -fprofile-arcs -ftest-coverage")
+  #set(CMAKE_C_FLAGS_COVERAGE
+  #  "-g -O0 ${COVERAGE_FLAG} -fprofile-arcs -ftest-coverage")
+  #set(CMAKE_EXE_LINKER_FLAGS_COVERAGE
+  #  "")
+  #set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE
+  #  "")
+endif()
+
 # Custom compile flags for memory allocator
-set(CMAKE_CXX_FLAGS
-  "-std=c++0x -g -Wall -fstack-protector-all -Wstack-protector -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS "-std=c++0x -g -Wall -fstack-protector-all -Wstack-protector -fno-omit-frame-pointer ${CMAKE_CXX_FLAGS_COVERAGE}")
 
 # The gallocy-core build
 set(GALLOCY_CORE_SRC

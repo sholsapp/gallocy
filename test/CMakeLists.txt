@@ -1,5 +1,6 @@
 if(CMAKE_COMPILER_IS_GNUCXX)
   include(CodeCoverage)
+  message("Using CodeCoverage module")
   setup_target_for_coverage(${PROJECT_NAME}_coverage gallocy_tests coverage)
 endif()
 
@@ -13,9 +14,23 @@ set (GALLOCY_INCLUDE
 include_directories(${GALLOCY_INCLUDE})
 include_directories(${GTEST_INCLUDE_DIRS})
 
+if(GENERATE_COVERAGE)
+  message(STATUS "Enabling gcov support")
+  if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    set(COVERAGE_FLAG "--coverage")
+  endif()
+  set(CMAKE_CXX_FLAGS_COVERAGE
+    "-g -O0 ${COVERAGE_FLAG} -fprofile-arcs -ftest-coverage")
+  #set(CMAKE_C_FLAGS_COVERAGE
+  #  "-g -O0 ${COVERAGE_FLAG} -fprofile-arcs -ftest-coverage")
+  #set(CMAKE_EXE_LINKER_FLAGS_COVERAGE
+  #  "")
+  #set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE
+  #  "")
+endif()
+
 # Custom compile flags for memory allocator
-set(CMAKE_CXX_FLAGS
-  "-std=c++11 -g -Wall -fstack-protector-all -Wstack-protector -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS "-std=c++0x -g -Wall -fstack-protector-all -Wstack-protector -fno-omit-frame-pointer ${CMAKE_CXX_FLAGS_COVERAGE}")
 
 set(test_sources
   gtest.cpp
