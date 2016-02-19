@@ -1,9 +1,5 @@
 language: cpp
 
-before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y lcov
-
 compiler:
   - gcc
   - clang
@@ -31,6 +27,7 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - gcc-4.8
-      - g++-4.8
       - clang
+      - g++-4.8
+      - gcc-4.8
+      - lcov
