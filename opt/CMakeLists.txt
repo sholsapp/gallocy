@@ -55,3 +55,4 @@ set_cache_variable(CURL_INCLUDE_DIRS "Location of curl include files")
 #  CONFIGURE_COMMAND autoreconf -i ${CMAKE_CURRENT_SOURCE_DIR}/restclient-cpp && ${CMAKE_CURRENT_SOURCE_DIR}/restclient-cpp/configure --prefix=${INSTALL_DIR} --srcdir=${CMAKE_CURRENT_SOURCE_DIR}/restclient-cpp "CXXFLAGS=-I${CMAKE_INCLUDE_DIRS} -I${CMAKE_CURRENT_SOURCE_DIR}/restclient-cpp/include"
 #  BUILD_COMMAND make ${CMAKE_CURRENT_SOURCE_DIR}/restclient-cpp
 #)
+

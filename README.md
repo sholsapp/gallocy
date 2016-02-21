@@ -50,7 +50,7 @@ Subcommands:
     build - invoke cmake/make to build the code
     clean - clean things up
     coverage - run the system test suite and collect coverage data
-    docker - build a docker
+    docker - build a docker image named gallocy-example
     integration - run the system test suite
     leakcheck - run the unit test suite under valgrind
     stylecheck - run the style checker
@@ -71,6 +71,7 @@ tests. Output files will be placed into the `install` directory.
 
   - [NUTSHELL](./resources/NUTSHELL.md) *good for learning about allocators*
   - [IMPLEMENTATION](./resources/IMPLEMENTATION.md) *good for learning about distributed shared memory*
+  - [DEVELOPERS](./resources/DEVELOPERS.md) *good for testing and debugging*
 
 
 ## about
