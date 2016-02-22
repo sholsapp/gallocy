@@ -39,6 +39,7 @@ set(test_sources
   test_consensus_state.cpp
   test_consensus_timer.cpp
   test_constants.cpp
+  test_transport.cpp
   test_diff.cpp
   test_free.cpp
   test_httpd.cpp
