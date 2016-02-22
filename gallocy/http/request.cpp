@@ -101,3 +101,25 @@ gallocy::string gallocy::http::Request::get_url() const {
     << uri;
   return s.str();
 }
+
+gallocy::string gallocy::http::Request::build_request() const {
+  gallocy::stringstream s;
+  // TODO(rverdon): What other headers do we want?
+  // BUILD the request based on the type of request (GET/POST)
+  if (method.compare("GET") == 0) {
+    s << "GET " << uri << " " << protocol << "\r\n"
+      << "Host: " << peer.get_string() << "\r\n"
+      << "\r\n";
+  } else if (method.compare("POST") == 0) {
+    s << "POST " << uri << " HTTP/1.1\r\n"
+      << "Host: " << peer.get_string() << "\r\n"
+      << "Content-Type: " << content_type << "\r\n"
+      << "Content-Length: " << raw_body.length() << "\r\n"
+      << "\r\n"
+      << raw_body.c_str();
+  } else {
+    abort();
+  }
+
+  return s.str();
+}

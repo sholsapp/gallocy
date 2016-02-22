@@ -7,6 +7,7 @@
 #include <sys/types.h>
 
 #include "gallocy/utils/stringutils.h"
+#include "gallocy/common/peer.h"
 
 #define UDP_TIMEOUT_100_MS 100000  // 100 Milliseconds
 #define UDP_BUFSIZE 65507  // Largest IPV4 packet (65,535) - UDP header (8) - IPv4 Header(20)
@@ -80,12 +81,12 @@ class UDPTransport: public AbstractTransport {
    */
   void write(gallocy::string http);
 
-  UDPTransport(uint64_t dest_addr, uint16_t dest_port, uint16_t listen_port);
+  UDPTransport(gallocy::common::Peer dst_peer, uint16_t listen_port);
   ~UDPTransport();
 
   int sock;
   // WHO to send data too
-  struct sockaddr_in dst_addr;
+  gallocy::common::Peer peer;
   // LISTEN on this ip/port
   struct sockaddr_in listen_addr;
   // LAST ip data was received from

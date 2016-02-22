@@ -15,7 +15,6 @@ std::string GET_REQUEST(
   "\r\n"
 );
 
-
 std::string GET_REQUEST_QUERY(
   "GET /get?query=1 HTTP/1.1\r\n"
   "Host: 127.0.0.1\r\n"
@@ -24,6 +23,20 @@ std::string GET_REQUEST_QUERY(
   "\r\n"
 );
 
+gallocy::string BUILD_GET_REQUEST_QUERY(
+  "GET /test/uri HTTP/1.1\r\n"
+  "Host: 127.0.0.1:12345\r\n"
+  "\r\n"
+);
+
+gallocy::string BUILD_POST_REQUEST_QUERY(
+  "POST /data/goes/here HTTP/1.1\r\n"
+  "Host: 127.0.0.1:12345\r\n"
+  "Content-Type: application/json\r\n"
+  "Content-Length: 14\r\n"
+  "\r\n"
+  "Best json ever"
+);
 
 std::string POST_REQUEST(
   "POST /post HTTP/1.1\r\n"
@@ -36,7 +49,6 @@ std::string POST_REQUEST(
   "{\"foo\":\"bar\"}\r\n"
   "\r\n"
 );
-
 
 std::string RESPONSE(
   "HTTP/1.0 200 OK\r\n"
@@ -59,6 +71,19 @@ TEST(RequestTests, Constructors) {
 #endif
 }
 
+TEST(RequestTests, BuildGetRequest) {
+  gallocy::http::Request request(BUILD_GET_REQUEST_QUERY);
+  request.peer = gallocy::common::Peer("127.0.0.1", 12345);
+
+  ASSERT_EQ(request.build_request(), BUILD_GET_REQUEST_QUERY);
+}
+
+TEST(RequestTests, BuildPostRequest) {
+  gallocy::http::Request request(BUILD_POST_REQUEST_QUERY);
+  request.peer = gallocy::common::Peer("127.0.0.1", 12345);
+
+  ASSERT_EQ(request.build_request(), BUILD_POST_REQUEST_QUERY);
+}
 
 TEST(RequestTests, SimpleGetRequest) {
   gallocy::http::Request request(GET_REQUEST);
@@ -128,6 +153,16 @@ TEST(ResponseTests, SimpleResponse) {
   ASSERT_EQ(response.str().c_str(), RESPONSE);
 }
 
+TEST(ResponseTests, FromBufferTest) {
+  gallocy::http::Response response;
+  gallocy::string raw = "HTTP/1.1 200 OK\r\nHost: TESTHOST\r\n\r\nBest json ever";
+  
+  response.from_buffer(raw);
+  
+  ASSERT_EQ(response.status_code, 200);
+  ASSERT_EQ(response.headers["Host"], "TESTHOST");
+  ASSERT_EQ(response.body, "Best json ever");
+}
 
 TEST(RoutingTableTests, Functors) {
   using ArgList = gallocy::vector<gallocy::string>;

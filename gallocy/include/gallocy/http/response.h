@@ -25,6 +25,14 @@ class Response {
   Response(const Response&) = delete;
   Response &operator=(const Response&) = delete;
 
+  /**
+   * Updates all of the response fields. Useful when you have  a raw
+   * string that was read off the wire, e.g., in a client implementation.
+   *
+   * \param raw The raw response.
+   */
+  void from_buffer(gallocy::string raw);
+
   // Members
   Headers headers;
   gallocy::common::Peer peer;

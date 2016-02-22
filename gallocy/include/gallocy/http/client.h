@@ -7,7 +7,7 @@
 
 #include "gallocy/http/request.h"
 #include "gallocy/http/response.h"
-
+#include "gallocy/http/transport.h"
 
 namespace gallocy {
 
@@ -64,6 +64,28 @@ class CurlClient : public AbstractClient {
                         std::function<bool(const Response &)> callback,
                         std::condition_variable *cv,
                         std::mutex *cv_m);
+};
+
+/**
+ * A request client that uses UDPTransport under the hood.
+ */
+class UDPClient : public AbstractClient {
+ public:
+  /**
+   * See \ref AbstractClient::request.
+   */
+  Response *request(const Request &request);
+  /**
+   * See \ref AbstractClient::multirequest.
+   */
+  uint64_t multirequest(const gallocy::vector<Request> requests,
+                        std::function<bool(const Response &)> callback,
+                        std::condition_variable *cv,
+                        std::mutex *cv_m);
+  /**
+   * Number of times the transport client will send and wait for data from a peer.
+   */
+  uint8_t retry_limit = 3;
 };
 
 }  // namespace http

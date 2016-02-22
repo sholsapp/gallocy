@@ -1,7 +1,7 @@
 #include "gallocy/http/transport.h"
 
 
-gallocy::http::UDPTransport::UDPTransport(uint64_t dest_addr, uint16_t dest_port, uint16_t listen_port) {
+gallocy::http::UDPTransport::UDPTransport(gallocy::common::Peer dst_peer, uint16_t listen_port) {
     // TODO(rverdon): Create the socket here? Or in the UDPClient?
     // CREATE the socket
     if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
@@ -18,13 +18,7 @@ gallocy::http::UDPTransport::UDPTransport(uint64_t dest_addr, uint16_t dest_port
         exit(1);
     }
 
-    // SETUP the destination
-    memset(std::addressof(dst_addr), 0, sizeof(dst_addr));
-    dst_addr.sin_family = AF_INET;
-    dst_addr.sin_port = htons(dest_port);
-    // CONVERT the uint64_t to a uint32_t
-    uint32_t dest_ipv4_addr = dest_addr & 0xFFFFFFFF;
-    dst_addr.sin_addr.s_addr = htonl(reinterpret_cast<in_addr_t>(dest_ipv4_addr));
+    peer = dst_peer;
 
     // SETUP the listen sockaddr
     memset(std::addressof(listen_addr), 0, sizeof(listen_addr));
@@ -58,6 +52,7 @@ gallocy::string gallocy::http::UDPTransport::read() {
 void gallocy::http::UDPTransport::write(gallocy::string http) {
     uint32_t total_sent = 0;
     uint32_t sent = 0;
+    struct sockaddr_in dst_addr = peer.get_socket();
 
     while (total_sent != http.length()) {
         if ((sent = sendto(sock, http.substr(total_sent).c_str(), http.length() - total_sent, 0,
