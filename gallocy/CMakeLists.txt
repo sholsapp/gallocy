@@ -42,6 +42,7 @@ set(GALLOCY_CORE_SRC
   http/client.cpp
   http/request.cpp
   http/response.cpp
+  http/transport.cpp
   libgallocy.cpp
   models.cpp
   sqlite.cpp
