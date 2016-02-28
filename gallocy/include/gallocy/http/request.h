@@ -71,6 +71,12 @@ class Request {
   gallocy::string peer;
   uint64_t peer_ip;
   void pretty_print() const;
+  /**
+   * Get the request's URL.
+   *
+   * \return The request's URL.
+   */
+  gallocy::string get_url() const;
 
  private:
   gallocy::string raw;

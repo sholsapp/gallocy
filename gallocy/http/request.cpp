@@ -111,3 +111,13 @@ void Request::pretty_print() const {
   }
   std::cout << raw_body << std::endl;;
 }
+
+
+gallocy::string Request::get_url() const {
+  gallocy::stringstream s;
+  s << "http:// "
+    << peer
+    << ":" << "8080"
+    << uri;
+  return s.str();
+}

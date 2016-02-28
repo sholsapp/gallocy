@@ -14,20 +14,12 @@
 
 Response *CurlClient::request(const Request &request) {
   RestClient::Response restclient_response;
-
-  gallocy::stringstream url;
-
-  // TODO(sholsapp): This port needs to be exposed so we can build the URL.
-  // Perhaps we need a Peer abstraction in the request object?
-  url << "http://" << request.peer << ":" << "8080"
-      << request.uri;
-
   if (request.method.compare("GET") == 0) {
-    restclient_response = RestClient::get(url.str().c_str());
+    restclient_response = RestClient::get(request.get_url().c_str());
   } else if (request.method.compare("POST") == 0) {
     // TODO(sholsapp): We assume that any POST request is a JSON request, for
     // now. This should be changed to accept any type of POST request.
-    restclient_response = RestClient::post(url.str().c_str(), "application/json", request.raw_body.c_str());
+    restclient_response = RestClient::post(request.get_url().c_str(), "application/json", request.raw_body.c_str());
   } else {
     abort();
   }
