@@ -1,7 +1,7 @@
 if(CMAKE_COMPILER_IS_GNUCXX)
-  include(CodeCoverage)
-  message("Using CodeCoverage module")
-  setup_target_for_coverage(${PROJECT_NAME}_coverage gallocy_tests coverage)
+	# include(CodeCoverage)
+	# message("Using CodeCoverage module")
+	# setup_target_for_coverage(${PROJECT_NAME}_coverage gallocy_tests coverage)
 endif()
 
 

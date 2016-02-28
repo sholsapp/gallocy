@@ -20,6 +20,7 @@ sub_help() {
 
 sub_build() {
   if [ ! -f "Makefile" ]; then
+    echo "Running build with GENERATE_COVERAGE=${GENERATE_COVERAGE}"
     cmake -G "Unix Makefiles"  \
       -DBUILD_CURL_EXE=OFF     \
       -DBUILD_CURL_TESTS=OFF   \
@@ -28,6 +29,7 @@ sub_build() {
       -DCMAKE_USE_OPENSSL=OFF  \
       -DCURL_ZLIB=OFF          \
       -DHTTP_ONLY=ON           \
+      -DGENERATE_COVERAGE="${GENERATE_COVERAGE:-OFF}" \
       || exit 1
   fi
   make || exit 1
@@ -88,7 +90,8 @@ sub_coverage() {
   make clean
   make || exit 1
   make install || exit 1
-  make gallocy_coverage || exit 1
+  # make gallocy_coverage || exit 1
+  sub_test || exit 1
 }
 
 

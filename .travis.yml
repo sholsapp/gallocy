@@ -1,21 +1,50 @@
 language: cpp
 
+# Use the Travis docker infrastructure.
+sudo: false
+
+# Build with both gcc and clang.
 compiler:
   - gcc
   - clang
 
+# Build with both Linux and OS X.
 os:
   - linux
   - osx
 
 install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+  # If the environment variable GENERATE_COVERAGE is set to ON then install
+  # cpp-coverals, a Python package from pypi.org that makes runs gcov and
+  # uploads results to coveralls.io.
+  - if [ "$GENERATE_COVERAGE" == "ON" ]; then
+      pip install --user cpp-coveralls;
+    fi
 
 script:
-  - which gcc
+  # Run the actually build and test command
   - ./project build
 
+after_success:
+  # If the environment variable GENERATE_COVERAGE is set to ON then run
+  # coveralls command from the cpp-coveralls Python package.
+  - if [ "$GENERATE_COVERAGE" == "ON" ]; then
+    coveralls
+      --include 'gallocy'
+      --include 'gallocy/include'
+      --exclude-pattern '.+/external/'
+      --gcov-options '\--long-file-names --preserve-paths'
+      --gcov /usr/bin/gcov-4.8
+      --verbose;
+    fi
+  - echo "DONE!"
+
 matrix:
+  include:
+    - os: linux
+      compiler: gcc
+      env: GENERATE_COVERAGE=ON
   exclude:
     # Only check clang on OS X
     - os: osx
@@ -32,3 +61,4 @@ addons:
       - g++-4.8
       - gcc-4.8
       - lcov
+      - python-pip
