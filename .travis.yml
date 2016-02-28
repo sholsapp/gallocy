@@ -11,7 +11,7 @@ compiler:
 # Build with both Linux and OS X.
 os:
   - linux
-  - osx
+#  - osx
 
 install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
@@ -45,10 +45,10 @@ matrix:
     - os: linux
       compiler: gcc
       env: GENERATE_COVERAGE=ON
-  exclude:
-    # Only check clang on OS X
-    - os: osx
-      compiler: gcc
+#  exclude:
+#    # Only check clang on OS X
+#    - os: osx
+#      compiler: gcc
 
 addons:
   apt:
