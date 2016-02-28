@@ -41,11 +41,12 @@ Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
 
 
 Response *GallocyServer::route_request_vote(RouteArguments *args, Request *request) {
+  gallocy::common::Peer peer = request->peer;
   gallocy::json request_json = request->get_json();
   uint64_t candidate_commit_index = request_json["commit_index"];
   uint64_t candidate_current_term = request_json["term"];
   uint64_t candidate_last_applied = request_json["last_applied"];
-  uint64_t candidate_voted_for = request->peer_ip;
+  uint64_t candidate_voted_for = peer.get_canonical_id();
   uint64_t local_commit_index = gallocy_state->get_commit_index();
   uint64_t local_current_term = gallocy_state->get_current_term();
   uint64_t local_last_applied = gallocy_state->get_last_applied();
@@ -91,6 +92,7 @@ Response *GallocyServer::route_request_vote(RouteArguments *args, Request *reque
 
 
 Response *GallocyServer::route_append_entries(RouteArguments *args, Request *request) {
+  gallocy::common::Peer peer = request->peer;
   gallocy::json request_json = request->get_json();
   gallocy::vector<LogEntry> leader_entries;
   uint64_t leader_commit_index = request_json["leader_commit"];
@@ -111,7 +113,7 @@ Response *GallocyServer::route_append_entries(RouteArguments *args, Request *req
 
   if (leader_term < local_term) {
     LOG_INFO("Rejecting leader "
-        << request->peer_ip
+        << peer.get_string()
         << " because term is outdated ("
         << leader_term
         << ")");
@@ -123,7 +125,7 @@ Response *GallocyServer::route_append_entries(RouteArguments *args, Request *req
     success = true;
     gallocy_state->set_current_term(leader_term);
     gallocy_state->set_state(RaftState::FOLLOWER);
-    gallocy_state->set_voted_for(request->peer_ip);
+    gallocy_state->set_voted_for(peer.get_canonical_id());
     gallocy_state->get_timer()->reset();
   }
   gallocy::json response_json = {
@@ -253,7 +255,6 @@ void *GallocyServer::handle_entry(void *arg) {
 
 void *GallocyServer::handle(int client_socket, struct sockaddr_in client_name) {
   Request *request = get_request(client_socket);
-  request->peer_ip = utils::parse_internet_address(inet_ntoa(client_name.sin_addr));
   Response *response = routes.match(request->uri)(request);
 
   if (send(client_socket, response->str().c_str(), response->size(), 0) == -1) {

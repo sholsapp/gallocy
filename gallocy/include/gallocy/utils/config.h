@@ -25,9 +25,11 @@ class GallocyConfig {
    * \param peers This node's peer list.
    * \param port This node's port.
    */
-  GallocyConfig(gallocy::string &address, gallocy::vector<gallocy::string> &peers, uint16_t port)
+  GallocyConfig(const gallocy::string &address,
+                const gallocy::vector<gallocy::common::Peer> &peer_list,
+                uint16_t port)
     : address(address),
-      peers(peers),
+      peer_list(peer_list),
       port(port) {}
 
   /**
@@ -45,15 +47,11 @@ class GallocyConfig {
 
     for (gallocy::json::string_t peer_ip_string : config_json["peers"]) {
       peer_list.push_back(gallocy::common::Peer(peer_ip_string.c_str(), port));
-      // TODO(sholsapp): Delete this member in favor of peer_list.
-      peers.push_back(peer_ip_string.c_str());
     }
   }
 
  public:
   gallocy::string address;
-  // TODO(sholsapp): Delete this member in favor of peer_list.
-  gallocy::vector<gallocy::string> peers;
   gallocy::vector<gallocy::common::Peer> peer_list;
   uint16_t port;
 };

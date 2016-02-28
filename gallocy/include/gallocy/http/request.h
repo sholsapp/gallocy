@@ -4,6 +4,7 @@
 #include <map>
 
 #include "gallocy/allocators/internal.h"
+#include "gallocy/peer.h"
 
 /**
  * A HTTP request.
@@ -38,10 +39,10 @@ class Request {
    * in a client implementation.
    *
    * \param method An HTTP method, such as GET or POST.
-   * \param peer_ip The peer's internet address.
+   * \param peer The peer's internet address.
    * \param uri The URI to request.
    */
-  Request(gallocy::string method, gallocy::string peer, gallocy::string uri);
+  Request(gallocy::string method, const gallocy::common::Peer &peer, gallocy::string uri);
   /**
    * Create a request.
    *
@@ -49,12 +50,12 @@ class Request {
    * in a client implementation.
    *
    * \param method An HTTP method, such as GET or POST.
-   * \param peer_ip The peer's internet address.
+   * \param peer The peer's internet address.
    * \param uri The URI to request.
    * \param body The raw request body.
    * \param headers Any headers to include.
    */
-  Request(gallocy::string method, gallocy::string peer, gallocy::string uri,
+  Request(gallocy::string method, const gallocy::common::Peer &peer, gallocy::string uri,
           gallocy::string body, Headers headers);
 
   // Request(const Request &) = delete;
@@ -63,13 +64,12 @@ class Request {
   // Members
   Headers headers;
   Parameters &get_params();
+  gallocy::common::Peer peer;
   gallocy::json &get_json();
   gallocy::string method;
   gallocy::string protocol;
   gallocy::string raw_body;
   gallocy::string uri;
-  gallocy::string peer;
-  uint64_t peer_ip;
   void pretty_print() const;
   /**
    * Get the request's URL.

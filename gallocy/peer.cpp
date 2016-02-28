@@ -1,11 +1,15 @@
 #include <arpa/inet.h>
+#include <netinet/in.h>
 
 #include "gallocy/allocators/internal.h"
 #include "gallocy/peer.h"
 
 
 const gallocy::string gallocy::common::Peer::get_string() const {
-  return unparse_internet_address(internet_address_integer);
+  gallocy::stringstream me;
+  me << unparse_internet_address(internet_address_integer)
+     << ":" << port_integer;
+  return me.str();
 }
 
 

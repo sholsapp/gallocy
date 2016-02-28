@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "gallocy/http/request.h"
+#include "gallocy/peer.h"
 #include "gallocy/utils/stringutils.h"
 
 
@@ -40,14 +41,14 @@ Request::Request(gallocy::string raw) {
 }
 
 
-Request::Request(gallocy::string method, gallocy::string peer, gallocy::string uri) {
+Request::Request(gallocy::string method, const gallocy::common::Peer &peer, gallocy::string uri) {
   this->method = method;
   this->peer = peer;
   this->uri = uri;
 }
 
 
-Request::Request(gallocy::string method, gallocy::string peer, gallocy::string uri,
+Request::Request(gallocy::string method, const gallocy::common::Peer &peer, gallocy::string uri,
                  gallocy::string body, Headers headers) {
   this->method = method;
   this->peer = peer;
@@ -115,9 +116,8 @@ void Request::pretty_print() const {
 
 gallocy::string Request::get_url() const {
   gallocy::stringstream s;
-  s << "http:// "
-    << peer
-    << ":" << "8080"
+  s << "http://"
+    << peer.get_string()
     << uri;
   return s.str();
 }

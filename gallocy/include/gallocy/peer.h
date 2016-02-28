@@ -1,6 +1,9 @@
 #ifndef GALLOCY_PEER_H_
 #define GALLOCY_PEER_H_
 
+#include <arpa/inet.h>
+#include <netinet/in.h>
+
 #include <functional>
 
 #include "gallocy/allocators/internal.h"
@@ -18,6 +21,19 @@ namespace common {
  */
 class Peer {
  public:
+  /**
+   * Create a peer.
+   */
+  Peer() : internet_address_integer(0), port_integer(0) {}
+  /**
+   * Create a peer.
+   *
+   * \param client_name The client socket name.
+   */
+  explicit Peer(struct sockaddr_in client_name) {
+    internet_address_integer = parse_internet_address(inet_ntoa(client_name.sin_addr));
+    port_integer = static_cast<uint16_t>(ntohs(client_name.sin_port));
+  }
   /**
    * Create a peer.
    *
@@ -42,8 +58,7 @@ class Peer {
    * Get the peer's internet address as a string in dot notation.
    *
    * \warning Always prefer \ref Peer::get_canonical_id when implementing
-   * internal logic that depends on the peer's identity. Use this method for
-   * logging only.
+   * internal logic that depends on a unique identifier for the peer.
    *
    * \return The internet address string.
    */

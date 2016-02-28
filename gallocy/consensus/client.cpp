@@ -42,14 +42,15 @@ bool GallocyClient::send_request_vote() {
   gallocy::vector<Request> requests;
   gallocy::map<gallocy::string, gallocy::string> headers;
   headers["Content-Type"] = "application/json";
-  for (auto &peer : config.peers)
+  for (auto &peer : config.peer_list) {
     requests.push_back(Request("POST", peer, "/raft/request_vote", j.dump(), headers));
+  }
   // TODO(sholsapp): How we handle this is busted and needs to be refactored so
   // that the cv is usable here. This is also blocking, which is probably bad?
   uint64_t votes = CurlClient().multirequest(requests, request_vote_callback, nullptr, nullptr);
 
-  LOG_INFO("Received votes from " << votes << "/" << config.peers.size() << " peers");
-  return votes >= config.peers.size() / 2;
+  LOG_INFO("Received votes from " << votes << "/" << config.peer_list.size() << " peers");
+  return votes >= config.peer_list.size() / 2;
 }
 
 
@@ -91,7 +92,7 @@ bool GallocyClient::send_append_entries() {
   gallocy::vector<Request> requests;
   gallocy::map<gallocy::string, gallocy::string> headers;
   headers["Content-Type"] = "application/json";
-  for (auto &peer : config.peers)
+  for (auto &peer : config.peer_list)
     requests.push_back(Request("POST", peer, "/raft/append_entries", j.dump(), headers));
   // TODO(sholsapp): How we handle this is busted and needs to be refactored so
   // that the cv is usable here. This is also blocking, which is probably bad?
@@ -123,7 +124,7 @@ bool GallocyClient::send_append_entries(const gallocy::vector<LogEntry> &entries
   gallocy::vector<Request> requests;
   gallocy::map<gallocy::string, gallocy::string> headers;
   headers["Content-Type"] = "application/json";
-  for (auto &peer : config.peers)
+  for (auto &peer : config.peer_list)
     requests.push_back(Request("POST", peer, "/raft/append_entries", j.dump(), headers));
   // TODO(sholsapp): How we handle this is busted and needs to be refactored so
   // that the cv is usable here. This is also blocking, which is probably bad?
