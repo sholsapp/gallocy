@@ -18,23 +18,32 @@
  */
 class GallocyConfig {
  public:
+  /**
+   * Create a configuration.
+   *
+   * \param address This node's internet address.
+   * \param peers This node's peer list.
+   * \param port This node's port.
+   */
   GallocyConfig(gallocy::string &address, gallocy::vector<gallocy::string> &peers, uint16_t port)
     : address(address),
       peers(peers),
-      port(port)
-  {}
-  explicit GallocyConfig(gallocy::json j) {
-    port = j["port"];
+      port(port) {}
+
+  /**
+   * Create a configuration.
+   *
+   * \param config_json A JSON object with keys for "self", "port", and "peers".
+   */
+  explicit GallocyConfig(gallocy::json config_json) {
+    port = config_json["port"];
 
     // TODO(sholsapp): Gah, this is driving me insane, we need to fix this
     // implicit converstion nightmare.
-    gallocy::json::string_t _address = j["self"];
+    gallocy::json::string_t _address = config_json["self"];
     address = _address.c_str();
 
-    // TODO(sholsapp): Gah, this is driving me insane, we need to fix this
-    // implicit converstion nightmare.
-    gallocy::json::array_t _peers = j["peers"];
-    for (auto p : _peers) {
+    for (auto p : config_json["peers"]) {
       gallocy::json::string_t str = p;
       gallocy::string _p = str.c_str();
       peers.push_back(_p);
@@ -42,9 +51,9 @@ class GallocyConfig {
   }
 
  public:
-  bool master;
   gallocy::string address;
   gallocy::vector<gallocy::string> peers;
+  gallocy::vector<gallocy::common::Peer> peer_list;
   uint16_t port;
 };
 

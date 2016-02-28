@@ -38,7 +38,6 @@ class GallocyServer : public ThreadedDaemon {
    */
   explicit GallocyServer(GallocyConfig &config) :
     config(config),
-    is_master(config.master),
     address(config.address),
     port(config.port),
     server_socket(-1) {
@@ -142,7 +141,6 @@ class GallocyServer : public ThreadedDaemon {
 
  private:
   GallocyConfig &config;
-  bool is_master;
   gallocy::string address;
   int16_t port;
   int64_t server_socket;
