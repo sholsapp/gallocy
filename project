@@ -90,8 +90,7 @@ sub_coverage() {
   make clean
   make || exit 1
   make install || exit 1
-  # make gallocy_coverage || exit 1
-  sub_test || exit 1
+  make gallocy_coverage || exit 1
 }
 
 

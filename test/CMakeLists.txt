@@ -1,7 +1,7 @@
 if(CMAKE_COMPILER_IS_GNUCXX)
-	# include(CodeCoverage)
-	# message("Using CodeCoverage module")
-	# setup_target_for_coverage(${PROJECT_NAME}_coverage gallocy_tests coverage)
+  include(CodeCoverage)
+  message("Using CodeCoverage module")
+  setup_target_for_coverage(${PROJECT_NAME}_coverage gallocy_tests coverage)
 endif()
 
 
@@ -39,10 +39,10 @@ set(test_sources
   test_consensus_state.cpp
   test_consensus_timer.cpp
   test_constants.cpp
-  test_transport.cpp
   test_diff.cpp
   test_free.cpp
   test_httpd.cpp
+  test_internal_allocator.cpp
   test_json.cpp
   test_logging.cpp
   test_malloc.cpp
@@ -52,6 +52,7 @@ set(test_sources
   test_stlallocator.cpp
   test_stringutils.cpp
   test_threads.cpp
+  test_transport.cpp
 )
 
 add_executable(gallocy_tests ${test_sources})
