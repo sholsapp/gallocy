@@ -35,7 +35,7 @@ set(CMAKE_CXX_FLAGS "-std=c++0x -g -Wall -fstack-protector-all -Wstack-protector
 set(test_sources
   gtest.cpp
   test_config.cpp
-  test_consensus_server.cpp
+  test_consensus.cpp
   test_consensus_state.cpp
   test_consensus_timer.cpp
   test_constants.cpp

@@ -6,7 +6,9 @@
 #include "gtest/gtest.h"
 
 #include "gallocy/allocators/internal.h"
+#include "gallocy/consensus/client.h"
 #include "gallocy/consensus/server.h"
+#include "gallocy/consensus/state.h"
 #include "gallocy/http/client.h"
 #include "gallocy/http/request.h"
 #include "gallocy/http/response.h"
@@ -14,8 +16,10 @@
 #include "gallocy/utils/config.h"
 
 
+GallocyClient *gallocy_client = nullptr;
 GallocyConfig *gallocy_config = nullptr;
 GallocyServer *gallocy_server = nullptr;
+GallocyState *gallocy_state = nullptr;
 
 
 class ConsensusServerTests: public ::testing::Test {
@@ -24,12 +28,16 @@ class ConsensusServerTests: public ::testing::Test {
    * Starts a GallocyServer.
    */
   virtual void SetUp() {
+    if (gallocy_server != nullptr)
+      return;
     gallocy::string address = "127.0.0.1";
     gallocy::vector<gallocy::common::Peer> peer_list;
     // Add oneself as a peer for testing routes.
     peer_list.push_back(gallocy::common::Peer("127.0.0.1", 8080));
+    gallocy_state = new (internal_malloc(sizeof(GallocyState))) GallocyState();
     gallocy_config = new (internal_malloc(sizeof(GallocyConfig))) GallocyConfig(address, peer_list, 8080);
     gallocy_server = new (internal_malloc(sizeof(GallocyServer))) GallocyServer(*gallocy_config);
+    gallocy_client = new (internal_malloc(sizeof(GallocyClient))) GallocyClient(*gallocy_config);
     gallocy_server->start();
     // TODO(sholsapp): Replace this with a "ready" implementation.
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -37,7 +45,10 @@ class ConsensusServerTests: public ::testing::Test {
   /**
    * Stops a GallocyServer.
    */
-  virtual void TearDown() {
+  // TODO(sholsapp): We need to fix up the destructors for the server before we
+  // can clean up everything. Otherwise, when we try to recreate the server in
+  // the fixture, the address is already in use.
+  virtual void TearDown_Disabled() {
     // TODO(sholsapp): The server's join implementation blocks forever
     // because, although we've set alive = false, it is blocked indefinitly
     // waiting for new connections. This approach joins the server in a thread
@@ -50,10 +61,18 @@ class ConsensusServerTests: public ::testing::Test {
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     // Clean up
+    gallocy_client->~GallocyClient();
     gallocy_config->~GallocyConfig();
-    internal_free(gallocy_config);
     gallocy_server->~GallocyServer();
+    gallocy_state->~GallocyState();
+    internal_free(gallocy_client);
+    internal_free(gallocy_config);
     internal_free(gallocy_server);
+    internal_free(gallocy_state);
+    gallocy_client = nullptr;
+    gallocy_config = nullptr;
+    gallocy_server = nullptr;
+    gallocy_state = nullptr;
   }
 };
 
@@ -66,5 +85,17 @@ TEST_F(ConsensusServerTests, StartStop) {
       [](const Response &rsp) {
         return true;
       }, nullptr, nullptr);
-  ASSERT_GE(rsp, 0);
+  ASSERT_GE(rsp, static_cast<uint64_t>(0));
+}
+
+
+TEST_F(ConsensusServerTests, RequestVote) {
+  uint64_t votes = gallocy_client->send_request_vote();
+  ASSERT_EQ(votes, static_cast<uint64_t>(1));
+}
+
+
+TEST_F(ConsensusServerTests, AppendEntries) {
+  uint64_t successes = gallocy_client->send_append_entries();
+  ASSERT_EQ(successes, static_cast<uint64_t>(1));
 }
