@@ -35,6 +35,16 @@ const uint64_t gallocy::common::Peer::parse_internet_address(const gallocy::stri
 }
 
 
+const struct sockaddr_in gallocy::common::Peer::get_socket() const {
+  struct sockaddr_in ip_address;
+  memset(std::addressof(ip_address), 0, sizeof(struct sockaddr_in));
+  ip_address.sin_family = AF_INET;
+  ip_address.sin_port = htons(port_integer);
+  ip_address.sin_addr.s_addr = htonl(internet_address_integer & 0xFFFFFFFF);
+  return ip_address;
+}
+
+
 const gallocy::string gallocy::common::Peer::unparse_internet_address(uint64_t ip_address) const {
   // HACK off half of the uint64_t representation after converting it to
   // network order.

@@ -38,7 +38,7 @@ extern "C" {
     local_internal_memory.free(ptr);
   }
 
-  void* internal_realloc(void* ptr, size_t sz) {
+  void *internal_realloc(void *ptr, size_t sz) {
     return local_internal_memory.realloc(ptr, sz);
   }
 

@@ -64,6 +64,12 @@ class Peer {
    */
   const gallocy::string get_string() const;
   /**
+   * Get the peer's socket.
+   *
+   * \return The peer's socket.
+   */
+  const struct sockaddr_in get_socket() const;
+  /**
    * Get the peer's canonical identifier.
    *
    * \return The peer's canonical identifier.
