@@ -43,15 +43,16 @@ class GallocyConfig {
     gallocy::json::string_t _address = config_json["self"];
     address = _address.c_str();
 
-    for (auto p : config_json["peers"]) {
-      gallocy::json::string_t str = p;
-      gallocy::string _p = str.c_str();
-      peers.push_back(_p);
+    for (gallocy::json::string_t peer_ip_string : config_json["peers"]) {
+      peer_list.push_back(gallocy::common::Peer(peer_ip_string.c_str(), port));
+      // TODO(sholsapp): Delete this member in favor of peer_list.
+      peers.push_back(peer_ip_string.c_str());
     }
   }
 
  public:
   gallocy::string address;
+  // TODO(sholsapp): Delete this member in favor of peer_list.
   gallocy::vector<gallocy::string> peers;
   gallocy::vector<gallocy::common::Peer> peer_list;
   uint16_t port;

@@ -10,6 +10,7 @@
 #include "gallocy/consensus/server.h"
 #include "gallocy/entrypoint.h"
 #include "gallocy/http/request.h"
+#include "gallocy/http/response.h"
 #include "gallocy/models.h"
 #include "gallocy/threads.h"
 #include "gallocy/utils/logging.h"
@@ -32,38 +33,9 @@ Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
   response->status_code = 200;
   response->headers["Server"] = "Gallocy-Httpd";
   response->headers["Content-Type"] = "application/json";
-
-#if 0
-  gallocy::json j = {
-    {"status", "GOOD" },
-    {"master", is_master},
-    {"peers", { } },
-    {"diagnostics", {
-      // TODO(sholsapp): These names suck.. we should indicate that they are allocators.
-      { "local_internal_memory", reinterpret_cast<uint64_t>(&local_internal_memory) },
-      { "shared_page_table", reinterpret_cast<uint64_t>(&shared_page_table) },
-      // TODO(sholsapp): Add the main application allocator here.
-    } },
-  };
-
-  for (auto p : peer_info_table.all()) {
-    gallocy::json peer_info = {
-      {"id", p.id},
-      {"ip_address", p.ip_address},
-      {"first_seen", p.first_seen},
-      {"last_seen", p.last_seen},
-    };
-    j["peers"].push_back(peer_info);
-  }
-
-  response->body = j.dump();
-#endif
-
   response->body = "GOOD";
-
   args->~RouteArguments();
   internal_free(args);
-
   return response;
 }
 
@@ -101,6 +73,8 @@ Response *GallocyServer::route_request_vote(RouteArguments *args, Request *reque
     }
   }
   gallocy::json response_json = {
+    // TODO(sholsapp): This information should from from the socket, not the
+    // payload, as it can be faked.
     { "peer", gallocy_config->address.c_str() },
     { "term", gallocy_state->get_current_term() },
     { "vote_granted", granted },
@@ -153,6 +127,8 @@ Response *GallocyServer::route_append_entries(RouteArguments *args, Request *req
     gallocy_state->get_timer()->reset();
   }
   gallocy::json response_json = {
+    // TODO(sholsapp): This information should from from the socket, not the
+    // payload, as it can be faked.
     { "peer", gallocy_config->address.c_str() },
     { "term", gallocy_state->get_current_term() },
     { "success", success },
