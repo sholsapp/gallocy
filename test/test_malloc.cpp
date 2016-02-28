@@ -26,6 +26,22 @@ TEST_F(MallocTests, ZeroMalloc) {
 }
 
 
+TEST_F(MallocTests, ZeroRealloc) {
+  void *ptr = NULL;
+  ptr = custom_realloc(NULL, 0);
+  ASSERT_NE(ptr, (void *) NULL);
+  ASSERT_GE(custom_malloc_usable_size(ptr), static_cast<size_t>(0));
+}
+
+
+TEST_F(MallocTests, ZeroCalloc) {
+  void *ptr = NULL;
+  ptr = calloc(0, 0);
+  ASSERT_NE(ptr, (void *) NULL);
+  ASSERT_GE(custom_malloc_usable_size(ptr), static_cast<size_t>(0));
+}
+
+
 TEST_F(MallocTests, SimpleMalloc) {
   char* ptr = (char*) custom_malloc(sizeof(char) * 16);
   ASSERT_NE(ptr, (void *) NULL);
@@ -285,4 +301,25 @@ TEST_F(MallocTests, ParallelCheck) {
   for (auto &thread : threads) {
     thread.join();
   }
+}
+
+
+TEST_F(MallocTests, GrowingRealloc) {
+  void *ptr = NULL;
+  size_t sz = 16;
+  for (uint64_t i = 0; i < 4096; i++) {
+    ptr = realloc(ptr, sz * i);
+    ASSERT_NE(ptr, (void *) NULL);
+    memset(ptr, 0, sz * i);
+  }
+}
+
+
+TEST_F(MallocTests, SimpleStrdup) {
+  char *from = reinterpret_cast<char *>(internal_malloc(sizeof(char) * 16));
+  memset(from, 'A', 15);
+  from[15] = 0;
+  char *to = internal_strdup(from);
+  ASSERT_NE(from, to);
+  ASSERT_EQ(strcmp(from, to), 0);
 }
