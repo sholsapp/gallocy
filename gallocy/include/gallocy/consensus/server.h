@@ -34,7 +34,7 @@ class GallocyServer : public ThreadedDaemon {
    * Creates, but does not start, a HTTP server. There can exist only one of
    * these objects in a well formed application and it is not copyable.
    *
-   * :param config: A gallocy configuration object.
+   * \param config A gallocy configuration object.
    */
   explicit GallocyServer(GallocyConfig &config) :
     config(config),
@@ -56,9 +56,9 @@ class GallocyServer : public ThreadedDaemon {
   /**
    * Read an HTTP request from a socket.
    *
-   * :param client_socket: The client's socket id.
-   * :param request: The string stream to write the request into.
-   * :returns: The request object.
+   * \param client_socket The client's socket id.
+   * \param request The string stream to write the request into.
+   * \return The request object.
    */
   Request *get_request(int client_socket);
   /**
@@ -69,8 +69,8 @@ class GallocyServer : public ThreadedDaemon {
    * request is done being handled, the :class:``RequestContext`` should be
    * freed.
    *
-   * :param arg: A heap``RequestContext`` argument.
-   * :returns: A null pointer.
+   * \param arg A heap``RequestContext`` argument.
+   * \return A null pointer.
    */
   static void *handle_entry(void *arg);
   /**
@@ -84,8 +84,8 @@ class GallocyServer : public ThreadedDaemon {
    * with the URI arguments and the request object itself. The route handler is
    * responsible for managing memory for all parameters passed to it.
    *
-   * :param client_socket: The client's socket id.
-   * :returns: A null pointer.
+   * \param client_socket The client's socket id.
+   * \return A null pointer.
    */
   void *handle(int client_socket, struct sockaddr_in client_name);
   /**
@@ -102,28 +102,28 @@ class GallocyServer : public ThreadedDaemon {
   /**
    * Routing table for routes known to this server.
    *
-   * See :class:`RoutingTable` for additional details.
+   * See \ref RoutingTable for additional details.
    */
   RoutingTable<HandlerFunction> routes;
   /**
    * Handle a request for /admin.
    *
-   * :param args: The route arguments.
-   * :param request: The request itself.
+   * \param args The route arguments.
+   * \param request The request itself.
    */
   Response *route_admin(RouteArguments *args, Request *request);
   /**
    * Handle a request for /raft/request_vote.
    *
-   * :param args: The route arguments.
-   * :param request: The request itself.
+   * \param args The route arguments.
+   * \param request The request itself.
    */
   Response *route_request_vote(RouteArguments *args, Request *request);
   /**
    * Handle a request for /raft/append_entries.
    *
-   * :param args: The route arguments.
-   * :param request: The request itself.
+   * \param args The route arguments.
+   * \param request The request itself.
    */
   Response *route_append_entries(RouteArguments *args, Request *request);
   /**
@@ -134,8 +134,8 @@ class GallocyServer : public ThreadedDaemon {
    *   This route is used for testing the Raft consensus algorithm and commits
    *   a dummy log entry to the log.
    *
-   * :param args: The route arguments.
-   * :param request: The request itself.
+   * \param args The route arguments.
+   * \param request The request itself.
    */
   Response *route_request(RouteArguments *args, Request *request);
 
