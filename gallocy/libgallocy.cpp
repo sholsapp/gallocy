@@ -29,8 +29,7 @@ extern "C" {
   }
 
   void* custom_malloc(size_t sz) {
-    void* ptr = heap.malloc(sz);
-    return ptr;
+    return heap.malloc(sz);
   }
 
   void custom_free(void* ptr) {
@@ -38,16 +37,7 @@ extern "C" {
   }
 
   void* custom_realloc(void* ptr, size_t sz) {
-    if (ptr == NULL) {
-      return custom_malloc(sz);
-    }
-    size_t min_size = heap.getSize(ptr);
-    void* buf = custom_malloc(sz);
-    if (buf != NULL) {
-      memcpy(buf, ptr, min_size);
-      custom_free(ptr);
-    }
-    return buf;
+    return heap.realloc(ptr, sz);
   }
 
   size_t custom_malloc_usable_size(void* ptr) {

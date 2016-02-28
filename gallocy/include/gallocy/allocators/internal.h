@@ -78,7 +78,7 @@ extern "C" {
   void *internal_realloc(void *ptr, size_t sz);
   char *internal_strdup(const char *ptr);
   void *internal_calloc(size_t num, size_t sz);
-
+  size_t internal_malloc_usable_size(void *ptr);
 }
 
 #endif  // GALLOCY_ALLOCATORS_INTERNAL_H_

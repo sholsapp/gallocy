@@ -50,4 +50,8 @@ extern "C" {
     return local_internal_memory.calloc(count, size);
   }
 
+  size_t internal_malloc_usable_size(void *ptr) {
+    return local_internal_memory.getSize(ptr);
+  }
+
 }
