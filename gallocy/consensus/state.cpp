@@ -120,6 +120,14 @@ RaftState GallocyState::get_state() {
 }
 
 
+void GallocyState::initialize_leader_state() {
+  for (auto peer : config.peer_list) {
+    next_index[peer] = commit_index + 1;
+    match_index[peer] = 0;
+  }
+}
+
+
 void GallocyState::set_state(RaftState new_state) {
     std::lock_guard<std::mutex> lock(access_lock);
 
@@ -139,7 +147,7 @@ void GallocyState::set_state(RaftState new_state) {
     if (new_state == RaftState::LEADER) {
         timer->set_step(LEADER_STEP_TIME);
         timer->set_jitter(LEADER_JITTER_TIME);
-        // TODO(sholsapp): Initialize the leader here for each peer.
+        initialize_leader_state();
     } else {
         timer->set_step(FOLLOWER_STEP_TIME);
         timer->set_jitter(FOLLOWER_JITTER_TIME);

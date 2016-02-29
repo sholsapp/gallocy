@@ -37,14 +37,14 @@ TEST(ConsensusStateTests, SetState) {
   GallocyConfig config(address, peer_list, 1234);
   GallocyState state(config);
   ASSERT_EQ(state.get_state(), RaftState::FOLLOWER);
-  ASSERT_EQ(state.get_timer()->get_step(), FOLLOWER_STEP_TIME);
-  ASSERT_EQ(state.get_timer()->get_jitter(), FOLLOWER_JITTER_TIME);
+  ASSERT_EQ(state.get_timer()->get_step(), static_cast<uint64_t>(FOLLOWER_STEP_TIME));
+  ASSERT_EQ(state.get_timer()->get_jitter(), static_cast<uint64_t>(FOLLOWER_JITTER_TIME));
   state.set_state(RaftState::CANDIDATE);
-  ASSERT_EQ(state.get_timer()->get_step(), FOLLOWER_STEP_TIME);
-  ASSERT_EQ(state.get_timer()->get_jitter(), FOLLOWER_JITTER_TIME);
+  ASSERT_EQ(state.get_timer()->get_step(), static_cast<uint64_t>(FOLLOWER_STEP_TIME));
+  ASSERT_EQ(state.get_timer()->get_jitter(), static_cast<uint64_t>(FOLLOWER_JITTER_TIME));
   state.set_state(RaftState::LEADER);
-  ASSERT_EQ(state.get_timer()->get_step(), LEADER_STEP_TIME);
-  ASSERT_EQ(state.get_timer()->get_jitter(), LEADER_JITTER_TIME);
+  ASSERT_EQ(state.get_timer()->get_step(), static_cast<uint64_t>(LEADER_STEP_TIME));
+  ASSERT_EQ(state.get_timer()->get_jitter(), static_cast<uint64_t>(LEADER_JITTER_TIME));
 }
 
 
@@ -62,6 +62,6 @@ TEST(ConsensusStateTests, AppendLogEntry) {
   GallocyState state(config);
   Command command("noop");
   LogEntry entry(command, 0);
-  int64_t index = state.get_log()->append_entry(entry);
+  uint64_t index = state.get_log()->append_entry(entry);
   ASSERT_EQ(index, static_cast<uint64_t>(0));
 }

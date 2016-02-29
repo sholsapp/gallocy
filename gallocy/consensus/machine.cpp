@@ -28,9 +28,8 @@ void *GallocyMachine::work() {
     std::unique_lock<std::mutex> lk(gallocy_state->get_timer_mutex());
     // Wait here indefinitely until the alarm expires.
     gallocy_state->get_timer_cv().wait(lk);
-    // If the timer expires the condition will be signaled, which indicates
-    // that our leader failed to contact us in a timely manner. When this
-    // happens, transition to a candidate state.
+    // If the timer expires, our leader failed to contact us in a timely
+    // manner, which indicates we need to start an election.
     if (gallocy_state->get_state() == RaftState::FOLLOWER) {
       gallocy_state->set_state(RaftState::CANDIDATE);
     }

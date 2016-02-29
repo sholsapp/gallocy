@@ -199,6 +199,7 @@ class GallocyState {
   std::mutex timed_out_mutex;
   GallocyConfig &config;
   RaftState state;
+  void initialize_leader_state();
 };
 
 #endif  // GALLOCY_CONSENSUS_STATE_H_
