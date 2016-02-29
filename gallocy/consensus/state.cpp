@@ -128,6 +128,12 @@ void GallocyState::initialize_leader_state() {
 }
 
 
+void GallocyState::finalize_leader_state() {
+    next_index.clear();
+    match_index.clear();
+}
+
+
 void GallocyState::set_state(RaftState new_state) {
     std::lock_guard<std::mutex> lock(access_lock);
 
@@ -145,10 +151,13 @@ void GallocyState::set_state(RaftState new_state) {
                 << ")");
 
     if (new_state == RaftState::LEADER) {
+        // We're the leader now
+        initialize_leader_state();
         timer->set_step(LEADER_STEP_TIME);
         timer->set_jitter(LEADER_JITTER_TIME);
-        initialize_leader_state();
     } else {
+        // We're a candidate or follower now
+        finalize_leader_state();
         timer->set_step(FOLLOWER_STEP_TIME);
         timer->set_jitter(FOLLOWER_JITTER_TIME);
     }

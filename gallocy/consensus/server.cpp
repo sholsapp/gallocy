@@ -102,6 +102,7 @@ Response *GallocyServer::route_append_entries(RouteArguments *args, Request *req
   uint64_t local_term = gallocy_state->get_current_term();
   bool success = false;
 
+  // Decode log entries from JSON payload
   for (auto entry_json : request_json["entries"]) {
     // TODO(sholsapp): Implicit conversion issue.
     gallocy::string tmp = entry_json["command"];
@@ -119,9 +120,11 @@ Response *GallocyServer::route_append_entries(RouteArguments *args, Request *req
         << ")");
     success = false;
   } else {
-    // if (leader_entries.size() > 0) {
-    //   LOG_INFO("Appending " << leader_entries.size() << " new entries!");
-    // }
+    if (leader_entries.size() > 0) {
+      LOG_INFO("Need to append " << leader_entries.size() << " new entries!");
+      // TODO(sholsapp): Use state object to append entries to the log, and
+      // report meaningful results on failure.
+    }
     success = true;
     gallocy_state->set_current_term(leader_term);
     gallocy_state->set_state(RaftState::FOLLOWER);
