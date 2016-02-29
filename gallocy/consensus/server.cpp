@@ -46,21 +46,21 @@ Response *GallocyServer::route_request_vote(RouteArguments *args, Request *reque
   uint64_t candidate_commit_index = request_json["commit_index"];
   uint64_t candidate_current_term = request_json["term"];
   uint64_t candidate_last_applied = request_json["last_applied"];
-  uint64_t candidate_voted_for = peer.get_canonical_id();
+  gallocy::common::Peer candidate_voted_for = peer;
   uint64_t local_commit_index = gallocy_state->get_commit_index();
   uint64_t local_current_term = gallocy_state->get_current_term();
   uint64_t local_last_applied = gallocy_state->get_last_applied();
-  uint64_t local_voted_for = gallocy_state->get_voted_for();
+  gallocy::common::Peer local_voted_for = gallocy_state->get_voted_for();
   bool granted = false;
 
   if (candidate_current_term < local_current_term) {
     granted = false;
-  } else if (local_voted_for == 0
+  } else if (local_voted_for == gallocy::common::Peer()
       || local_voted_for == candidate_voted_for) {
     if (candidate_last_applied >= local_last_applied
         && candidate_commit_index >= local_commit_index) {
       LOG_INFO("Granting vote to "
-          << utils::unparse_internet_address(candidate_voted_for)
+          << candidate_voted_for.get_string()
           << " in term " << candidate_current_term);
 
       gallocy_state->set_current_term(candidate_current_term);
@@ -125,7 +125,7 @@ Response *GallocyServer::route_append_entries(RouteArguments *args, Request *req
     success = true;
     gallocy_state->set_current_term(leader_term);
     gallocy_state->set_state(RaftState::FOLLOWER);
-    gallocy_state->set_voted_for(peer.get_canonical_id());
+    gallocy_state->set_voted_for(peer);
     gallocy_state->get_timer()->reset();
   }
   gallocy::json response_json = {

@@ -21,13 +21,13 @@ TEST(ConsensusStateTests, DefaultState) {
   gallocy::vector<gallocy::common::Peer> peer_list;
   GallocyConfig config(address, peer_list, 1234);
   GallocyState state(config);
-  ASSERT_EQ(state.get_commit_index(), 0);
-  ASSERT_EQ(state.get_current_term(), 0);
-  ASSERT_EQ(state.get_last_applied(), 0);
-  ASSERT_EQ(state.get_voted_for(), 0);
+  ASSERT_EQ(state.get_commit_index(), static_cast<uint64_t>(0));
+  ASSERT_EQ(state.get_current_term(), static_cast<uint64_t>(0));
+  ASSERT_EQ(state.get_last_applied(), static_cast<uint64_t>(0));
+  ASSERT_EQ(state.get_voted_for(), gallocy::common::Peer());
   ASSERT_EQ(state.get_state(), RaftState::FOLLOWER);
-  ASSERT_EQ(state.get_next_index(0), 0);
-  ASSERT_EQ(state.get_match_index(0), 0);
+  ASSERT_EQ(state.get_next_index(gallocy::common::Peer()), static_cast<uint64_t>(0));
+  ASSERT_EQ(state.get_match_index(gallocy::common::Peer()), static_cast<uint64_t>(0));
 }
 
 
@@ -63,5 +63,5 @@ TEST(ConsensusStateTests, AppendLogEntry) {
   Command command("noop");
   LogEntry entry(command, 0);
   int64_t index = state.get_log()->append_entry(entry);
-  ASSERT_EQ(index, 0);
+  ASSERT_EQ(index, static_cast<uint64_t>(0));
 }

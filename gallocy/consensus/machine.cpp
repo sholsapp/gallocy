@@ -8,6 +8,7 @@
 #include "gallocy/consensus/machine.h"
 #include "gallocy/entrypoint.h"
 #include "gallocy/models.h"
+#include "gallocy/peer.h"
 #include "gallocy/threads.h"
 #include "gallocy/utils/logging.h"
 #include "gallocy/utils/stringutils.h"
@@ -71,7 +72,7 @@ RaftState GallocyMachine::state_candidate() {
     return state_leader();
   } else {
     gallocy_state->get_timer()->reset();
-    gallocy_state->set_voted_for(0);
+    gallocy_state->set_voted_for(gallocy::common::Peer());
     return RaftState::CANDIDATE;
   }
 }

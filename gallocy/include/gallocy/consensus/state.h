@@ -8,6 +8,7 @@
 #include "gallocy/allocators/internal.h"
 #include "gallocy/consensus/log.h"
 #include "gallocy/consensus/timer.h"
+#include "gallocy/peer.h"
 #include "gallocy/utils/config.h"
 #include "gallocy/utils/logging.h"
 
@@ -21,7 +22,7 @@
 /**
  * The type to identifier peers.
  */
-using PeerId = uint64_t;
+using PeerId = gallocy::common::Peer;
 
 
 /**
@@ -53,7 +54,7 @@ class GallocyState {
  public:
   explicit GallocyState(GallocyConfig &config) :
       current_term(0),
-      voted_for(0),
+      voted_for(gallocy::common::Peer()),
       commit_index(0),
       last_applied(0),
       config(config) {

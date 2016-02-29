@@ -31,7 +31,7 @@ void GallocyState::set_current_term(uint64_t value) {
                 << value
                 << ". This is a logic error.");
     current_term = value;
-    voted_for = 0;
+    voted_for = gallocy::common::Peer();
 }
 
 
