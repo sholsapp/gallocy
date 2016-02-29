@@ -97,8 +97,8 @@ bool GallocyClient::send_append_entries() {
   // TODO(sholsapp): How we handle this is busted and needs to be refactored so
   // that the cv is usable here. This is also blocking, which is probably bad?
   uint64_t votes = CurlClient().multirequest(requests, append_entries_callback, nullptr, nullptr);
-
-  return true;
+  // TODO(sholsapp): What is the correct value to return true here?
+  return votes > 0;
 }
 
 
@@ -129,6 +129,6 @@ bool GallocyClient::send_append_entries(const gallocy::vector<LogEntry> &entries
   // TODO(sholsapp): How we handle this is busted and needs to be refactored so
   // that the cv is usable here. This is also blocking, which is probably bad?
   uint64_t votes = CurlClient().multirequest(requests, append_entries_callback, nullptr, nullptr);
-
-  return true;
+  // TODO(sholsapp): What is the correct value to return true here?
+  return votes > 0;
 }
