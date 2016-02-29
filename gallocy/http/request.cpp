@@ -6,7 +6,7 @@
 #include "gallocy/utils/stringutils.h"
 
 
-Request::Request(gallocy::string raw) {
+gallocy::http::Request::Request(gallocy::string raw) {
   // Parse the raw request into lines
   gallocy::vector<gallocy::string> lines;
   utils::split(raw, '\n', lines);
@@ -41,14 +41,14 @@ Request::Request(gallocy::string raw) {
 }
 
 
-Request::Request(gallocy::string method, const gallocy::common::Peer &peer, gallocy::string uri) {
+gallocy::http::Request::Request(gallocy::string method, const gallocy::common::Peer &peer, gallocy::string uri) {
   this->method = method;
   this->peer = peer;
   this->uri = uri;
 }
 
 
-Request::Request(gallocy::string method, const gallocy::common::Peer &peer, gallocy::string uri,
+gallocy::http::Request::Request(gallocy::string method, const gallocy::common::Peer &peer, gallocy::string uri,
                  gallocy::string body, Headers headers) {
   this->method = method;
   this->peer = peer;
@@ -64,7 +64,7 @@ Request::Request(gallocy::string method, const gallocy::common::Peer &peer, gall
  *
  * :returns: The JSON body.
  */
-gallocy::json &Request::get_json() {
+gallocy::json &gallocy::http::Request::get_json() {
   if (json == gallocy::json(nullptr)
       && headers.count("Content-Type")
       && headers["Content-Type"] == "application/json") {
@@ -79,7 +79,7 @@ gallocy::json &Request::get_json() {
  *
  * :returns: The request parameters.
  */
-Request::Parameters &Request::get_params() {
+gallocy::http::Request::Parameters &gallocy::http::Request::get_params() {
   if (uri.find("?") == std::string::npos)
     return params;
   gallocy::string param_string = uri.substr(uri.find("?") + 1, uri.length());
@@ -94,7 +94,7 @@ Request::Parameters &Request::get_params() {
 }
 
 
-gallocy::string Request::get_url() const {
+gallocy::string gallocy::http::Request::get_url() const {
   gallocy::stringstream s;
   s << "http://"
     << peer.get_string()

@@ -49,19 +49,19 @@ std::string RESPONSE(
 
 
 TEST(RequestTests, Constructors) {
-  Request request1(GET_REQUEST);
+  gallocy::http::Request request1(GET_REQUEST);
   ASSERT_EQ(request1.method, "GET");
 #if 0
-  Request request2 = request1;
+  gallocy::http::Request request2 = request1;
   ASSERT_EQ(request2.method, "GET");
-  Request request3(request1);
+  gallocy::http::Request request3(request1);
   ASSERT_EQ(request3.method, "GET");
 #endif
 }
 
 
 TEST(RequestTests, SimpleGetRequest) {
-  Request request(GET_REQUEST);
+  gallocy::http::Request request(GET_REQUEST);
   ASSERT_EQ(request.method, "GET");
   ASSERT_EQ(request.uri, "/get");
   ASSERT_EQ(request.protocol, "HTTP/1.1");
@@ -72,7 +72,7 @@ TEST(RequestTests, SimpleGetRequest) {
 
 
 TEST(RequestTests, SimpleGetRequestQuery) {
-  Request request(GET_REQUEST_QUERY);
+  gallocy::http::Request request(GET_REQUEST_QUERY);
   ASSERT_EQ(request.method, "GET");
   ASSERT_EQ(request.uri, "/get?query=1");
   ASSERT_EQ(request.protocol, "HTTP/1.1");
@@ -84,7 +84,7 @@ TEST(RequestTests, SimpleGetRequestQuery) {
 
 
 TEST(RequestTests, SimplePostRequest) {
-  Request request(POST_REQUEST);
+  gallocy::http::Request request(POST_REQUEST);
   ASSERT_EQ(request.method, "POST");
   ASSERT_EQ(request.uri, "/post");
   ASSERT_EQ(request.protocol, "HTTP/1.1");
@@ -100,16 +100,16 @@ TEST(RequestTests, SimplePostRequest) {
 
 
 TEST(ResponseTests, Constructors) {
-  Response response1;
+  gallocy::http::Response response1;
   response1.status_code = 200;
   response1.headers["foo"] = "bar";
   ASSERT_EQ(response1.status_code, static_cast<uint64_t>(200));
   ASSERT_EQ(response1.headers["foo"], "bar");
 #if 0
-  Response response2 = response1;
+  gallocy::http::Response response2 = response1;
   ASSERT_EQ(response2.status_code, static_cast<uint64_t>(200));
   ASSERT_EQ(response2.headers["foo"], "bar");
-  Response response3(response1);
+  gallocy::http::Response response3(response1);
   ASSERT_EQ(response3.status_code, static_cast<uint64_t>(200));
   ASSERT_EQ(response3.headers["foo"], "bar");
 #endif
@@ -117,7 +117,7 @@ TEST(ResponseTests, Constructors) {
 
 
 TEST(ResponseTests, SimpleResponse) {
-  Response response;
+  gallocy::http::Response response;
   response.status_code = 200;
   response.headers["Server"] = "Gallocy-Httpd";
   response.headers["Content-Type"] = "application/json";
@@ -131,10 +131,10 @@ TEST(ResponseTests, SimpleResponse) {
 
 TEST(RoutingTableTests, Functors) {
   using ArgList = gallocy::vector<gallocy::string>;
-  RoutingTable<std::function<Response *(ArgList *, Request *)> > t;
-  Response *response =
-    new (internal_malloc(sizeof(Response))) Response();
-  auto f = [response](ArgList *a, Request *request) {
+  RoutingTable<std::function<gallocy::http::Response *(ArgList *, gallocy::http::Request *)> > t;
+  gallocy::http::Response *response =
+    new (internal_malloc(sizeof(gallocy::http::Response))) gallocy::http::Response();
+  auto f = [response](ArgList *a, gallocy::http::Request *request) {
     gallocy::stringstream s;
     s << a->size();
     response->body = s.str();

@@ -8,6 +8,11 @@
 #include "gallocy/http/request.h"
 #include "gallocy/http/response.h"
 
+
+namespace gallocy {
+
+namespace http {
+
 /**
  * An abstract request client.
  *
@@ -60,6 +65,10 @@ class CurlClient : public AbstractClient {
                         std::condition_variable *cv,
                         std::mutex *cv_m);
 };
+
+}  // namespace http
+
+}  // namespace gallocy
 
 
 #endif  // GALLOCY_HTTP_CLIENT_H_

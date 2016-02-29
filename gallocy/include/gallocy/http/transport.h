@@ -1,15 +1,20 @@
 #ifndef GALLOCY_HTTP_TRANSPORT_H_
 #define GALLOCY_HTTP_TRANSPORT_H_
 
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <sys/time.h>
 #include <arpa/inet.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <sys/types.h>
 
 #include "gallocy/utils/stringutils.h"
 
 #define UDP_TIMEOUT_100_MS 100000  // 100 Milliseconds
 #define UDP_BUFSIZE 65507  // Largest IPV4 packet (65,535) - UDP header (8) - IPv4 Header(20)
+
+
+namespace gallocy {
+
+namespace http {
 
 /**
  * An abstract transport layer.
@@ -109,5 +114,9 @@ class RDPTransport: public AbstractTransport {
    */
   virtual void write(gallocy::string http) = 0;
 };
+
+}  // namespace http
+
+}  // namespace gallocy
 
 #endif  // GALLOCY_HTTP_TRANSPORT_H_

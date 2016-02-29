@@ -28,8 +28,8 @@ void error_die(const char *sc) {
 }
 
 
-Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
-  Response *response = new (internal_malloc(sizeof(Response))) Response();
+gallocy::http::Response *GallocyServer::route_admin(RouteArguments *args, gallocy::http::Request *request) {
+  gallocy::http::Response *response = new (internal_malloc(sizeof(gallocy::http::Response))) gallocy::http::Response();
   response->status_code = 200;
   response->headers["Server"] = "Gallocy-Httpd";
   response->headers["Content-Type"] = "application/json";
@@ -40,7 +40,7 @@ Response *GallocyServer::route_admin(RouteArguments *args, Request *request) {
 }
 
 
-Response *GallocyServer::route_request_vote(RouteArguments *args, Request *request) {
+gallocy::http::Response *GallocyServer::route_request_vote(RouteArguments *args, gallocy::http::Request *request) {
   gallocy::common::Peer peer = request->peer;
   gallocy::json request_json = request->get_json();
   uint64_t candidate_commit_index = request_json["commit_index"];
@@ -80,7 +80,7 @@ Response *GallocyServer::route_request_vote(RouteArguments *args, Request *reque
     { "term", gallocy_state->get_current_term() },
     { "vote_granted", granted },
   };
-  Response *response = new (internal_malloc(sizeof(Response))) Response();
+  gallocy::http::Response *response = new (internal_malloc(sizeof(gallocy::http::Response))) gallocy::http::Response();
   response->headers["Server"] = "Gallocy-Httpd";
   response->headers["Content-Type"] = "application/json";
   response->status_code = 200;
@@ -91,7 +91,7 @@ Response *GallocyServer::route_request_vote(RouteArguments *args, Request *reque
 }
 
 
-Response *GallocyServer::route_append_entries(RouteArguments *args, Request *request) {
+gallocy::http::Response *GallocyServer::route_append_entries(RouteArguments *args, gallocy::http::Request *request) {
   gallocy::common::Peer peer = request->peer;
   gallocy::json request_json = request->get_json();
   gallocy::vector<LogEntry> leader_entries;
@@ -138,7 +138,7 @@ Response *GallocyServer::route_append_entries(RouteArguments *args, Request *req
     { "term", gallocy_state->get_current_term() },
     { "success", success },
   };
-  Response *response = new (internal_malloc(sizeof(Response))) Response();
+  gallocy::http::Response *response = new (internal_malloc(sizeof(gallocy::http::Response))) gallocy::http::Response();
   response->headers["Server"] = "Gallocy-Httpd";
   response->headers["Content-Type"] = "application/json";
   response->status_code = 200;
@@ -151,7 +151,7 @@ Response *GallocyServer::route_append_entries(RouteArguments *args, Request *req
 
 // TODO(sholsapp): This is just a route that we can hit to trigger an append
 // entries action. Once we're done testing, we can remove this route.
-Response *GallocyServer::route_request(RouteArguments *args, Request *request) {
+gallocy::http::Response *GallocyServer::route_request(RouteArguments *args, gallocy::http::Request *request) {
   Command command("hello world");
   LogEntry entry(command, gallocy_state->get_current_term());
   gallocy::vector<LogEntry> entries;
@@ -159,7 +159,7 @@ Response *GallocyServer::route_request(RouteArguments *args, Request *request) {
 
   gallocy_client->send_append_entries(entries);
 
-  Response *response = new (internal_malloc(sizeof(Response))) Response();
+  gallocy::http::Response *response = new (internal_malloc(sizeof(gallocy::http::Response))) gallocy::http::Response();
   response->headers["Server"] = "Gallocy-Httpd";
   response->headers["Content-Type"] = "application/json";
   response->status_code = 200;
@@ -257,8 +257,8 @@ void *GallocyServer::handle_entry(void *arg) {
 
 
 void *GallocyServer::handle(int client_socket, struct sockaddr_in client_name) {
-  Request *request = get_request(client_socket);
-  Response *response = routes.match(request->uri)(request);
+  gallocy::http::Request *request = get_request(client_socket);
+  gallocy::http::Response *response = routes.match(request->uri)(request);
 
   if (send(client_socket, response->str().c_str(), response->size(), 0) == -1) {
     error_die("send");
@@ -287,7 +287,7 @@ void *GallocyServer::handle(int client_socket, struct sockaddr_in client_name) {
 }
 
 
-Request *GallocyServer::get_request(int client_socket) {
+gallocy::http::Request *GallocyServer::get_request(int client_socket) {
   gallocy::stringstream request;
   int n;
   char buf[512] = {0};
@@ -298,5 +298,5 @@ Request *GallocyServer::get_request(int client_socket) {
     n = recv(client_socket, buf, 512, MSG_DONTWAIT);
     request << buf;
   }
-  return new (internal_malloc(sizeof(Request))) Request(request.str());
+  return new (internal_malloc(sizeof(gallocy::http::Request))) gallocy::http::Request(request.str());
 }

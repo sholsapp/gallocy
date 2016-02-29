@@ -58,7 +58,7 @@ class ConsensusServerTests: public ::testing::Test {
     // and then executes one last request to prompt the server to actually shut
     // down. Fix by using select in the server with a timeout.
     std::thread([&]{ gallocy_server->stop(); }).detach();
-    Response *rsp = CurlClient().request(Request("GET", gallocy::common::Peer("127.0.0.1", TEST_PORT), "/admin"));
+    gallocy::http::Response *rsp = gallocy::http::CurlClient().request(gallocy::http::Request("GET", gallocy::common::Peer("127.0.0.1", TEST_PORT), "/admin"));
     rsp->~Response();
     internal_free(rsp);
 
@@ -89,11 +89,11 @@ class ConsensusServerTests: public ::testing::Test {
 
 
 TEST_F(ConsensusServerTests, StartStop) {
-  gallocy::vector<Request> requests;
+  gallocy::vector<gallocy::http::Request> requests;
   gallocy::map<gallocy::string, gallocy::string> headers;
-  requests.push_back(Request("POST", gallocy::common::Peer("127.0.0.1", TEST_PORT), "/admin", "", headers));
-  uint64_t rsp = CurlClient().multirequest(requests,
-      [](const Response &rsp) {
+  requests.push_back(gallocy::http::Request("POST", gallocy::common::Peer("127.0.0.1", TEST_PORT), "/admin", "", headers));
+  uint64_t rsp = gallocy::http::CurlClient().multirequest(requests,
+      [](const gallocy::http::Response &rsp) {
         return true;
       }, nullptr, nullptr);
   ASSERT_GE(rsp, static_cast<uint64_t>(0));

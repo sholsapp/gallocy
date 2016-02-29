@@ -6,6 +6,10 @@
 #include "gallocy/allocators/internal.h"
 #include "gallocy/peer.h"
 
+namespace gallocy {
+
+namespace http {
+
 /**
  * A HTTP request.
  */
@@ -82,5 +86,9 @@ class Request {
   gallocy::json json;
   Parameters params;
 };
+
+}  // namespace http
+
+}  // namespace gallocy
 
 #endif  // GALLOCY_HTTP_REQUEST_H_

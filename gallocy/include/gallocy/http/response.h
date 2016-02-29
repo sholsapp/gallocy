@@ -6,6 +6,10 @@
 #include "gallocy/allocators/internal.h"
 #include "gallocy/peer.h"
 
+namespace gallocy {
+
+namespace http {
+
 /**
  * A HTTP response.
  */
@@ -30,5 +34,9 @@ class Response {
   uint64_t size();
   uint64_t status_code;
 };
+
+}  // namespace http
+
+}  // namespace gallocy
 
 #endif  // GALLOCY_HTTP_RESPONSE_H_

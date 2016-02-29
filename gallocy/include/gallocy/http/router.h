@@ -37,7 +37,7 @@ class RoutingTable {
   ~RoutingTable() {
     internal_free(table);
   }
-  std::function<Response *(Request *)> match(gallocy::string path);
+  std::function<gallocy::http::Response *(gallocy::http::Request *)> match(gallocy::string path);
   void dump_table();
   void register_handler(gallocy::string route, HandlerFunction func);
 
@@ -134,7 +134,7 @@ inline void RoutingTable<HandlerFunction>::register_handler(gallocy::string rout
  * :param path: The path to look up the handler for.
  */
 template <typename HandlerFunction>
-inline std::function<Response *(Request *)> RoutingTable<HandlerFunction>::match(gallocy::string path) {
+inline std::function<gallocy::http::Response *(gallocy::http::Request *)> RoutingTable<HandlerFunction>::match(gallocy::string path) {
   gallocy::vector<gallocy::string> *args =
     new (internal_malloc(sizeof(gallocy::vector<gallocy::string>))) gallocy::vector<gallocy::string>();
   gallocy::vector<gallocy::string> path_parts;

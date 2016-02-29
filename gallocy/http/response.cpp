@@ -8,7 +8,7 @@
 /**
  * Create a response.
  */
-Response::Response() {
+gallocy::http::Response::Response() {
   protocol = "HTTP/1.0";
 }
 
@@ -21,7 +21,7 @@ Response::Response() {
  *
  * :returns: The response as a string.
  */
-gallocy::string Response::str() {
+gallocy::string gallocy::http::Response::str() {
   gallocy::stringstream out;
   out << protocol << " " << status_code << " " << "OK" << "\r\n";
   for (auto it : headers) {
@@ -40,13 +40,13 @@ gallocy::string Response::str() {
  *
  * :returns: The size of the response in bytes.
  */
-uint64_t Response::size() {
+uint64_t gallocy::http::Response::size() {
   return str().size();
 }
 
 /**
  * Print the response as a string.
  */
-std::ostream& operator<<(std::ostream& stream, const Response& response) {
-  return stream << "Response(" << response.status_code << ")";
+std::ostream& operator<<(std::ostream& stream, const gallocy::http::Response& response) {
+  return stream << "gallocy::http::Response(" << response.status_code << ")";
 }

@@ -12,7 +12,7 @@
 #include "restclient.h"  // NOLINT
 
 
-Response *CurlClient::request(const Request &request) {
+gallocy::http::Response *gallocy::http::CurlClient::request(const gallocy::http::Request &request) {
   RestClient::Response restclient_response;
   if (request.method.compare("GET") == 0) {
     restclient_response = RestClient::get(request.get_url().c_str());
@@ -24,7 +24,7 @@ Response *CurlClient::request(const Request &request) {
     abort();
   }
 
-  Response *response = new (internal_malloc(sizeof(Response))) Response();
+  gallocy::http::Response *response = new (internal_malloc(sizeof(gallocy::http::Response))) gallocy::http::Response();
   response->status_code = restclient_response.code;
   for (auto header : restclient_response.headers) {
     response->headers[header.first] = header.second;
@@ -36,8 +36,8 @@ Response *CurlClient::request(const Request &request) {
 }
 
 
-uint64_t CurlClient::multirequest(const gallocy::vector<Request> requests,
-                                  std::function<bool(const Response &)> callback,
+uint64_t gallocy::http::CurlClient::multirequest(const gallocy::vector<gallocy::http::Request> requests,
+                                  std::function<bool(const gallocy::http::Response &)> callback,
                                   std::condition_variable *cv,
                                   std::mutex *cv_m) {
   int rsp_count = 0;
@@ -55,7 +55,7 @@ uint64_t CurlClient::multirequest(const gallocy::vector<Request> requests,
   for (auto &request : requests) {
     std::future<uint64_t> future =
       std::async(std::launch::async, [&request, &peer_majority, &rsp_count, &rsp_count_lock, &rsp_have_majority, &callback]() {
-        Response *rsp = CurlClient().request(request);
+        gallocy::http::Response *rsp = gallocy::http::CurlClient().request(request);
         uint64_t status_code = rsp->status_code;
 
         // CHECK if we have a majority of repsonses and signal if ready.

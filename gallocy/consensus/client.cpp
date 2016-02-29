@@ -9,7 +9,7 @@
 #include "gallocy/http/response.h"
 
 
-std::function<bool(const Response &)> request_vote_callback = [](const Response &rsp) {
+std::function<bool(const gallocy::http::Response &)> request_vote_callback = [](const gallocy::http::Response &rsp) {
   if (rsp.status_code == 200) {
     gallocy::string body = rsp.body.c_str();
     gallocy::json response_json = gallocy::json::parse(body.c_str());
@@ -39,22 +39,22 @@ bool GallocyClient::send_request_vote() {
 
   // TODO(sholsapp): How we handle this is busted and needs to be refactored so
   // that the cv is usable here. This is also blocking, which is probably bad?
-  gallocy::vector<Request> requests;
+  gallocy::vector<gallocy::http::Request> requests;
   gallocy::map<gallocy::string, gallocy::string> headers;
   headers["Content-Type"] = "application/json";
   for (auto &peer : config.peer_list) {
-    requests.push_back(Request("POST", peer, "/raft/request_vote", j.dump(), headers));
+    requests.push_back(gallocy::http::Request("POST", peer, "/raft/request_vote", j.dump(), headers));
   }
   // TODO(sholsapp): How we handle this is busted and needs to be refactored so
   // that the cv is usable here. This is also blocking, which is probably bad?
-  uint64_t votes = CurlClient().multirequest(requests, request_vote_callback, nullptr, nullptr);
+  uint64_t votes = gallocy::http::CurlClient().multirequest(requests, request_vote_callback, nullptr, nullptr);
 
   LOG_INFO("Received votes from " << votes << "/" << config.peer_list.size() << " peers");
   return votes >= config.peer_list.size() / 2;
 }
 
 
-std::function<bool(const Response &)> append_entries_callback = [](const Response &rsp) {
+std::function<bool(const gallocy::http::Response &)> append_entries_callback = [](const gallocy::http::Response &rsp) {
   if (rsp.status_code == 200) {
     gallocy::string body = rsp.body.c_str();
     gallocy::json response_json = gallocy::json::parse(body.c_str());
@@ -98,14 +98,14 @@ bool GallocyClient::send_append_entries(const gallocy::vector<LogEntry> &entries
 
   // TODO(sholsapp): Append the log entry here.
 
-  gallocy::vector<Request> requests;
+  gallocy::vector<gallocy::http::Request> requests;
   gallocy::map<gallocy::string, gallocy::string> headers;
   headers["Content-Type"] = "application/json";
   for (auto &peer : config.peer_list)
-    requests.push_back(Request("POST", peer, "/raft/append_entries", j.dump(), headers));
+    requests.push_back(gallocy::http::Request("POST", peer, "/raft/append_entries", j.dump(), headers));
   // TODO(sholsapp): How we handle this is busted and needs to be refactored so
   // that the cv is usable here. This is also blocking, which is probably bad?
-  uint64_t votes = CurlClient().multirequest(requests, append_entries_callback, nullptr, nullptr);
+  uint64_t votes = gallocy::http::CurlClient().multirequest(requests, append_entries_callback, nullptr, nullptr);
   LOG_DEBUG("Received " << votes << " for append entries");
 
   // TODO(sholsapp): Commit and apply the log entry here.

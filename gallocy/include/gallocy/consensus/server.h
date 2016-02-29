@@ -27,7 +27,7 @@ void error_die(const char *);
 class GallocyServer : public ThreadedDaemon {
  public:
   using RouteArguments = gallocy::vector<gallocy::string>;
-  using HandlerFunction = std::function<Response *(RouteArguments *, Request *)>;
+  using HandlerFunction = std::function<gallocy::http::Response *(RouteArguments *, gallocy::http::Request *)>;
   /**
    * Construct a HTTP server.
    *
@@ -42,13 +42,13 @@ class GallocyServer : public ThreadedDaemon {
     port(config.port),
     server_socket(-1) {
       routes.register_handler("/admin",
-        [this](RouteArguments *args, Request *request) { return route_admin(args, request); });
+        [this](RouteArguments *args, gallocy::http::Request *request) { return route_admin(args, request); });
       routes.register_handler("/raft/request_vote",
-        [this](RouteArguments *args, Request *request) { return route_request_vote(args, request); });
+        [this](RouteArguments *args, gallocy::http::Request *request) { return route_request_vote(args, request); });
       routes.register_handler("/raft/append_entries",
-        [this](RouteArguments *args, Request *request) { return route_append_entries(args, request); });
+        [this](RouteArguments *args, gallocy::http::Request *request) { return route_append_entries(args, request); });
       routes.register_handler("/raft/request",
-        [this](RouteArguments *args, Request *request) { return route_request(args, request); });
+        [this](RouteArguments *args, gallocy::http::Request *request) { return route_request(args, request); });
   }
   GallocyServer(const GallocyServer &) = delete;
   GallocyServer &operator=(const GallocyServer &) = delete;
@@ -61,7 +61,7 @@ class GallocyServer : public ThreadedDaemon {
    * \param request The string stream to write the request into.
    * \return The request object.
    */
-  Request *get_request(int client_socket);
+  gallocy::http::Request *get_request(int client_socket);
   /**
    * A static helper for handling requests.
    *
@@ -112,21 +112,21 @@ class GallocyServer : public ThreadedDaemon {
    * \param args The route arguments.
    * \param request The request itself.
    */
-  Response *route_admin(RouteArguments *args, Request *request);
+  gallocy::http::Response *route_admin(RouteArguments *args, gallocy::http::Request *request);
   /**
    * Handle a request for /raft/request_vote.
    *
    * \param args The route arguments.
    * \param request The request itself.
    */
-  Response *route_request_vote(RouteArguments *args, Request *request);
+  gallocy::http::Response *route_request_vote(RouteArguments *args, gallocy::http::Request *request);
   /**
    * Handle a request for /raft/append_entries.
    *
    * \param args The route arguments.
    * \param request The request itself.
    */
-  Response *route_append_entries(RouteArguments *args, Request *request);
+  gallocy::http::Response *route_append_entries(RouteArguments *args, gallocy::http::Request *request);
   /**
    * Handle a request for /raft/request.
    *
@@ -138,7 +138,7 @@ class GallocyServer : public ThreadedDaemon {
    * \param args The route arguments.
    * \param request The request itself.
    */
-  Response *route_request(RouteArguments *args, Request *request);
+  gallocy::http::Response *route_request(RouteArguments *args, gallocy::http::Request *request);
 
  private:
   GallocyConfig &config;
