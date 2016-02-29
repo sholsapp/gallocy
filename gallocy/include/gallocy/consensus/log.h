@@ -74,13 +74,7 @@ class GallocyLog {
    * \return The index of the last committed log entry, or -1 if no committed
    * log entry exists.
    */
-  int64_t get_previous_log_index() {
-    for (int i = log.size() - 1; i >= 0; ++i) {
-    if (!log[i].committed)
-      return i;
-    }
-    return 0;
-  }
+  int64_t get_previous_log_index();
   /**
    * Get the term of the last committed log entry.
    *
@@ -90,23 +84,14 @@ class GallocyLog {
    * \return The term of the last committed log entry, or -1 if no committed
    * log entry exists.
    */
-  int64_t get_previous_log_term() {
-    for (int i = log.size() - 1; i >= 0; ++i) {
-    if (!log[i].committed)
-      return log[i].term;
-    }
-    return 0;
-  }
+  int64_t get_previous_log_term();
   /**
    * Append an entry to the log.
    *
    * \param entry The log entry to append to the log.
    * \return The index at which the entry was inserted.
    */
-  int64_t append_entry(const LogEntry &entry) {
-    log.push_back(entry);
-    return log.size() - 1;
-  }
+  int64_t append_entry(const LogEntry &entry);
 
  public:
   gallocy::vector<LogEntry> log;

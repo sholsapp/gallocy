@@ -35,6 +35,7 @@ set(GALLOCY_CORE_SRC
   allocators/internal.cpp
   allocators/shared.cpp
   consensus/client.cpp
+  consensus/log.cpp
   consensus/machine.cpp
   consensus/server.cpp
   consensus/state.cpp
