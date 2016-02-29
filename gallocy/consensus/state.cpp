@@ -35,13 +35,13 @@ void gallocy::consensus::GallocyState::set_current_term(uint64_t value) {
 }
 
 
-gallocy::consensus::PeerId gallocy::consensus::GallocyState::get_voted_for() {
+gallocy::common::Peer gallocy::consensus::GallocyState::get_voted_for() {
     std::lock_guard<std::mutex> lock(access_lock);
     return voted_for;
 }
 
 
-void gallocy::consensus::GallocyState::set_voted_for(gallocy::consensus::PeerId value) {
+void gallocy::consensus::GallocyState::set_voted_for(gallocy::common::Peer value) {
     std::lock_guard<std::mutex> lock(access_lock);
     voted_for = value;
 }
@@ -71,25 +71,25 @@ void gallocy::consensus::GallocyState::set_last_applied(uint64_t value) {
 }
 
 
-uint64_t gallocy::consensus::GallocyState::get_next_index(gallocy::consensus::PeerId peer) {
+uint64_t gallocy::consensus::GallocyState::get_next_index(gallocy::common::Peer peer) {
     std::lock_guard<std::mutex> lock(access_lock);
     return next_index[peer];
 }
 
 
-void gallocy::consensus::GallocyState::set_next_index(gallocy::consensus::PeerId peer, uint64_t value) {
+void gallocy::consensus::GallocyState::set_next_index(gallocy::common::Peer peer, uint64_t value) {
     std::lock_guard<std::mutex> lock(access_lock);
     next_index[peer] = value;
 }
 
 
-uint64_t gallocy::consensus::GallocyState::get_match_index(gallocy::consensus::PeerId peer) {
+uint64_t gallocy::consensus::GallocyState::get_match_index(gallocy::common::Peer peer) {
     std::lock_guard<std::mutex> lock(access_lock);
     return match_index[peer];
 }
 
 
-void gallocy::consensus::GallocyState::set_match_index(gallocy::consensus::PeerId peer, uint64_t value) {
+void gallocy::consensus::GallocyState::set_match_index(gallocy::common::Peer peer, uint64_t value) {
     std::lock_guard<std::mutex> lock(access_lock);
     match_index[peer] = value;
 }

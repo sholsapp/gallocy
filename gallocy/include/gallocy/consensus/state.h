@@ -23,12 +23,6 @@ namespace gallocy {
 namespace consensus {
 
 /**
- * The type to identifier peers.
- */
-using PeerId = gallocy::common::Peer;
-
-
-/**
  * Raft states.
  */
 enum RaftState {
@@ -89,11 +83,11 @@ class GallocyState {
   /**
    * Get candidate that received vote in current term.
    */
-  PeerId get_voted_for();
+  gallocy::common::Peer get_voted_for();
   /**
    * Set candidate that received vote in current term.
    */
-  void set_voted_for(PeerId value);
+  void set_voted_for(gallocy::common::Peer value);
   /**
    * Get the commit index.
    */
@@ -113,19 +107,19 @@ class GallocyState {
   /**
    * Get index of the next log entry to send to peer.
    */
-  uint64_t get_next_index(PeerId peer);
+  uint64_t get_next_index(gallocy::common::Peer peer);
   /**
    * Set index of the next log entry to send to peer.
    */
-  void set_next_index(PeerId peer, uint64_t value);
+  void set_next_index(gallocy::common::Peer peer, uint64_t value);
   /**
    * Get index of highest log entry known to be replicated on peer.
    */
-  uint64_t get_match_index(PeerId peer);
+  uint64_t get_match_index(gallocy::common::Peer peer);
   /**
    * Set index of highest log entry known to be replicated on peer.
    */
-  void set_match_index(PeerId peer, uint64_t value);
+  void set_match_index(gallocy::common::Peer peer, uint64_t value);
   /**
    * Get the state machine log.
    */
@@ -161,7 +155,7 @@ class GallocyState {
   /**
    * The candidate identifier that received vote in current term.
    */
-  PeerId voted_for;
+  gallocy::common::Peer voted_for;
   /**
    * The replicated log.
    *
@@ -180,11 +174,11 @@ class GallocyState {
   /**
    * Mapping of peer to next log entry to send to the peer.
    */
-  gallocy::map<PeerId, uint64_t> next_index;
+  gallocy::map<gallocy::common::Peer, uint64_t> next_index;
   /**
    * Mapping of peer to highest log entry known to be replicated on the peer.
    */
-  gallocy::map<PeerId, uint64_t> match_index;
+  gallocy::map<gallocy::common::Peer, uint64_t> match_index;
   /**
    * A lock to synchronize all get/set access to private member data.
    */
