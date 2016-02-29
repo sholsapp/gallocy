@@ -290,6 +290,7 @@ class GallocyState {
     if (new_state == RaftState::LEADER) {
       timer->set_step(LEADER_STEP_TIME);
       timer->set_jitter(LEADER_JITTER_TIME);
+      // TODO(sholsapp): Initialize the leader here for each peer.
     } else {
       timer->set_step(FOLLOWER_STEP_TIME);
       timer->set_jitter(FOLLOWER_JITTER_TIME);

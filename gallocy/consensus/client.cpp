@@ -72,33 +72,8 @@ std::function<bool(const Response &)> append_entries_callback = [](const Respons
 
 
 bool GallocyClient::send_append_entries() {
-  uint64_t leader_term = gallocy_state->get_current_term();
-  // uint64_t leader_last_applied = gallocy_state->get_last_applied();
-  uint64_t leader_commit_index = gallocy_state->get_commit_index();
-  uint64_t leader_prev_log_index = gallocy_state->get_log()->get_previous_log_index();
-  uint64_t leader_prev_log_term = gallocy_state->get_log()->get_previous_log_term();
-
-  gallocy::json j = {
-    // A heartbeat request is an "append entries" with no entries.
-    { "entries", gallocy::json::array() },
-    { "leader_commit", leader_commit_index },
-    { "previous_log_index", leader_prev_log_index },
-    { "previous_log_term", leader_prev_log_term },
-    { "term", leader_term },
-  };
-
-  // TODO(sholsapp): How we handle this is busted and needs to be refactored so
-  // that the cv is usable here. This is also blocking, which is probably bad?
-  gallocy::vector<Request> requests;
-  gallocy::map<gallocy::string, gallocy::string> headers;
-  headers["Content-Type"] = "application/json";
-  for (auto &peer : config.peer_list)
-    requests.push_back(Request("POST", peer, "/raft/append_entries", j.dump(), headers));
-  // TODO(sholsapp): How we handle this is busted and needs to be refactored so
-  // that the cv is usable here. This is also blocking, which is probably bad?
-  uint64_t votes = CurlClient().multirequest(requests, append_entries_callback, nullptr, nullptr);
-  LOG_DEBUG("Received " << votes << " for append entries");
-  return true;
+  gallocy::vector<LogEntry> empty;
+  return send_append_entries(empty);
 }
 
 
@@ -121,6 +96,8 @@ bool GallocyClient::send_append_entries(const gallocy::vector<LogEntry> &entries
     j["entries"].push_back(entry.to_json());
   }
 
+  // TODO(sholsapp): Append the log entry here.
+
   gallocy::vector<Request> requests;
   gallocy::map<gallocy::string, gallocy::string> headers;
   headers["Content-Type"] = "application/json";
@@ -130,5 +107,9 @@ bool GallocyClient::send_append_entries(const gallocy::vector<LogEntry> &entries
   // that the cv is usable here. This is also blocking, which is probably bad?
   uint64_t votes = CurlClient().multirequest(requests, append_entries_callback, nullptr, nullptr);
   LOG_DEBUG("Received " << votes << " for append entries");
+
+  // TODO(sholsapp): Commit and apply the log entry here.
+
+  // TODO(sholsapp): Return the response to the client.
   return true;
 }
