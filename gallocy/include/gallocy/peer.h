@@ -70,11 +70,29 @@ class Peer {
    */
   const struct sockaddr_in get_socket() const;
   /**
+   * Get the peer's port.
+   *
+   * \return The peer's port.
+   */
+  const uint16_t get_port() const;
+  /**
    * Get the peer's canonical identifier.
    *
    * \return The peer's canonical identifier.
    */
   const uint64_t get_canonical_id() const;
+  /**
+   * Equals operator.
+   *
+   * \return True if peers are equal.
+   */
+  bool operator== (const Peer &rhs) const;
+  /**
+   * Not equals operator.
+   *
+   * \return True if peers are not equal.
+   */
+  bool operator!= (const Peer &rhs) const;
 
  private:
   /**

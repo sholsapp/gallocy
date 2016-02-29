@@ -45,6 +45,11 @@ const struct sockaddr_in gallocy::common::Peer::get_socket() const {
 }
 
 
+const uint16_t gallocy::common::Peer::get_port() const {
+  return port_integer;
+}
+
+
 const gallocy::string gallocy::common::Peer::unparse_internet_address(uint64_t ip_address) const {
   // HACK off half of the uint64_t representation after converting it to
   // network order.
@@ -52,4 +57,14 @@ const gallocy::string gallocy::common::Peer::unparse_internet_address(uint64_t i
   struct in_addr ip_addr;
   ip_addr.s_addr = half_of_long;
   return inet_ntoa(ip_addr);
+}
+
+
+bool gallocy::common::Peer::operator== (const gallocy::common::Peer &rhs) const {
+  return get_canonical_id() == rhs.get_canonical_id() && get_port() == rhs.get_port();
+}
+
+
+bool gallocy::common::Peer::operator!= (const gallocy::common::Peer &rhs) const {
+  return !(*this == rhs);
 }
