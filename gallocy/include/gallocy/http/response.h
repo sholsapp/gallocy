@@ -4,6 +4,7 @@
 #include <map>
 
 #include "gallocy/allocators/internal.h"
+#include "gallocy/peer.h"
 
 /**
  * A HTTP response.
@@ -22,13 +23,12 @@ class Response {
 
   // Members
   Headers headers;
+  gallocy::common::Peer peer;
   gallocy::string body;
   gallocy::string protocol;
-  uint64_t peer_ip;
-  uint64_t status_code;
-
   gallocy::string str();
   uint64_t size();
+  uint64_t status_code;
 };
 
 #endif  // GALLOCY_HTTP_RESPONSE_H_

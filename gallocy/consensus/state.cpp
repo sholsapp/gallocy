@@ -121,10 +121,10 @@ RaftState GallocyState::get_state() {
 
 
 void GallocyState::initialize_leader_state() {
-  for (auto peer : config.peer_list) {
-    next_index[peer] = commit_index + 1;
-    match_index[peer] = 0;
-  }
+    for (auto peer : config.peer_list) {
+        next_index[peer] = commit_index + 1;
+        match_index[peer] = 0;
+    }
 }
 
 

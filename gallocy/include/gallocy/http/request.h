@@ -70,7 +70,6 @@ class Request {
   gallocy::string protocol;
   gallocy::string raw_body;
   gallocy::string uri;
-  void pretty_print() const;
   /**
    * Get the request's URL.
    *

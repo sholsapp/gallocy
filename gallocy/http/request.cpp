@@ -94,26 +94,6 @@ Request::Parameters &Request::get_params() {
 }
 
 
-/**
- * Pretty print a request.
- *
- * Prints directly to standard output.
- */
-void Request::pretty_print() const {
-  std::cout << "Request (" << this << ")" << std::endl
-            << "  " << method
-            << " " << uri
-            << " " << protocol
-            << std::endl;
-  for (auto &it : headers) {
-    std::cout << "  " << it.first
-              << ": " << it.second
-              << std::endl;
-  }
-  std::cout << raw_body << std::endl;;
-}
-
-
 gallocy::string Request::get_url() const {
   gallocy::stringstream s;
   s << "http://"

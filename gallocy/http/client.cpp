@@ -30,6 +30,7 @@ Response *CurlClient::request(const Request &request) {
     response->headers[header.first] = header.second;
   }
   response->body = restclient_response.body.c_str();
+  response->peer = request.peer;
 
   return response;
 }
