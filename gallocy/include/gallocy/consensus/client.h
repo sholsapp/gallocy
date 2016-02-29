@@ -6,6 +6,10 @@
 #include "gallocy/consensus/log.h"
 #include "gallocy/utils/config.h"
 
+namespace gallocy {
+
+namespace consensus {
+
 /**
  * The GallocyClient object.
  *
@@ -61,5 +65,9 @@ class GallocyClient {
  private:
   GallocyConfig &config;
 };
+
+}  // namespace consensus
+
+}  // namespace gallocy
 
 #endif  // GALLOCY_CONSENSUS_CLIENT_H_

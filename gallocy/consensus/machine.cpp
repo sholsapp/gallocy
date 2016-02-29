@@ -14,7 +14,7 @@
 #include "gallocy/utils/stringutils.h"
 
 
-void *GallocyMachine::work() {
+void *gallocy::consensus::GallocyMachine::work() {
   LOG_DEBUG("Starting HTTP client");
 
   if (gallocy_state == nullptr) {
@@ -30,18 +30,18 @@ void *GallocyMachine::work() {
     gallocy_state->get_timer_cv().wait(lk);
     // If the timer expires, our leader failed to contact us in a timely
     // manner, which indicates we need to start an election.
-    if (gallocy_state->get_state() == RaftState::FOLLOWER) {
-      gallocy_state->set_state(RaftState::CANDIDATE);
+    if (gallocy_state->get_state() == gallocy::consensus::RaftState::FOLLOWER) {
+      gallocy_state->set_state(gallocy::consensus::RaftState::CANDIDATE);
     }
 
     switch (gallocy_state->get_state()) {
-      case RaftState::FOLLOWER:
+      case gallocy::consensus::RaftState::FOLLOWER:
         gallocy_state->set_state(state_candidate());
         break;
-      case RaftState::LEADER:
+      case gallocy::consensus::RaftState::LEADER:
         gallocy_state->set_state(state_leader());
         break;
-      case RaftState::CANDIDATE:
+      case gallocy::consensus::RaftState::CANDIDATE:
         gallocy_state->set_state(state_candidate());
         break;
       default:
@@ -53,25 +53,25 @@ void *GallocyMachine::work() {
 }
 
 
-RaftState GallocyMachine::state_follower() {
-  return RaftState::FOLLOWER;
+gallocy::consensus::RaftState gallocy::consensus::GallocyMachine::state_follower() {
+  return gallocy::consensus::RaftState::FOLLOWER;
 }
 
 
-RaftState GallocyMachine::state_leader() {
+gallocy::consensus::RaftState gallocy::consensus::GallocyMachine::state_leader() {
   gallocy_client->send_append_entries();
-  return RaftState::LEADER;
+  return gallocy::consensus::RaftState::LEADER;
 }
 
 
-RaftState GallocyMachine::state_candidate() {
+gallocy::consensus::RaftState gallocy::consensus::GallocyMachine::state_candidate() {
   if (gallocy_client->send_request_vote()) {
-    gallocy_state->set_state(RaftState::LEADER);
+    gallocy_state->set_state(gallocy::consensus::RaftState::LEADER);
     gallocy_state->get_timer()->reset();
     return state_leader();
   } else {
     gallocy_state->get_timer()->reset();
     gallocy_state->set_voted_for(gallocy::common::Peer());
-    return RaftState::CANDIDATE;
+    return gallocy::consensus::RaftState::CANDIDATE;
   }
 }

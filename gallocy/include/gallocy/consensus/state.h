@@ -18,6 +18,9 @@
 #define LEADER_STEP_TIME 500
 #define LEADER_JITTER_TIME 0
 
+namespace gallocy {
+
+namespace consensus {
 
 /**
  * The type to identifier peers.
@@ -58,10 +61,10 @@ class GallocyState {
       commit_index(0),
       last_applied(0),
       config(config) {
-    timer = new (internal_malloc(sizeof(Timer)))
-      Timer(FOLLOWER_STEP_TIME, FOLLOWER_JITTER_TIME, std::addressof(timed_out));
-    log = new (internal_malloc(sizeof(GallocyLog)))
-      GallocyLog();
+    timer = new (internal_malloc(sizeof(gallocy::consensus::Timer)))
+      gallocy::consensus::Timer(FOLLOWER_STEP_TIME, FOLLOWER_JITTER_TIME, std::addressof(timed_out));
+    log = new (internal_malloc(sizeof(gallocy::consensus::GallocyLog)))
+      gallocy::consensus::GallocyLog();
     state = RaftState::FOLLOWER;
   }
   ~GallocyState() {
@@ -126,11 +129,11 @@ class GallocyState {
   /**
    * Get the state machine log.
    */
-  GallocyLog *get_log();
+  gallocy::consensus::GallocyLog *get_log();
   /**
    * Get the timer.
    */
-  Timer *get_timer();
+  gallocy::consensus::Timer *get_timer();
   /**
    * Get the timer's mutex.
    */
@@ -165,7 +168,7 @@ class GallocyState {
    * Each entry contains a command for the state machine and the term when the
    * entry was received by the leader.
    */
-  GallocyLog *log;
+  gallocy::consensus::GallocyLog *log;
   /**
    * Index of highest log entry known to be committed.
    */
@@ -194,7 +197,7 @@ class GallocyState {
    * reaches zero, which indicates a leader timeout, the `timed_out` condition
    * variable is signaled.
    */
-  Timer *timer;
+  gallocy::consensus::Timer *timer;
   std::condition_variable timed_out;
   std::mutex timed_out_mutex;
   GallocyConfig &config;
@@ -208,5 +211,9 @@ class GallocyState {
    */
   void finalize_leader_state();
 };
+
+}  // namespace consensus
+
+}  // namespace gallocy
 
 #endif  // GALLOCY_CONSENSUS_STATE_H_

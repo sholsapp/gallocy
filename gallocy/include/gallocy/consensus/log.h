@@ -5,6 +5,10 @@
 
 #include "gallocy/allocators/internal.h"
 
+namespace gallocy {
+
+namespace consensus {
+
 /**
  * A replicated state machine command.
  *
@@ -96,5 +100,9 @@ class GallocyLog {
  public:
   gallocy::vector<LogEntry> log;
 };
+
+}  // namespace consensus
+
+}  // namespace gallocy
 
 #endif  // GALLOCY_CONSENSUS_LOG_H_

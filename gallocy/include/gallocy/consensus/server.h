@@ -20,6 +20,10 @@
 #include "gallocy/utils/config.h"
 #include "gallocy/worker.h"
 
+namespace gallocy {
+
+namespace consensus {
+
 
 void error_die(const char *);
 
@@ -160,5 +164,9 @@ struct RequestContext {
   int client_socket;
   struct sockaddr_in client_name;
 };
+
+}  // namespace consensus
+
+}  // namespace gallocy
 
 #endif  // GALLOCY_CONSENSUS_SERVER_H_

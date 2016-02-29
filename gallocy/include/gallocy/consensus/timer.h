@@ -9,6 +9,10 @@
 
 #include "gallocy/utils/logging.h"
 
+namespace gallocy {
+
+namespace consensus {
+
 class Timer {
  public:
   /**
@@ -149,5 +153,9 @@ class Timer {
    */
   uint64_t jitter;
 };
+
+}  // namespace consensus
+
+}  // namespace gallocy
 
 #endif  // GALLOCY_CONSENSUS_TIMER_H_

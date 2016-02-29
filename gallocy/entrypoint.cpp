@@ -16,11 +16,11 @@
 #include "gallocy/utils/constants.h"
 #include "gallocy/utils/logging.h"
 
-GallocyClient *gallocy_client = nullptr;
 GallocyConfig *gallocy_config = nullptr;
-GallocyMachine *gallocy_machine = nullptr;
-GallocyServer *gallocy_server = nullptr;
-GallocyState *gallocy_state = nullptr;
+gallocy::consensus::GallocyClient *gallocy_client = nullptr;
+gallocy::consensus::GallocyMachine *gallocy_machine = nullptr;
+gallocy::consensus::GallocyServer *gallocy_server = nullptr;
+gallocy::consensus::GallocyState *gallocy_state = nullptr;
 
 int initialize_gallocy_framework(const char* config_path) {
   void *start;
@@ -122,21 +122,21 @@ int initialize_gallocy_framework(const char* config_path) {
   //
   // Create the state object.
   //
-  gallocy_state = new (internal_malloc(sizeof(GallocyState))) GallocyState(*gallocy_config);
+  gallocy_state = new (internal_malloc(sizeof(gallocy::consensus::GallocyState))) gallocy::consensus::GallocyState(*gallocy_config);
   //
   // Create the client object.
   //
-  gallocy_client = new (internal_malloc(sizeof(GallocyClient))) GallocyClient(*gallocy_config);
+  gallocy_client = new (internal_malloc(sizeof(gallocy::consensus::GallocyClient))) gallocy::consensus::GallocyClient(*gallocy_config);
   //
   //
   // Start the client thread.
   //
-  gallocy_machine = new (internal_malloc(sizeof(GallocyMachine))) GallocyMachine(*gallocy_config);
+  gallocy_machine = new (internal_malloc(sizeof(gallocy::consensus::GallocyMachine))) gallocy::consensus::GallocyMachine(*gallocy_config);
   gallocy_machine->start();
   //
   // Start the server thread.
   //
-  gallocy_server = new (internal_malloc(sizeof(GallocyServer))) GallocyServer(*gallocy_config);
+  gallocy_server = new (internal_malloc(sizeof(gallocy::consensus::GallocyServer))) gallocy::consensus::GallocyServer(*gallocy_config);
   gallocy_server->start();
   //
   // Yield to the application.

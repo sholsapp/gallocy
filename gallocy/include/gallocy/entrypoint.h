@@ -40,22 +40,22 @@ int teardown_gallocy_framework();
 /**
  * The global handle to the server.
  */
-extern GallocyServer *gallocy_server;
+extern gallocy::consensus::GallocyServer *gallocy_server;
 
 /**
  * The global handle to the state machine.
  */
-extern GallocyMachine *gallocy_machine;
+extern gallocy::consensus::GallocyMachine *gallocy_machine;
 
 /**
  * The global handle to the state.
  */
-extern GallocyState *gallocy_state;
+extern gallocy::consensus::GallocyState *gallocy_state;
 
 /**
  * The global handle to the request client.
  */
-extern GallocyClient *gallocy_client;
+extern gallocy::consensus::GallocyClient *gallocy_client;
 
 /**
  * The global handle to the configuration.

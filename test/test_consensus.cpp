@@ -19,16 +19,16 @@
 uint16_t TEST_PORT = 10000;
 
 
-GallocyClient *gallocy_client = nullptr;
 GallocyConfig *gallocy_config = nullptr;
-GallocyServer *gallocy_server = nullptr;
-GallocyState *gallocy_state = nullptr;
+gallocy::consensus::GallocyClient *gallocy_client = nullptr;
+gallocy::consensus::GallocyServer *gallocy_server = nullptr;
+gallocy::consensus::GallocyState *gallocy_state = nullptr;
 
 
 class ConsensusServerTests: public ::testing::Test {
  protected:
   /**
-   * Starts a GallocyServer.
+   * Starts a gallocy::consensus::GallocyServer.
    */
   virtual void SetUp() {
     if (gallocy_server != nullptr)
@@ -38,15 +38,15 @@ class ConsensusServerTests: public ::testing::Test {
     // Add oneself as a peer for testing routes.
     peer_list.push_back(gallocy::common::Peer("127.0.0.1", TEST_PORT));
     gallocy_config = new (internal_malloc(sizeof(GallocyConfig))) GallocyConfig(address, peer_list, TEST_PORT);
-    gallocy_client = new (internal_malloc(sizeof(GallocyClient))) GallocyClient(*gallocy_config);
-    gallocy_server = new (internal_malloc(sizeof(GallocyServer))) GallocyServer(*gallocy_config);
-    gallocy_state = new (internal_malloc(sizeof(GallocyState))) GallocyState(*gallocy_config);
+    gallocy_client = new (internal_malloc(sizeof(gallocy::consensus::GallocyClient))) gallocy::consensus::GallocyClient(*gallocy_config);
+    gallocy_server = new (internal_malloc(sizeof(gallocy::consensus::GallocyServer))) gallocy::consensus::GallocyServer(*gallocy_config);
+    gallocy_state = new (internal_malloc(sizeof(gallocy::consensus::GallocyState))) gallocy::consensus::GallocyState(*gallocy_config);
     gallocy_server->start();
     // TODO(sholsapp): Replace this with a "ready" implementation.
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
   /**
-   * Stops a GallocyServer.
+   * Stops a gallocy::consensus::GallocyServer.
    */
   // TODO(sholsapp): We need to fix up the destructors for the server before we
   // can clean up everything. Otherwise, when we try to recreate the server in

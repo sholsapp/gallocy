@@ -10,6 +10,10 @@
 #include "gallocy/worker.h"
 
 
+namespace gallocy {
+
+namespace consensus {
+
 /**
  * The gallocy finite state machine.
  *
@@ -40,5 +44,9 @@ class GallocyMachine : public ThreadedDaemon {
  private:
   GallocyConfig &config;
 };
+
+}  // namespace consensus
+
+}  // namespace gallocy
 
 #endif  // GALLOCY_CONSENSUS_MACHINE_H_

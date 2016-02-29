@@ -17,7 +17,7 @@ std::function<bool(const gallocy::http::Response &)> request_vote_callback = [](
     uint64_t supporter_term = response_json["term"];
     uint64_t local_term = gallocy_state->get_current_term();
     if (supporter_term > local_term) {
-      gallocy_state->set_state(RaftState::FOLLOWER);
+      gallocy_state->set_state(gallocy::consensus::RaftState::FOLLOWER);
       gallocy_state->set_current_term(supporter_term);
     }
     return granted;
@@ -26,7 +26,7 @@ std::function<bool(const gallocy::http::Response &)> request_vote_callback = [](
 };
 
 
-bool GallocyClient::send_request_vote() {
+bool gallocy::consensus::GallocyClient::send_request_vote() {
   uint64_t candidate_term = gallocy_state->get_current_term();
   uint64_t candidate_last_applied = gallocy_state->get_last_applied();
   uint64_t candidate_commit_index = gallocy_state->get_commit_index();
@@ -62,7 +62,7 @@ std::function<bool(const gallocy::http::Response &)> append_entries_callback = [
     uint64_t supporter_term = response_json["term"];
     uint64_t local_term = gallocy_state->get_current_term();
     if (supporter_term > local_term) {
-      gallocy_state->set_state(RaftState::FOLLOWER);
+      gallocy_state->set_state(gallocy::consensus::RaftState::FOLLOWER);
       gallocy_state->set_current_term(supporter_term);
     }
     return success;
@@ -71,13 +71,13 @@ std::function<bool(const gallocy::http::Response &)> append_entries_callback = [
 };
 
 
-bool GallocyClient::send_append_entries() {
+bool gallocy::consensus::GallocyClient::send_append_entries() {
   gallocy::vector<LogEntry> empty;
   return send_append_entries(empty);
 }
 
 
-bool GallocyClient::send_append_entries(const gallocy::vector<LogEntry> &entries) {
+bool gallocy::consensus::GallocyClient::send_append_entries(const gallocy::vector<LogEntry> &entries) {
   uint64_t leader_term = gallocy_state->get_current_term();
   // uint64_t leader_last_applied = gallocy_state->get_last_applied();
   uint64_t leader_commit_index = gallocy_state->get_commit_index();

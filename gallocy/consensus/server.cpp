@@ -22,13 +22,13 @@
  *
  * :param sc: A custom error to pass alont to ``perror``.
  */
-void error_die(const char *sc) {
+void gallocy::consensus::error_die(const char *sc) {
   perror(sc);
   exit(1);
 }
 
 
-gallocy::http::Response *GallocyServer::route_admin(RouteArguments *args, gallocy::http::Request *request) {
+gallocy::http::Response *gallocy::consensus::GallocyServer::route_admin(RouteArguments *args, gallocy::http::Request *request) {
   gallocy::http::Response *response = new (internal_malloc(sizeof(gallocy::http::Response))) gallocy::http::Response();
   response->status_code = 200;
   response->headers["Server"] = "Gallocy-Httpd";
@@ -40,7 +40,7 @@ gallocy::http::Response *GallocyServer::route_admin(RouteArguments *args, galloc
 }
 
 
-gallocy::http::Response *GallocyServer::route_request_vote(RouteArguments *args, gallocy::http::Request *request) {
+gallocy::http::Response *gallocy::consensus::GallocyServer::route_request_vote(RouteArguments *args, gallocy::http::Request *request) {
   gallocy::common::Peer peer = request->peer;
   gallocy::json request_json = request->get_json();
   uint64_t candidate_commit_index = request_json["commit_index"];
@@ -91,10 +91,10 @@ gallocy::http::Response *GallocyServer::route_request_vote(RouteArguments *args,
 }
 
 
-gallocy::http::Response *GallocyServer::route_append_entries(RouteArguments *args, gallocy::http::Request *request) {
+gallocy::http::Response *gallocy::consensus::GallocyServer::route_append_entries(RouteArguments *args, gallocy::http::Request *request) {
   gallocy::common::Peer peer = request->peer;
   gallocy::json request_json = request->get_json();
-  gallocy::vector<LogEntry> leader_entries;
+  gallocy::vector<gallocy::consensus::LogEntry> leader_entries;
   uint64_t leader_commit_index = request_json["leader_commit"];
   uint64_t leader_prev_log_index = request_json["previous_log_index"];
   uint64_t leader_prev_log_term = request_json["previous_log_term"];
@@ -107,8 +107,8 @@ gallocy::http::Response *GallocyServer::route_append_entries(RouteArguments *arg
     // TODO(sholsapp): Implicit conversion issue.
     gallocy::string tmp = entry_json["command"];
     uint64_t term = entry_json["term"];
-    Command command(tmp);
-    LogEntry entry(command, term);
+    gallocy::consensus::Command command(tmp);
+    gallocy::consensus::LogEntry entry(command, term);
     leader_entries.push_back(entry);
   }
 
@@ -127,7 +127,7 @@ gallocy::http::Response *GallocyServer::route_append_entries(RouteArguments *arg
     }
     success = true;
     gallocy_state->set_current_term(leader_term);
-    gallocy_state->set_state(RaftState::FOLLOWER);
+    gallocy_state->set_state(gallocy::consensus::RaftState::FOLLOWER);
     gallocy_state->set_voted_for(peer);
     gallocy_state->get_timer()->reset();
   }
@@ -151,10 +151,10 @@ gallocy::http::Response *GallocyServer::route_append_entries(RouteArguments *arg
 
 // TODO(sholsapp): This is just a route that we can hit to trigger an append
 // entries action. Once we're done testing, we can remove this route.
-gallocy::http::Response *GallocyServer::route_request(RouteArguments *args, gallocy::http::Request *request) {
-  Command command("hello world");
-  LogEntry entry(command, gallocy_state->get_current_term());
-  gallocy::vector<LogEntry> entries;
+gallocy::http::Response *gallocy::consensus::GallocyServer::route_request(RouteArguments *args, gallocy::http::Request *request) {
+  gallocy::consensus::Command command("hello world");
+  gallocy::consensus::LogEntry entry(command, gallocy_state->get_current_term());
+  gallocy::vector<gallocy::consensus::LogEntry> entries;
   entries.push_back(entry);
 
   gallocy_client->send_append_entries(entries);
@@ -179,7 +179,7 @@ gallocy::http::Response *GallocyServer::route_request(RouteArguments *args, gall
 //
 
 
-void *GallocyServer::work() {
+void *gallocy::consensus::GallocyServer::work() {
   LOG_DEBUG("Starting HTTP server on " << address << ":" << port);
 
   struct sockaddr_in name;
@@ -187,7 +187,7 @@ void *GallocyServer::work() {
 
   server_socket = socket(PF_INET, SOCK_STREAM, 0);
   if (server_socket == -1) {
-    error_die("socket");
+    gallocy::consensus::error_die("socket");
   }
 
 #ifdef __APPLE__
@@ -203,11 +203,11 @@ void *GallocyServer::work() {
   name.sin_addr.s_addr = inet_addr(address.c_str());
 
   if (bind(server_socket, (struct sockaddr *) &name, sizeof(name)) < 0) {
-    error_die("bind");
+    gallocy::consensus::error_die("bind");
   }
 
   if (listen(server_socket, 5) < 0) {
-    error_die("listen");
+    gallocy::consensus::error_die("listen");
   }
 
   int64_t client_sock = -1;
@@ -221,7 +221,7 @@ void *GallocyServer::work() {
         reinterpret_cast<socklen_t *>(&client_name_len));
 
     if (client_sock == -1) {
-      error_die("accept");
+      gallocy::consensus::error_die("accept");
     }
 
     struct RequestContext *ctx =
@@ -247,7 +247,7 @@ void *GallocyServer::work() {
 }
 
 
-void *GallocyServer::handle_entry(void *arg) {
+void *gallocy::consensus::GallocyServer::handle_entry(void *arg) {
   struct RequestContext *ctx = reinterpret_cast<struct RequestContext *>(arg);
   void *ret = ctx->server->handle(ctx->client_socket, ctx->client_name);
   ctx->~RequestContext();
@@ -256,12 +256,12 @@ void *GallocyServer::handle_entry(void *arg) {
 }
 
 
-void *GallocyServer::handle(int client_socket, struct sockaddr_in client_name) {
+void *gallocy::consensus::GallocyServer::handle(int client_socket, struct sockaddr_in client_name) {
   gallocy::http::Request *request = get_request(client_socket);
   gallocy::http::Response *response = routes.match(request->uri)(request);
 
   if (send(client_socket, response->str().c_str(), response->size(), 0) == -1) {
-    error_die("send");
+    gallocy::consensus::error_die("send");
   }
 
   LOG_INFO(request->method
@@ -287,7 +287,7 @@ void *GallocyServer::handle(int client_socket, struct sockaddr_in client_name) {
 }
 
 
-gallocy::http::Request *GallocyServer::get_request(int client_socket) {
+gallocy::http::Request *gallocy::consensus::GallocyServer::get_request(int client_socket) {
   gallocy::stringstream request;
   int n;
   char buf[512] = {0};

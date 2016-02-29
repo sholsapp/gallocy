@@ -13,7 +13,7 @@ TEST(ConsensusTimerTests, StartStopReset) {
   std::mutex m;
   uint64_t step = 100;
 
-  Timer t(step, 0, std::addressof(alarm_triggered));
+  gallocy::consensus::Timer t(step, 0, std::addressof(alarm_triggered));
 
   // Start the timer
   t.start();
