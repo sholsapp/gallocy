@@ -37,10 +37,10 @@ class ConsensusServerTests: public ::testing::Test {
     gallocy::vector<gallocy::common::Peer> peer_list;
     // Add oneself as a peer for testing routes.
     peer_list.push_back(gallocy::common::Peer("127.0.0.1", TEST_PORT));
-    gallocy_state = new (internal_malloc(sizeof(GallocyState))) GallocyState();
     gallocy_config = new (internal_malloc(sizeof(GallocyConfig))) GallocyConfig(address, peer_list, TEST_PORT);
-    gallocy_server = new (internal_malloc(sizeof(GallocyServer))) GallocyServer(*gallocy_config);
     gallocy_client = new (internal_malloc(sizeof(GallocyClient))) GallocyClient(*gallocy_config);
+    gallocy_server = new (internal_malloc(sizeof(GallocyServer))) GallocyServer(*gallocy_config);
+    gallocy_state = new (internal_malloc(sizeof(GallocyState))) GallocyState(*gallocy_config);
     gallocy_server->start();
     // TODO(sholsapp): Replace this with a "ready" implementation.
     std::this_thread::sleep_for(std::chrono::milliseconds(500));

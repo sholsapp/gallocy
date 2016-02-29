@@ -1,7 +1,12 @@
+#include <vector>
+
 #include "gtest/gtest.h"
 
+#include "gallocy/allocators/internal.h"
 #include "gallocy/consensus/log.h"
 #include "gallocy/consensus/state.h"
+#include "gallocy/peer.h"
+#include "gallocy/utils/config.h"
 
 
 TEST(ConsensusStateTests, RaftStateToString) {
@@ -12,7 +17,10 @@ TEST(ConsensusStateTests, RaftStateToString) {
 
 
 TEST(ConsensusStateTests, DefaultState) {
-  GallocyState state;
+  gallocy::string address = "127.0.0.1";
+  gallocy::vector<gallocy::common::Peer> peer_list;
+  GallocyConfig config(address, peer_list, 1234);
+  GallocyState state(config);
   ASSERT_EQ(state.get_commit_index(), 0);
   ASSERT_EQ(state.get_current_term(), 0);
   ASSERT_EQ(state.get_last_applied(), 0);
@@ -24,7 +32,10 @@ TEST(ConsensusStateTests, DefaultState) {
 
 
 TEST(ConsensusStateTests, SetState) {
-  GallocyState state;
+  gallocy::string address = "127.0.0.1";
+  gallocy::vector<gallocy::common::Peer> peer_list;
+  GallocyConfig config(address, peer_list, 1234);
+  GallocyState state(config);
   ASSERT_EQ(state.get_state(), RaftState::FOLLOWER);
   ASSERT_EQ(state.get_timer()->get_step(), FOLLOWER_STEP_TIME);
   ASSERT_EQ(state.get_timer()->get_jitter(), FOLLOWER_JITTER_TIME);
@@ -45,7 +56,10 @@ TEST(ConsensusStateTests, TimerConfiguration) {
 
 
 TEST(ConsensusStateTests, AppendLogEntry) {
-  GallocyState state;
+  gallocy::string address = "127.0.0.1";
+  gallocy::vector<gallocy::common::Peer> peer_list;
+  GallocyConfig config(address, peer_list, 1234);
+  GallocyState state(config);
   Command command("noop");
   LogEntry entry(command, 0);
   int64_t index = state.get_log()->append_entry(entry);

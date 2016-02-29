@@ -122,7 +122,7 @@ int initialize_gallocy_framework(const char* config_path) {
   //
   // Create the state object.
   //
-  gallocy_state = new (internal_malloc(sizeof(GallocyState))) GallocyState();
+  gallocy_state = new (internal_malloc(sizeof(GallocyState))) GallocyState(*gallocy_config);
   //
   // Create the client object.
   //

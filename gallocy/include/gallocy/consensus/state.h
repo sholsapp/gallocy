@@ -10,6 +10,7 @@
 #include "gallocy/allocators/internal.h"
 #include "gallocy/consensus/log.h"
 #include "gallocy/consensus/timer.h"
+#include "gallocy/utils/config.h"
 #include "gallocy/utils/logging.h"
 
 
@@ -65,11 +66,12 @@ const gallocy::string raft_state_to_string(RaftState state);
  */
 class GallocyState {
  public:
-  GallocyState() :
+  explicit GallocyState(GallocyConfig &config) :
       current_term(0),
       voted_for(0),
       commit_index(0),
-      last_applied(0) {
+      last_applied(0),
+      config(config) {
     lock = PTHREAD_MUTEX_INITIALIZER;
     timer = new (internal_malloc(sizeof(Timer)))
       Timer(FOLLOWER_STEP_TIME, FOLLOWER_JITTER_TIME, std::addressof(timed_out));
@@ -230,10 +232,11 @@ class GallocyState {
   // Internal implementation details.
   //
  private:
+  GallocyConfig &config;
+  RaftState state;
   /**
    * A lock to synchronize all get/set access to private member data.
    */
-  RaftState state;
   pthread_mutex_t lock;
   /**
    * The timer.
