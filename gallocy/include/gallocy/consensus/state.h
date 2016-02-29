@@ -1,8 +1,6 @@
 #ifndef GALLOCY_CONSENSUS_STATE_H_
 #define GALLOCY_CONSENSUS_STATE_H_
 
-#include <pthread.h>
-
 #include <condition_variable>
 #include <map>
 #include <mutex>
@@ -24,19 +22,6 @@
  * The type to identifier peers.
  */
 using PeerId = uint64_t;
-
-class Guard {
- public:
-  inline explicit Guard(pthread_mutex_t *lock) {
-    _lock = lock;
-    pthread_mutex_lock(_lock);
-  }
-  inline ~Guard() {
-    pthread_mutex_unlock(_lock);
-  }
- private:
-  pthread_mutex_t *_lock;
-};
 
 
 /**
@@ -72,7 +57,6 @@ class GallocyState {
       commit_index(0),
       last_applied(0),
       config(config) {
-    lock = PTHREAD_MUTEX_INITIALIZER;
     timer = new (internal_malloc(sizeof(Timer)))
       Timer(FOLLOWER_STEP_TIME, FOLLOWER_JITTER_TIME, std::addressof(timed_out));
     log = new (internal_malloc(sizeof(GallocyLog)))
@@ -91,7 +75,7 @@ class GallocyState {
    * Get the current term.
    */
   uint64_t get_current_term() {
-    Guard(std::addressof(lock));
+    std::lock_guard<std::mutex> lock(access_lock);
     return current_term;
   }
   /**
@@ -101,7 +85,7 @@ class GallocyState {
    * last voted for is implicitly reset.
    */
   void set_current_term(uint64_t value) {
-    Guard(std::addressof(lock));
+    std::lock_guard<std::mutex> lock(access_lock);
     if (value < current_term)
       LOG_ERROR("Regressing current term from "
           << current_term
@@ -115,70 +99,70 @@ class GallocyState {
    * Get candidate that received vote in current term.
    */
   PeerId get_voted_for() {
-    Guard(std::addressof(lock));
+    std::lock_guard<std::mutex> lock(access_lock);
     return voted_for;
   }
   /**
    * Set candidate that received vote in current term.
    */
   void set_voted_for(PeerId value) {
-    Guard(std::addressof(lock));
+    std::lock_guard<std::mutex> lock(access_lock);
     voted_for = value;
   }
   /**
    * Get the commit index.
    */
   uint64_t get_commit_index() {
-    Guard(std::addressof(lock));
+    std::lock_guard<std::mutex> lock(access_lock);
     return commit_index;
   }
   /**
    * Set the commit index.
    */
   void set_commit_index(uint64_t value) {
-    Guard(std::addressof(lock));
+    std::lock_guard<std::mutex> lock(access_lock);
     commit_index = value;
   }
   /**
    * Get the index of the last applied log entry.
    */
   uint64_t get_last_applied() {
-    Guard(std::addressof(lock));
+    std::lock_guard<std::mutex> lock(access_lock);
     return last_applied;
   }
   /**
    * Set the index of the last applied log entry.
    */
   void set_last_applied(uint64_t value) {
-    Guard(std::addressof(lock));
+    std::lock_guard<std::mutex> lock(access_lock);
     last_applied = value;
   }
   /**
    * Get index of the next log entry to send to peer.
    */
   uint64_t get_next_index(PeerId peer) {
-    Guard(std::addressof(lock));
+    std::lock_guard<std::mutex> lock(access_lock);
     return next_index[peer];
   }
   /**
    * Set index of the next log entry to send to peer.
    */
   void set_next_index(PeerId peer, uint64_t value) {
-    Guard(std::addressof(lock));
+    std::lock_guard<std::mutex> lock(access_lock);
     next_index[peer] = value;
   }
   /**
    * Get index of highest log entry known to be replicated on peer.
    */
   uint64_t get_match_index(PeerId peer) {
-    Guard(std::addressof(lock));
+    std::lock_guard<std::mutex> lock(access_lock);
     return match_index[peer];
   }
   /**
    * Set index of highest log entry known to be replicated on peer.
    */
   void set_match_index(PeerId peer, uint64_t value) {
-    Guard(std::addressof(lock));
+    std::lock_guard<std::mutex> lock(access_lock);
     match_index[peer] = value;
   }
 
@@ -237,7 +221,7 @@ class GallocyState {
   /**
    * A lock to synchronize all get/set access to private member data.
    */
-  pthread_mutex_t lock;
+  std::mutex access_lock;
   /**
    * The timer.
    *
@@ -281,14 +265,14 @@ class GallocyState {
    * Get the current state of this node.
    */
   RaftState get_state() {
-    Guard(std::addressof(lock));
+    std::lock_guard<std::mutex> lock(access_lock);
     return state;
   }
   /**
    * Set the current state of this node.
    */
   void set_state(RaftState new_state) {
-    Guard(std::addressof(lock));
+    std::lock_guard<std::mutex> lock(access_lock);
 
     // Only log state changes.
     if (new_state != state)
