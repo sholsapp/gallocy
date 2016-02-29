@@ -73,7 +73,7 @@ std::function<bool(const Response &)> append_entries_callback = [](const Respons
 
 bool GallocyClient::send_append_entries() {
   uint64_t leader_term = gallocy_state->get_current_term();
-  uint64_t leader_last_applied = gallocy_state->get_last_applied();
+  // uint64_t leader_last_applied = gallocy_state->get_last_applied();
   uint64_t leader_commit_index = gallocy_state->get_commit_index();
   uint64_t leader_prev_log_index = gallocy_state->get_log()->get_previous_log_index();
   uint64_t leader_prev_log_term = gallocy_state->get_log()->get_previous_log_term();
@@ -104,7 +104,7 @@ bool GallocyClient::send_append_entries() {
 
 bool GallocyClient::send_append_entries(const gallocy::vector<LogEntry> &entries) {
   uint64_t leader_term = gallocy_state->get_current_term();
-  uint64_t leader_last_applied = gallocy_state->get_last_applied();
+  // uint64_t leader_last_applied = gallocy_state->get_last_applied();
   uint64_t leader_commit_index = gallocy_state->get_commit_index();
   uint64_t leader_prev_log_index = gallocy_state->get_log()->get_previous_log_index();
   uint64_t leader_prev_log_term = gallocy_state->get_log()->get_previous_log_term();
