@@ -52,7 +52,8 @@ class GallocyServer : public ThreadedDaemon {
   }
   GallocyServer(const GallocyServer &) = delete;
   GallocyServer &operator=(const GallocyServer &) = delete;
-  ~GallocyServer() {}
+  ~GallocyServer() {
+  }
   /**
    * Read an HTTP request from a socket.
    *
