@@ -6,13 +6,13 @@
 #include "gtest/gtest.h"
 
 #include "gallocy/allocators/internal.h"
+#include "gallocy/common/peer.h"
 #include "gallocy/consensus/client.h"
 #include "gallocy/consensus/server.h"
 #include "gallocy/consensus/state.h"
 #include "gallocy/http/client.h"
 #include "gallocy/http/request.h"
 #include "gallocy/http/response.h"
-#include "gallocy/peer.h"
 #include "gallocy/utils/config.h"
 
 

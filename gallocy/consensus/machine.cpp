@@ -5,10 +5,10 @@
 #include <ctime>
 #include <iostream>
 
+#include "gallocy/common/peer.h"
 #include "gallocy/consensus/machine.h"
 #include "gallocy/entrypoint.h"
 #include "gallocy/models.h"
-#include "gallocy/peer.h"
 #include "gallocy/threads.h"
 #include "gallocy/utils/logging.h"
 #include "gallocy/utils/stringutils.h"

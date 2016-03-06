@@ -6,9 +6,9 @@
 #include <mutex>
 
 #include "gallocy/allocators/internal.h"
+#include "gallocy/common/peer.h"
 #include "gallocy/consensus/log.h"
 #include "gallocy/consensus/timer.h"
-#include "gallocy/peer.h"
 #include "gallocy/utils/config.h"
 #include "gallocy/utils/logging.h"
 

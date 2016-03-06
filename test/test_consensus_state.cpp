@@ -3,9 +3,9 @@
 #include "gtest/gtest.h"
 
 #include "gallocy/allocators/internal.h"
+#include "gallocy/common/peer.h"
 #include "gallocy/consensus/log.h"
 #include "gallocy/consensus/state.h"
-#include "gallocy/peer.h"
 #include "gallocy/utils/config.h"
 
 

@@ -1,8 +1,8 @@
 #include <string>
 #include <vector>
 
+#include "gallocy/common/peer.h"
 #include "gallocy/http/request.h"
-#include "gallocy/peer.h"
 #include "gallocy/utils/stringutils.h"
 
 

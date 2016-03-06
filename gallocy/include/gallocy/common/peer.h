@@ -1,5 +1,5 @@
-#ifndef GALLOCY_PEER_H_
-#define GALLOCY_PEER_H_
+#ifndef GALLOCY_COMMON_PEER_H_
+#define GALLOCY_COMMON_PEER_H_
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -144,4 +144,4 @@ template<> struct less<gallocy::common::Peer> {
 
 }  // namespace std
 
-#endif  // GALLOCY_PEER_H_
+#endif  // GALLOCY_COMMON_PEER_H_

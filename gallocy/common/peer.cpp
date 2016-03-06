@@ -2,7 +2,7 @@
 #include <netinet/in.h>
 
 #include "gallocy/allocators/internal.h"
-#include "gallocy/peer.h"
+#include "gallocy/common/peer.h"
 
 
 const gallocy::string gallocy::common::Peer::get_string() const {

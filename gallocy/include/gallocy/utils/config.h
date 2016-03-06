@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "gallocy/allocators/internal.h"
-#include "gallocy/peer.h"
+#include "gallocy/common/peer.h"
 
 
 /**

@@ -34,6 +34,7 @@ set(CMAKE_CXX_FLAGS "-std=c++0x -g -Wall -fstack-protector-all -Wstack-protector
 set(GALLOCY_CORE_SRC
   allocators/internal.cpp
   allocators/shared.cpp
+  common/peer.cpp
   consensus/client.cpp
   consensus/log.cpp
   consensus/machine.cpp
@@ -46,7 +47,6 @@ set(GALLOCY_CORE_SRC
   http/transport.cpp
   libgallocy.cpp
   models.cpp
-  peer.cpp
   sqlite.cpp
   threads.cpp
   utils/config.cpp
