@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "gallocy/allocators/internal.h"
 #include "gallocy/consensus/log.h"
 #include "gallocy/consensus/state.h"
@@ -16,8 +18,8 @@ const gallocy::string gallocy::consensus::raft_state_to_string(gallocy::consensu
 }
 
 
-uint64_t gallocy::consensus::GallocyState::get_current_term() {
-    std::lock_guard<std::mutex> lock(access_lock);
+uint64_t gallocy::consensus::GallocyState::get_current_term() const {
+    std::lock_guard<std::mutex> lock(std::ref(access_lock));
     return current_term;
 }
 
@@ -35,7 +37,7 @@ void gallocy::consensus::GallocyState::set_current_term(uint64_t value) {
 }
 
 
-gallocy::common::Peer gallocy::consensus::GallocyState::get_voted_for() {
+gallocy::common::Peer gallocy::consensus::GallocyState::get_voted_for() const {
     std::lock_guard<std::mutex> lock(access_lock);
     return voted_for;
 }
@@ -47,7 +49,7 @@ void gallocy::consensus::GallocyState::set_voted_for(gallocy::common::Peer value
 }
 
 
-uint64_t gallocy::consensus::GallocyState::get_commit_index() {
+uint64_t gallocy::consensus::GallocyState::get_commit_index() const {
     std::lock_guard<std::mutex> lock(access_lock);
     return commit_index;
 }
@@ -59,7 +61,7 @@ void gallocy::consensus::GallocyState::set_commit_index(uint64_t value) {
 }
 
 
-uint64_t gallocy::consensus::GallocyState::get_last_applied() {
+uint64_t gallocy::consensus::GallocyState::get_last_applied() const {
     std::lock_guard<std::mutex> lock(access_lock);
     return last_applied;
 }
@@ -71,35 +73,43 @@ void gallocy::consensus::GallocyState::set_last_applied(uint64_t value) {
 }
 
 
-uint64_t gallocy::consensus::GallocyState::get_next_index(gallocy::common::Peer peer) {
+uint64_t gallocy::consensus::GallocyState::get_next_index(const gallocy::common::Peer &peer) const {
     std::lock_guard<std::mutex> lock(access_lock);
-    return next_index[peer];
+    try {
+        return next_index.at(peer);
+    } catch (const std::out_of_range& oor) {
+        return 0;
+    }
 }
 
 
-void gallocy::consensus::GallocyState::set_next_index(gallocy::common::Peer peer, uint64_t value) {
+void gallocy::consensus::GallocyState::set_next_index(const gallocy::common::Peer &peer, uint64_t value) {
     std::lock_guard<std::mutex> lock(access_lock);
     next_index[peer] = value;
 }
 
 
-uint64_t gallocy::consensus::GallocyState::get_match_index(gallocy::common::Peer peer) {
+uint64_t gallocy::consensus::GallocyState::get_match_index(const gallocy::common::Peer &peer) const {
     std::lock_guard<std::mutex> lock(access_lock);
-    return match_index[peer];
+    try {
+        return match_index.at(peer);
+    } catch (const std::out_of_range& oor) {
+        return 0;
+    }
 }
 
 
-void gallocy::consensus::GallocyState::set_match_index(gallocy::common::Peer peer, uint64_t value) {
+void gallocy::consensus::GallocyState::set_match_index(const gallocy::common::Peer &peer, uint64_t value) {
     std::lock_guard<std::mutex> lock(access_lock);
     match_index[peer] = value;
 }
 
-gallocy::consensus::GallocyLog *gallocy::consensus::GallocyState::get_log() {
+gallocy::consensus::GallocyLog *gallocy::consensus::GallocyState::get_log()  const {
     return log;
 }
 
 
-gallocy::consensus::Timer *gallocy::consensus::GallocyState::get_timer() {
+gallocy::consensus::Timer *gallocy::consensus::GallocyState::get_timer() const {
     return timer;
 }
 
@@ -114,7 +124,7 @@ std::condition_variable &gallocy::consensus::GallocyState::get_timer_cv() {
 }
 
 
-gallocy::consensus::RaftState gallocy::consensus::GallocyState::get_state() {
+gallocy::consensus::RaftState gallocy::consensus::GallocyState::get_state() const {
     std::lock_guard<std::mutex> lock(access_lock);
     return state;
 }
@@ -162,4 +172,17 @@ void gallocy::consensus::GallocyState::set_state(gallocy::consensus::RaftState n
         timer->set_jitter(FOLLOWER_JITTER_TIME);
     }
     state = new_state;
+}
+
+
+gallocy::json gallocy::consensus::GallocyState::to_json() const {
+    gallocy::json j = {
+        { "term", get_current_term() },
+        { "state", raft_state_to_string(get_state()).c_str() },
+        { "commit_index", get_commit_index() },
+        { "last_applied", get_last_applied() },
+        { "voted_for", get_voted_for().get_string().c_str() },
+        { "log_size", get_log()->log.size() },
+    };
+    return j;
 }

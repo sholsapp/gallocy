@@ -72,7 +72,7 @@ class GallocyState {
   /**
    * Get the current term.
    */
-  uint64_t get_current_term();
+  uint64_t get_current_term() const;
   /**
    * Set the current term.
    *
@@ -83,7 +83,7 @@ class GallocyState {
   /**
    * Get candidate that received vote in current term.
    */
-  gallocy::common::Peer get_voted_for();
+  gallocy::common::Peer get_voted_for() const;
   /**
    * Set candidate that received vote in current term.
    */
@@ -91,7 +91,7 @@ class GallocyState {
   /**
    * Get the commit index.
    */
-  uint64_t get_commit_index();
+  uint64_t get_commit_index() const;
   /**
    * Set the commit index.
    */
@@ -99,7 +99,7 @@ class GallocyState {
   /**
    * Get the index of the last applied log entry.
    */
-  uint64_t get_last_applied();
+  uint64_t get_last_applied() const;
   /**
    * Set the index of the last applied log entry.
    */
@@ -107,27 +107,27 @@ class GallocyState {
   /**
    * Get index of the next log entry to send to peer.
    */
-  uint64_t get_next_index(gallocy::common::Peer peer);
+  uint64_t get_next_index(const gallocy::common::Peer &peer) const;
   /**
    * Set index of the next log entry to send to peer.
    */
-  void set_next_index(gallocy::common::Peer peer, uint64_t value);
+  void set_next_index(const gallocy::common::Peer &peer, uint64_t value);
   /**
    * Get index of highest log entry known to be replicated on peer.
    */
-  uint64_t get_match_index(gallocy::common::Peer peer);
+  uint64_t get_match_index(const gallocy::common::Peer &peer) const;
   /**
    * Set index of highest log entry known to be replicated on peer.
    */
-  void set_match_index(gallocy::common::Peer peer, uint64_t value);
+  void set_match_index(const gallocy::common::Peer &peer, uint64_t value);
   /**
    * Get the state machine log.
    */
-  gallocy::consensus::GallocyLog *get_log();
+  gallocy::consensus::GallocyLog *get_log() const;
   /**
    * Get the timer.
    */
-  gallocy::consensus::Timer *get_timer();
+  gallocy::consensus::Timer *get_timer() const;
   /**
    * Get the timer's mutex.
    */
@@ -141,11 +141,15 @@ class GallocyState {
   /**
    * Get the current state of this node.
    */
-  RaftState get_state();
+  RaftState get_state() const;
   /**
    * Set the current state of this node.
    */
   void set_state(RaftState new_state);
+  /**
+   * Dump the state object as JSON object.
+   */
+  gallocy::json to_json() const;
 
  private:
   /**
@@ -182,19 +186,29 @@ class GallocyState {
   /**
    * A lock to synchronize all get/set access to private member data.
    */
-  std::mutex access_lock;
+  mutable std::mutex access_lock;
   /**
-   * The timer.
+   * The Raft timer.
    *
-   * This timer is used to implement the Raft consensus module and repeatedly
-   * counts down from a randomized starting time. If the count down ever
-   * reaches zero, which indicates a leader timeout, the `timed_out` condition
-   * variable is signaled.
+   * If the count down ever reaches zero, which indicates a leader timeout, the
+   * `timed_out` condition variable is signaled.
    */
   gallocy::consensus::Timer *timer;
+  /**
+   * The Raft timer's time out condition variable.
+   */
   std::condition_variable timed_out;
+  /**
+   * The Raft timer's time out condition variable mutex.
+   */
   std::mutex timed_out_mutex;
+  /**
+   * The configuration object.
+   */
   GallocyConfig &config;
+  /**
+   * The current Raft state.
+   */
   RaftState state;
   /**
    * Set up leader state.
