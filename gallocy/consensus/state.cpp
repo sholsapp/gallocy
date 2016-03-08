@@ -28,9 +28,7 @@ void gallocy::consensus::GallocyState::set_current_term(uint64_t value) {
     std::lock_guard<std::mutex> lock(access_lock);
     if (value < current_term)
         LOG_ERROR("Regressing current term from "
-                << current_term
-                << " to "
-                << value
+                << current_term << " to " << value
                 << ". This is a logic error.");
     current_term = value;
     voted_for = gallocy::common::Peer();
@@ -185,4 +183,25 @@ gallocy::json gallocy::consensus::GallocyState::to_json() const {
         { "log_size", get_log()->log.size() },
     };
     return j;
+}
+
+
+uint64_t gallocy::consensus::GallocyState::increment_current_term() {
+  std::lock_guard<std::mutex> lock(access_lock);
+  current_term += 1;
+  return current_term;
+}
+
+
+uint64_t gallocy::consensus::GallocyState::increment_next_index(const gallocy::common::Peer &peer) {
+    std::lock_guard<std::mutex> lock(access_lock);
+    next_index[peer] += 1;
+    return next_index[peer];
+}
+
+
+uint64_t gallocy::consensus::GallocyState::decrement_next_index(const gallocy::common::Peer &peer) {
+    std::lock_guard<std::mutex> lock(access_lock);
+    next_index[peer] -= 1;
+    return next_index[peer];
 }

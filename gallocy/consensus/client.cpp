@@ -27,8 +27,7 @@ std::function<bool(const gallocy::http::Response &)> request_vote_callback = [](
 
 
 bool gallocy::consensus::GallocyClient::send_request_vote() {
-    gallocy_state->set_current_term(gallocy_state->get_current_term() + 1);
-    uint64_t candidate_term = gallocy_state->get_current_term();
+    uint64_t candidate_term = gallocy_state->increment_current_term();
     uint64_t candidate_last_applied = gallocy_state->get_last_applied();
     uint64_t candidate_commit_index = gallocy_state->get_commit_index();
 
@@ -73,10 +72,10 @@ std::function<bool(const gallocy::http::Response &)> append_entries_callback = [
 
         // ON success, update peer's next index and match index.
         if (success) {
-            gallocy_state->set_next_index(peer, gallocy_state->get_next_index(peer) + 1);
+            gallocy_state->increment_next_index(peer);
         // ON failure, decremenet peer's next index and try again.
         } else {
-            gallocy_state->set_next_index(peer, gallocy_state->get_next_index(peer) - 1);
+            gallocy_state->decrement_next_index(peer);
         }
 
         return success;
@@ -126,9 +125,13 @@ bool gallocy::consensus::GallocyClient::send_append_entries(const gallocy::vecto
     LOG_DEBUG("Received " << votes << " for append entries");
 
     // APPLY commands to the state machine.
-    // TODO(sholsapp): This isn't implemented correctly.
-    gallocy_state->set_commit_index(leader_commit_index + entries.size());
-    gallocy_state->set_last_applied(leader_prev_log_index + entries.size());
+    if (votes) {
+        int64_t idx = gallocy_state->get_log()->log.size() - 1;
+        if (idx > 0) {
+            gallocy_state->set_commit_index(static_cast<uint64_t>(idx));
+            gallocy_state->set_last_applied(static_cast<uint64_t>(idx));
+        }
+    }
 
     // RESPOND with results.
     return true;

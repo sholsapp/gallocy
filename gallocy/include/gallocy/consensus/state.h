@@ -150,6 +150,27 @@ class GallocyState {
    * Dump the state object as JSON object.
    */
   gallocy::json to_json() const;
+  /**
+   * Increment current term.
+   *
+   * \return The current term, after incrementing.
+   */
+  uint64_t increment_current_term();
+  /**
+   * Increment next index for peer.
+   *
+   * \param The peer's whose metadata to adjust.
+   * \return The peer's next index, after incrementing.
+   */
+  uint64_t increment_next_index(const gallocy::common::Peer &peer);
+  /**
+   * Decrement next index for peer.
+   *
+   * \param The peer's whose metadata to adjust.
+   * \return The peer's next index, after decrementing.
+   */
+  uint64_t decrement_next_index(const gallocy::common::Peer &peer);
+
 
  private:
   /**

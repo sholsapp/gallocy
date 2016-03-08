@@ -42,17 +42,16 @@ gallocy::http::Response *gallocy::consensus::GallocyServer::route_admin(RouteArg
 
 
 gallocy::http::Response *gallocy::consensus::GallocyServer::route_request_vote(RouteArguments *args, gallocy::http::Request *request) {
-    gallocy::common::Peer peer = request->peer;
+    bool granted = false;
+    gallocy::common::Peer candidate_voted_for = request->peer;
+    gallocy::common::Peer local_voted_for = gallocy_state->get_voted_for();
     gallocy::json request_json = request->get_json();
     uint64_t candidate_commit_index = request_json["commit_index"];
     uint64_t candidate_current_term = request_json["term"];
     uint64_t candidate_last_applied = request_json["last_applied"];
-    gallocy::common::Peer candidate_voted_for = peer;
     uint64_t local_commit_index = gallocy_state->get_commit_index();
     uint64_t local_current_term = gallocy_state->get_current_term();
     uint64_t local_last_applied = gallocy_state->get_last_applied();
-    gallocy::common::Peer local_voted_for = gallocy_state->get_voted_for();
-    bool granted = false;
 
     if (candidate_current_term < local_current_term) {
         granted = false;
@@ -115,11 +114,8 @@ gallocy::http::Response *gallocy::consensus::GallocyServer::route_append_entries
 
     // IF leader is out of date, fail.
     if (leader_term < local_term) {
-        LOG_INFO("Rejecting leader "
-                << peer.get_string()
-                << " because term is outdated ("
-                << leader_term
-                << ")");
+        LOG_INFO("Rejecting leader " << peer.get_string()
+                << " because term is outdated (" << leader_term << ")");
         success = false;
         // ELSE process leader request.
     } else {
@@ -134,13 +130,14 @@ gallocy::http::Response *gallocy::consensus::GallocyServer::route_append_entries
             // APPEND new entry.
             LOG_DEBUG("Appending " << entry.to_json() << " to local log.");
             gallocy_state->get_log()->append_entry(entry);
-
-            // SET commit index to min(leader commit, index of last new entry).
-            if (leader_commit_index > gallocy_state->get_commit_index()) {
-                gallocy_state->set_commit_index(
-                        std::min(leader_commit_index, gallocy_state->get_log()->log.size()));
-            }
         }
+
+        // SET commit index to min(leader commit, index of last new entry).
+        if (leader_commit_index > gallocy_state->get_commit_index()) {
+            gallocy_state->set_commit_index(
+                    std::min(leader_commit_index, gallocy_state->get_log()->log.size() - 1));
+        }
+
         success = true;
         gallocy_state->set_current_term(leader_term);
         gallocy_state->set_state(gallocy::consensus::RaftState::FOLLOWER);
@@ -148,9 +145,6 @@ gallocy::http::Response *gallocy::consensus::GallocyServer::route_append_entries
         gallocy_state->get_timer()->reset();
     }
     gallocy::json response_json = {
-        // TODO(sholsapp): This information should from from the socket, not the
-        // payload, as it can be faked.
-        { "peer", gallocy_config->address.c_str() },
         { "term", gallocy_state->get_current_term() },
         { "success", success },
     };
