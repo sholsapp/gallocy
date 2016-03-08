@@ -87,7 +87,7 @@ class GallocyState {
   /**
    * Set candidate that received vote in current term.
    */
-  void set_voted_for(gallocy::common::Peer value);
+  void set_voted_for(const gallocy::common::Peer &value);
   /**
    * Get the commit index.
    */

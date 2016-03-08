@@ -49,7 +49,7 @@ std::string RESPONSE(
 
 
 TEST(RequestTests, Constructors) {
-  gallocy::http::Request request1(GET_REQUEST);
+  gallocy::http::Request request1(GET_REQUEST, gallocy::common::Peer());
   ASSERT_EQ(request1.method, "GET");
 #if 0
   gallocy::http::Request request2 = request1;
@@ -61,7 +61,7 @@ TEST(RequestTests, Constructors) {
 
 
 TEST(RequestTests, SimpleGetRequest) {
-  gallocy::http::Request request(GET_REQUEST);
+  gallocy::http::Request request(GET_REQUEST, gallocy::common::Peer());
   ASSERT_EQ(request.method, "GET");
   ASSERT_EQ(request.uri, "/get");
   ASSERT_EQ(request.protocol, "HTTP/1.1");
@@ -72,7 +72,7 @@ TEST(RequestTests, SimpleGetRequest) {
 
 
 TEST(RequestTests, SimpleGetRequestQuery) {
-  gallocy::http::Request request(GET_REQUEST_QUERY);
+  gallocy::http::Request request(GET_REQUEST_QUERY, gallocy::common::Peer());
   ASSERT_EQ(request.method, "GET");
   ASSERT_EQ(request.uri, "/get?query=1");
   ASSERT_EQ(request.protocol, "HTTP/1.1");
@@ -84,7 +84,7 @@ TEST(RequestTests, SimpleGetRequestQuery) {
 
 
 TEST(RequestTests, SimplePostRequest) {
-  gallocy::http::Request request(POST_REQUEST);
+  gallocy::http::Request request(POST_REQUEST, gallocy::common::Peer());
   ASSERT_EQ(request.method, "POST");
   ASSERT_EQ(request.uri, "/post");
   ASSERT_EQ(request.protocol, "HTTP/1.1");

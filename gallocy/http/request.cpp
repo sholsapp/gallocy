@@ -6,7 +6,9 @@
 #include "gallocy/utils/stringutils.h"
 
 
-gallocy::http::Request::Request(gallocy::string raw) {
+gallocy::http::Request::Request(gallocy::string raw, const gallocy::common::Peer &peer) {
+  this->peer = peer;
+
   // Parse the raw request into lines
   gallocy::vector<gallocy::string> lines;
   utils::split(raw, '\n', lines);

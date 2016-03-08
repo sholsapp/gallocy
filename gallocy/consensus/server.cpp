@@ -276,7 +276,7 @@ void *gallocy::consensus::GallocyServer::handle_entry(void *arg) {
 
 
 void *gallocy::consensus::GallocyServer::handle(int client_socket, struct sockaddr_in client_name) {
-    gallocy::http::Request *request = get_request(client_socket);
+    gallocy::http::Request *request = get_request(client_socket, client_name);
     gallocy::http::Response *response = routes.match(request->uri)(request);
 
     if (send(client_socket, response->str().c_str(), response->size(), 0) == -1) {
@@ -306,7 +306,7 @@ void *gallocy::consensus::GallocyServer::handle(int client_socket, struct sockad
 }
 
 
-gallocy::http::Request *gallocy::consensus::GallocyServer::get_request(int client_socket) {
+gallocy::http::Request *gallocy::consensus::GallocyServer::get_request(int client_socket, struct sockaddr_in client_name) {
     gallocy::stringstream request;
     int n;
     char buf[512] = {0};
@@ -317,5 +317,6 @@ gallocy::http::Request *gallocy::consensus::GallocyServer::get_request(int clien
         n = recv(client_socket, buf, 512, MSG_DONTWAIT);
         request << buf;
     }
-    return new (internal_malloc(sizeof(gallocy::http::Request))) gallocy::http::Request(request.str());
+    return new (internal_malloc(sizeof(gallocy::http::Request)))
+        gallocy::http::Request(request.str(), gallocy::common::Peer(client_name));
 }

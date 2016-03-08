@@ -62,10 +62,10 @@ class GallocyServer : public ThreadedDaemon {
    * Read an HTTP request from a socket.
    *
    * \param client_socket The client's socket id.
-   * \param request The string stream to write the request into.
+   * \param client_name The client's socket name.
    * \return The request object.
    */
-  gallocy::http::Request *get_request(int client_socket);
+  gallocy::http::Request *get_request(int client_socket, struct sockaddr_in client_name);
   /**
    * A static helper for handling requests.
    *

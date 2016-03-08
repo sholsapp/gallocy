@@ -34,8 +34,9 @@ class Request {
    * string that was read off the wire, e.g., in a server implementation.
    *
    * \param raw The raw request.
+   * \param peer The peer's internet address.
    */
-  explicit Request(gallocy::string raw);
+  Request(gallocy::string raw, const gallocy::common::Peer &peer);
   /**
    * Create a request.
    *

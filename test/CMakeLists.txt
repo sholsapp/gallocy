@@ -48,6 +48,7 @@ set(test_sources
   test_malloc.cpp
   test_mmult.cpp
   test_models.cpp
+  test_peer.cpp
   test_singleton.cpp
   test_stlallocator.cpp
   test_stringutils.cpp

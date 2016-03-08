@@ -43,7 +43,7 @@ gallocy::common::Peer gallocy::consensus::GallocyState::get_voted_for() const {
 }
 
 
-void gallocy::consensus::GallocyState::set_voted_for(gallocy::common::Peer value) {
+void gallocy::consensus::GallocyState::set_voted_for(const gallocy::common::Peer &value) {
     std::lock_guard<std::mutex> lock(access_lock);
     voted_for = value;
 }
