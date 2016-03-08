@@ -7,6 +7,7 @@
 #include <functional>
 
 #include "gallocy/allocators/internal.h"
+#include "gallocy/utils/logging.h"
 
 namespace gallocy {
 
@@ -28,11 +29,17 @@ class Peer {
   /**
    * Create a peer.
    *
+   * \warning Beware of using this constructor with a transient client socket
+   * name, e.g., used for just a single request, as this port number will
+   * likely be random.
+   *
    * \param client_name The client socket name.
    */
   explicit Peer(struct sockaddr_in client_name) {
     internet_address_integer = parse_internet_address(inet_ntoa(client_name.sin_addr));
-    port_integer = static_cast<uint16_t>(ntohs(client_name.sin_port));
+    // TODO(sholsapp): Fix me.
+    // port_integer = static_cast<uint16_t>(ntohs(client_name.sin_port));
+    port_integer = 8080;
   }
   /**
    * Create a peer.
@@ -52,7 +59,7 @@ class Peer {
    */
   Peer(uint64_t internet_address, uint16_t port) {
     internet_address_integer = internet_address;
-    port = port;
+    port_integer = port;
   }
   /**
    * Get the peer's internet address as a string in dot notation.
