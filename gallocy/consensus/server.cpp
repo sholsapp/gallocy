@@ -124,12 +124,15 @@ gallocy::http::Response *gallocy::consensus::GallocyServer::route_append_entries
             if (gallocy_state->get_log()->log.size() - 1 < leader_prev_log_index &&
                     gallocy_state->get_log()->log.at(leader_prev_log_index).term != leader_prev_log_term) {
                 success = false;
-            }
-            // DELETE conflicting entries.
+            } else {
+                // DELETE conflicting entries.
+                // TODO(sholsapp): Implement me.
 
-            // APPEND new entry.
-            LOG_DEBUG("Appending " << entry.to_json() << " to local log.");
-            gallocy_state->get_log()->append_entry(entry);
+                // APPEND new entry.
+                LOG_DEBUG("Appending " << entry.to_json() << " to local log.");
+                gallocy_state->get_log()->append_entry(entry);
+                success = true;
+            }
         }
 
         // SET commit index to min(leader commit, index of last new entry).
@@ -138,7 +141,6 @@ gallocy::http::Response *gallocy::consensus::GallocyServer::route_append_entries
                     std::min(leader_commit_index, gallocy_state->get_log()->log.size() - 1));
         }
 
-        success = true;
         gallocy_state->set_current_term(leader_term);
         gallocy_state->set_state(gallocy::consensus::RaftState::FOLLOWER);
         gallocy_state->set_voted_for(peer);

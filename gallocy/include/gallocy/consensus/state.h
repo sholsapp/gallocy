@@ -170,6 +170,13 @@ class GallocyState {
    * \return The peer's next index, after decrementing.
    */
   uint64_t decrement_next_index(const gallocy::common::Peer &peer);
+  /**
+   * Increment match index for peer.
+   *
+   * \param The peer's whose metadata to adjust.
+   * \return The peer's match index, after incrementing.
+   */
+  uint64_t increment_match_index(const gallocy::common::Peer &peer);
 
 
  private:

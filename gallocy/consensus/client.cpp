@@ -73,6 +73,7 @@ std::function<bool(const gallocy::http::Response &)> append_entries_callback = [
         // ON success, update peer's next index and match index.
         if (success) {
             gallocy_state->increment_next_index(peer);
+            gallocy_state->increment_match_index(peer);
         // ON failure, decremenet peer's next index and try again.
         } else {
             gallocy_state->decrement_next_index(peer);

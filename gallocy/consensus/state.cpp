@@ -205,3 +205,10 @@ uint64_t gallocy::consensus::GallocyState::decrement_next_index(const gallocy::c
     next_index[peer] -= 1;
     return next_index[peer];
 }
+
+
+uint64_t gallocy::consensus::GallocyState::increment_match_index(const gallocy::common::Peer &peer) {
+    std::lock_guard<std::mutex> lock(access_lock);
+    match_index[peer] += 1;
+    return match_index[peer];
+}
