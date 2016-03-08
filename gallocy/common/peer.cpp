@@ -36,12 +36,12 @@ const uint64_t gallocy::common::Peer::parse_internet_address(const gallocy::stri
 
 
 const struct sockaddr_in gallocy::common::Peer::get_socket() const {
-  struct sockaddr_in ip_address;
-  memset(std::addressof(ip_address), 0, sizeof(struct sockaddr_in));
-  ip_address.sin_family = AF_INET;
-  ip_address.sin_port = htons(port_integer);
-  ip_address.sin_addr.s_addr = htonl(internet_address_integer & 0xFFFFFFFF);
-  return ip_address;
+  struct sockaddr_in socket_name;
+  memset(std::addressof(socket_name), 0, sizeof(struct sockaddr_in));
+  socket_name.sin_family = AF_INET;
+  socket_name.sin_port = htons(port_integer);
+  socket_name.sin_addr.s_addr = htonl(internet_address_integer & 0xFFFFFFFF);
+  return socket_name;
 }
 
 
