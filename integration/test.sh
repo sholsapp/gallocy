@@ -3,7 +3,8 @@
 
 setup() {
   echo "SETUP"
-  BIN=install/bin
+  ROOT="$(pwd)"
+  BIN="$ROOT/install/bin"
 }
 
 
@@ -18,21 +19,28 @@ teardown() {
 }
 
 
-@test "http server starts" {
-  ${BIN}/server &
-  PID=$!
-  run kill -s 0 $PID
-  kill -9 $PID
-  [ "$status" -eq 0 ]
+# The below integration tests depend on a cthulhu-fixture being present. The
+# fixture is created for 5 nodes.
+
+
+@test "cthulu-fixture exists" {
+  run ls "$ROOT/cthulhu-fixture"
+  [ $status -eq 0 ]
 }
 
 
-@test "http server responds on /admin" {
-  ${BIN}/server &
-  PID=$!
-  echo "Started server on ${PID}"
-  run curl --max-time 1 http://localhost:8080/admin
-  echo "RESULTS $status $result"
-  kill -9 $PID
-  [ "$status" -eq 0 ]
+@test "cthulhu-fixture starts/stops" {
+  run "$ROOT/cthulhu-fixture/control" start
+  [ $status -eq 0 ]
+  run "$ROOT/cthulhu-fixture/control" stop
+  [ $status -eq 0 ]
+}
+
+
+@test "leader election" {
+  run "$ROOT/cthulhu-fixture/control" start
+  [ $status -eq 0 ]
+  run "$ROOT/integration/helpers/leader_election.py"
+  run "$ROOT/cthulhu-fixture/control" stop
+  [ $status -eq 0 ]
 }
