@@ -38,11 +38,13 @@ class AbstractClient {
    *
    * \param requests The requests objects to send.
    * \param callback The callback function with which to process responses.
+   * \param successful The number of responses which the callback evaluates to true for.
    * \param cv The condition to signal when a majority of responses have been processed.
    * \param cv_m The lock assosciated with the condition.
    */
   virtual uint64_t multirequest(const gallocy::vector<Request> requests,
                                 std::function<bool(const Response &)> callback,
+                                uint64_t &successful,
                                 std::condition_variable *cv,
                                 std::mutex *cv_m) = 0;
 };
@@ -62,6 +64,7 @@ class CurlClient : public AbstractClient {
    */
   uint64_t multirequest(const gallocy::vector<Request> requests,
                         std::function<bool(const Response &)> callback,
+                        uint64_t &successful,
                         std::condition_variable *cv,
                         std::mutex *cv_m);
 };

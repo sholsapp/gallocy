@@ -38,17 +38,11 @@ gallocy::http::Response *gallocy::http::CurlClient::request(const gallocy::http:
 
 uint64_t gallocy::http::CurlClient::multirequest(const gallocy::vector<gallocy::http::Request> requests,
                                   std::function<bool(const gallocy::http::Response &)> callback,
-                                  std::condition_variable *cv,
-                                  std::mutex *cv_m) {
-  int rsp_count = 0;
+                                  uint64_t &rsp_count,
+                                  std::condition_variable *rsp_have_majority,
+                                  std::mutex *rsp_count_lock) {
   int peer_count = requests.size();
   int peer_majority = peer_count / 2;
-
-  // TODO(sholsapp): Move these to a caller and take them by parameter. The
-  // caller can use these to continue operation when a majority of requests are
-  // complete.
-  std::condition_variable rsp_have_majority;
-  std::mutex rsp_count_lock;
 
   std::vector<std::future<uint64_t>> futures;
 
@@ -60,12 +54,12 @@ uint64_t gallocy::http::CurlClient::multirequest(const gallocy::vector<gallocy::
 
         // CHECK if we have a majority of repsonses and signal if ready.
         {
-          std::unique_lock<std::mutex> lk(rsp_count_lock);
+          std::unique_lock<std::mutex> lk(*rsp_count_lock);
           // CHECK if the callback received the expected response.
           if (callback(*rsp))
             rsp_count++;
           if (rsp_count >= peer_majority)
-            rsp_have_majority.notify_all();
+            rsp_have_majority->notify_all();
         }
 
         // FREE the response since we're done with it.
@@ -78,34 +72,18 @@ uint64_t gallocy::http::CurlClient::multirequest(const gallocy::vector<gallocy::
     futures.push_back(std::move(future));
   }
 
-  {
-    // LOG_DEBUG("Waiting for majority of threads to respond");
-    std::unique_lock<std::mutex> lk(rsp_count_lock);
-    while (rsp_count < peer_majority) {
-      // TODO(sholsapp): What should time out be such that it doesn't interfere
-      // with the leader timeout?
-      std::cv_status status = rsp_have_majority.wait_for(lk, std::chrono::milliseconds(50));
-      if (status == std::cv_status::timeout) {
-        // LOG_DEBUG("Failed to get majority at " << rsp_count << " of " << peer_count << "!");
-        return rsp_count;
-      } else if (status == std::cv_status::no_timeout) {
-        // LOG_DEBUG("Has majority at " << rsp_count << " of " << peer_count << "!");
-      }
-    }
-  }
-
+  // TODO(sholsapp): Spin off clean up work in a seperate thread. This will
+  // require using a shared pointer to the future or something, since detaching
+  // here loses references to the future once this function returns.
   for (auto &f : futures) {
     std::future_status status;
     status = f.wait_for(std::chrono::nanoseconds(150));
     if (status == std::future_status::deferred) {
       // no-op
     } else if (status == std::future_status::timeout) {
-      // TODO(sholsapp): What should we do here? Are these just zombie threads
-      // at this point that never get cleaned up?
       // LOG_WARNING("Need to keep waiting... this thread won't be cleaned up!");
     } else if (status == std::future_status::ready) {
       f.get();
-      // LOG_DEBUG("Cleaning up an std::future: " << f.get());
     }
   }
 

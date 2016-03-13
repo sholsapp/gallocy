@@ -4,6 +4,8 @@
 #include <vector>
 
 #include "gallocy/consensus/log.h"
+#include "gallocy/http/request.h"
+#include "gallocy/http/response.h"
 #include "gallocy/utils/config.h"
 
 namespace gallocy {
@@ -27,6 +29,19 @@ class GallocyClient {
   explicit GallocyClient(GallocyConfig &config)
     : config(config)
   {}
+  /**
+   * Perform a "Raft" request.
+   *
+   * A "Raft" request is one that returns when a majority of responses are
+   * received and evaluate as "successful" responses. A "successful" response
+   * is one that the callback function evaluates to true for the response.
+   *
+   * \param requests The prepared requests to send.
+   * \param callback The callback function to process responses with.
+   * \return True if a majority of successful responses are received.
+   */
+  bool raft_request(const gallocy::vector<gallocy::http::Request> &requests,
+                    std::function<bool(const gallocy::http::Response &)> callback);
   /**
    * Make a "request vote" request.
    *

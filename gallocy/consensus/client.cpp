@@ -1,4 +1,7 @@
+#include <algorithm>
+#include <condition_variable>
 #include <map>
+#include <mutex>
 #include <vector>
 
 #include "gallocy/consensus/client.h"
@@ -7,6 +10,36 @@
 #include "gallocy/http/client.h"
 #include "gallocy/http/request.h"
 #include "gallocy/http/response.h"
+
+
+bool gallocy::consensus::GallocyClient::raft_request(const gallocy::vector<gallocy::http::Request> &requests,
+        std::function<bool(const gallocy::http::Response &)> callback) {
+    std::condition_variable have_majority;
+    std::mutex count_lock;
+    uint64_t peer_count = config.peer_list.size();
+    uint64_t peer_majority = peer_count / 2;
+    uint64_t rsp_count = 0;
+    // SEND requests
+    gallocy::http::CurlClient().multirequest(
+            requests,
+            callback,
+            std::ref(rsp_count),
+            std::addressof(have_majority),
+            std::addressof(count_lock));
+    std::unique_lock<std::mutex> lk(count_lock);
+    // LOOP while we do not have a majority of responses.
+    while (rsp_count < peer_majority) {
+        // WAIT for responses
+        std::cv_status status = have_majority.wait_for(lk, std::chrono::milliseconds(1));
+        // IF timed out waiting, we've not received enough responses.
+        if (status == std::cv_status::timeout) {
+            // RETURN failure, we've timed out waiting for responses.
+            return false;
+        }
+    }
+    // RETURN success, a majority of responses have been received.
+    return true;
+}
 
 
 std::function<bool(const gallocy::http::Response &)> request_vote_callback = [](const gallocy::http::Response &rsp) {
@@ -43,12 +76,8 @@ bool gallocy::consensus::GallocyClient::send_request_vote() {
     for (auto &peer : config.peer_list) {
         requests.push_back(gallocy::http::Request("POST", peer, "/raft/request_vote", j.dump(), headers));
     }
-    // TODO(sholsapp): How we handle this is busted and needs to be refactored so
-    // that the cv is usable here. This is also blocking, which is probably bad?
-    uint64_t votes = gallocy::http::CurlClient().multirequest(requests, request_vote_callback, nullptr, nullptr);
 
-    LOG_INFO("Received votes from " << votes << "/" << config.peer_list.size() << " peers");
-    return votes >= config.peer_list.size() / 2;
+    return raft_request(requests, request_vote_callback);
 }
 
 
@@ -72,7 +101,7 @@ std::function<bool(const gallocy::http::Response &)> append_entries_callback = [
         if (success) {
             gallocy_state->increment_next_index(peer);
             gallocy_state->increment_match_index(peer);
-        // ON failure, decremenet peer's next index and try again.
+            // ON failure, decremenet peer's next index and try again.
         } else {
             gallocy_state->decrement_next_index(peer);
         }
@@ -116,21 +145,20 @@ bool gallocy::consensus::GallocyClient::send_append_entries(const gallocy::vecto
     gallocy::vector<gallocy::http::Request> requests;
     gallocy::map<gallocy::string, gallocy::string> headers;
     headers["Content-Type"] = "application/json";
-    for (auto &peer : config.peer_list)
+    for (auto &peer : config.peer_list) {
         requests.push_back(gallocy::http::Request("POST", peer, "/raft/append_entries", j.dump(), headers));
-    // TODO(sholsapp): How we handle this is busted and needs to be refactored so
-    // that the cv is usable here. This is also blocking, which is probably bad?
-    uint64_t votes = gallocy::http::CurlClient().multirequest(requests, append_entries_callback, nullptr, nullptr);
+    }
+
+    bool success = raft_request(requests, append_entries_callback);
 
     // APPLY commands to the state machine.
-    if (votes) {
+    if (success) {
         int64_t idx = gallocy_state->get_log()->log.size() - 1;
         if (idx > 0) {
             gallocy_state->set_commit_index(static_cast<uint64_t>(idx));
             gallocy_state->set_last_applied(static_cast<uint64_t>(idx));
         }
+        return true;
     }
-
-    // RESPOND with results.
-    return true;
+    return false;
 }

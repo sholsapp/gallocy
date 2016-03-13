@@ -1,5 +1,7 @@
 #include <chrono>
+#include <condition_variable>
 #include <iostream>
+#include <mutex>
 #include <thread>
 #include <vector>
 
@@ -92,16 +94,35 @@ TEST_F(ConsensusServerTests, StartStop) {
   gallocy::vector<gallocy::http::Request> requests;
   gallocy::map<gallocy::string, gallocy::string> headers;
   requests.push_back(gallocy::http::Request("POST", gallocy::common::Peer("127.0.0.1", TEST_PORT), "/admin", "", headers));
+  std::condition_variable have_majority;
+  std::mutex count_lock;
+  uint64_t rsp_count = 0;
   uint64_t rsp = gallocy::http::CurlClient().multirequest(requests,
       [](const gallocy::http::Response &rsp) {
         return true;
-      }, nullptr, nullptr);
-  ASSERT_GE(rsp, static_cast<uint64_t>(0));
+      }, std::ref(rsp_count), std::addressof(have_majority), std::addressof(count_lock));
+
+    {
+        uint64_t peer_count = gallocy_config->peer_list.size();
+        uint64_t peer_majority = peer_count / 2;
+        std::unique_lock<std::mutex> lk(count_lock);
+        while (rsp_count < peer_majority) {
+            std::cv_status status = have_majority.wait_for(lk, std::chrono::milliseconds(50));
+            if (status == std::cv_status::timeout) {
+            } else if (status == std::cv_status::no_timeout) {
+                break;
+            }
+        }
+    }
+
+  ASSERT_GE(rsp_count, static_cast<uint64_t>(0));
 }
 
 
 TEST_F(ConsensusServerTests, RequestVote) {
   uint64_t votes = gallocy_client->send_request_vote();
+  // TODO(sholsapp): We should write a better test since a lone server will
+  // never get a successful response from itself.
   ASSERT_EQ(votes, static_cast<uint64_t>(1));
 }
 
