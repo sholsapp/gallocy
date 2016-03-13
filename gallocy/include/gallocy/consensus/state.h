@@ -55,10 +55,13 @@ class GallocyState {
       commit_index(0),
       last_applied(0),
       config(config) {
+    // CREATE a timer
     timer = new (internal_malloc(sizeof(gallocy::consensus::Timer)))
       gallocy::consensus::Timer(FOLLOWER_STEP_TIME, FOLLOWER_JITTER_TIME, std::addressof(timed_out));
+    // CREATE a log
     log = new (internal_malloc(sizeof(gallocy::consensus::GallocyLog)))
       gallocy::consensus::GallocyLog();
+    // SET initial state
     state = RaftState::FOLLOWER;
   }
   ~GallocyState() {

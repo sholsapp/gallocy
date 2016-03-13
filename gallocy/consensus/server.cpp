@@ -74,9 +74,6 @@ gallocy::http::Response *gallocy::consensus::GallocyServer::route_request_vote(R
         }
     }
     gallocy::json response_json = {
-        // TODO(sholsapp): This information should from from the socket, not the
-        // payload, as it can be faked.
-        { "peer", gallocy_config->address.c_str() },
         { "term", gallocy_state->get_current_term() },
         { "vote_granted", granted },
     };
@@ -187,7 +184,7 @@ gallocy::http::Response *gallocy::consensus::GallocyServer::route_request(RouteA
 
 // TODO(rverdon): This needs an abstraction so that we can swap out the
 // underlying transport mechanism for the server *at the same time* as the
-// client. What about libevent, here?
+// client.
 
 //
 // The server socket implementation

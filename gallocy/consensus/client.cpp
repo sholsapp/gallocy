@@ -37,8 +37,6 @@ bool gallocy::consensus::GallocyClient::send_request_vote() {
         { "commit_index", candidate_commit_index },
     };
 
-    // TODO(sholsapp): How we handle this is busted and needs to be refactored so
-    // that the cv is usable here. This is also blocking, which is probably bad?
     gallocy::vector<gallocy::http::Request> requests;
     gallocy::map<gallocy::string, gallocy::string> headers;
     headers["Content-Type"] = "application/json";
@@ -123,7 +121,6 @@ bool gallocy::consensus::GallocyClient::send_append_entries(const gallocy::vecto
     // TODO(sholsapp): How we handle this is busted and needs to be refactored so
     // that the cv is usable here. This is also blocking, which is probably bad?
     uint64_t votes = gallocy::http::CurlClient().multirequest(requests, append_entries_callback, nullptr, nullptr);
-    LOG_DEBUG("Received " << votes << " for append entries");
 
     // APPLY commands to the state machine.
     if (votes) {
