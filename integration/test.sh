@@ -40,7 +40,11 @@ teardown() {
 @test "leader election" {
   run "$ROOT/cthulhu-fixture/control" start
   [ $status -eq 0 ]
-  run "$ROOT/integration/helpers/leader_election.py"
+  # Wait for the cluster to elect a leader.
+  sleep 1
+  run python "$ROOT/integration/helpers/leader_election.py"
+  echo $output
+  [ $status -eq 0 ]
   run "$ROOT/cthulhu-fixture/control" stop
   [ $status -eq 0 ]
 }
