@@ -41,7 +41,7 @@ teardown() {
   run "$ROOT/cthulhu-fixture/control" start
   [ $status -eq 0 ]
   # Wait for the cluster to elect a leader.
-  sleep 1
+  sleep 5
   run python "$ROOT/integration/helpers/leader_election.py"
   echo $output
   [ $status -eq 0 ]
