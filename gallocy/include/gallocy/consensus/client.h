@@ -30,9 +30,9 @@ class GallocyClient {
     : config(config)
   {}
   /**
-   * Perform a "Raft" request.
+   * Perform a Raft request.
    *
-   * A "Raft" request is one that returns when a majority of responses are
+   * A Raft request is one that returns when a majority of responses are
    * received and evaluate as "successful" responses. A "successful" response
    * is one that the callback function evaluates to true for the response.
    *

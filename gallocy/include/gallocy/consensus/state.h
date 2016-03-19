@@ -162,25 +162,61 @@ class GallocyState {
   /**
    * Increment next index for peer.
    *
-   * \param The peer's whose metadata to adjust.
+   * \param peer The peer's whose metadata to adjust.
    * \return The peer's next index, after incrementing.
    */
   uint64_t increment_next_index(const gallocy::common::Peer &peer);
   /**
    * Decrement next index for peer.
    *
-   * \param The peer's whose metadata to adjust.
+   * \param peer The peer's whose metadata to adjust.
    * \return The peer's next index, after decrementing.
    */
   uint64_t decrement_next_index(const gallocy::common::Peer &peer);
   /**
    * Increment match index for peer.
    *
-   * \param The peer's whose metadata to adjust.
+   * \param peer The peer's whose metadata to adjust.
    * \return The peer's match index, after incrementing.
    */
   uint64_t increment_match_index(const gallocy::common::Peer &peer);
 
+  /**
+   * Evaluate a request for a vote.
+   *
+   * Upon a vote being granted to the peer, this function returns true and sets
+   * internal state metadata to reflect the vote.
+   *
+   * See \ref gallocy::consensus::GallocyServer for usage.
+   *
+   * \param peer The peer requesting a vote.
+   * \param candidate_commit_index The peer's commit index.
+   * \param candidate_current_term The peer's current term.
+   * \param candidate_last_applied The peer's last applied command.
+   * \return True if the vote has been granted.
+   */
+  bool try_grant_vote(const gallocy::common::Peer &peer,
+                      uint64_t candidate_commit_index,
+                      uint64_t candidate_current_term,
+                      uint64_t candidate_last_applied);
+
+  /**
+   * Evaluate a request to replicate log entries.
+   *
+   * See \ref gallocy::consensus::GallocyServer for usage.
+   *
+   * \param leader_entries The log entries to try to replicate.
+   * \param leader_commit_index The leader's commit index.
+   * \param leader_prev_log_index The leader's previous log index.
+   * \param leader_prev_log_term The leader's previous log term.
+   * \param leader_term The leader's term.
+   * \return True if the log entries were successfully replicated.
+   */
+  bool try_replicate_log(const gallocy::vector<gallocy::consensus::LogEntry> &leader_entries,
+                         uint64_t leader_commit_index,
+                         uint64_t leader_prev_log_index,
+                         uint64_t leader_prev_log_term,
+                         uint64_t leader_term);
 
  private:
   /**

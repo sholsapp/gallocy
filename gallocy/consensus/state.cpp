@@ -1,6 +1,7 @@
 #include <stdexcept>
 
 #include "gallocy/allocators/internal.h"
+#include "gallocy/common/peer.h"
 #include "gallocy/consensus/log.h"
 #include "gallocy/consensus/state.h"
 #include "gallocy/consensus/timer.h"
@@ -187,9 +188,9 @@ gallocy::json gallocy::consensus::GallocyState::to_json() const {
 
 
 uint64_t gallocy::consensus::GallocyState::increment_current_term() {
-  std::lock_guard<std::mutex> lock(access_lock);
-  current_term += 1;
-  return current_term;
+    std::lock_guard<std::mutex> lock(access_lock);
+    current_term += 1;
+    return current_term;
 }
 
 
@@ -211,4 +212,49 @@ uint64_t gallocy::consensus::GallocyState::increment_match_index(const gallocy::
     std::lock_guard<std::mutex> lock(access_lock);
     match_index[peer] += 1;
     return match_index[peer];
+}
+
+
+bool gallocy::consensus::GallocyState::try_grant_vote(
+        const gallocy::common::Peer &candidate_voted_for,
+        uint64_t candidate_commit_index,
+        uint64_t candidate_current_term,
+        uint64_t candidate_last_applied) {
+    gallocy::common::Peer local_voted_for = get_voted_for();
+    uint64_t local_commit_index = get_commit_index();
+    uint64_t local_current_term = get_current_term();
+    uint64_t local_last_applied = get_last_applied();
+
+    if (candidate_current_term < local_current_term) {
+        return false;
+    } else if (local_voted_for == gallocy::common::Peer()
+            || local_voted_for == candidate_voted_for) {
+        if (candidate_last_applied >= local_last_applied
+                && candidate_commit_index >= local_commit_index) {
+            LOG_INFO("Granting vote to "
+                    << candidate_voted_for.get_string()
+                    << " in term " << candidate_current_term);
+
+            set_current_term(candidate_current_term);
+            set_voted_for(candidate_voted_for);
+            get_timer()->reset();
+            return true;
+        } else {
+            // TODO(sholsapp): Implement logic to reject candidates that don't have
+            // an up to date log.
+            LOG_ERROR("Handling of out-of-date log is unimplemented");
+            return false;
+        }
+    }
+    LOG_WARNING("Strange grant vote case met. This may be a logic error.");
+    return false;
+}
+
+
+bool try_replicate_log(const gallocy::vector<gallocy::consensus::LogEntry> &leader_entries,
+        uint64_t leader_commit_index,
+        uint64_t leader_prev_log_index,
+        uint64_t leader_prev_log_term,
+        uint64_t leader_term) {
+    return false;
 }
