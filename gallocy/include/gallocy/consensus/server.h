@@ -27,7 +27,22 @@ namespace consensus {
 
 void error_die(const char *);
 
-
+/**
+ * Server to implement the Raft consesus protocol.
+ *
+ * This abstraction focuses on receiving, transmitting, encoding, and decoding
+ * Raft messages. This abstraction does not focus on maintaining internal Raft
+ * state. For maintaining internal raft state, see \ref
+ * gallocy::consensus::GallocyState.
+ *
+ * Conceptually, this abstraction captures most of the behavior of a Raft
+ * follower node. A leader node will use a client to interact with the
+ * follower's server to perform actions such as requesting votes or appending
+ * entries.
+ *
+ * See *In Search of an Understandable Consensus Algorithm (Extended
+ * Version)* by Diego Ongaro and John Ousterhout.
+ */
 class GallocyServer : public ThreadedDaemon {
  public:
   using RouteArguments = gallocy::vector<gallocy::string>;

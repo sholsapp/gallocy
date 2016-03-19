@@ -1,4 +1,6 @@
+#include <algorithm>
 #include <stdexcept>
+#include <vector>
 
 #include "gallocy/allocators/internal.h"
 #include "gallocy/common/peer.h"
@@ -251,10 +253,46 @@ bool gallocy::consensus::GallocyState::try_grant_vote(
 }
 
 
-bool try_replicate_log(const gallocy::vector<gallocy::consensus::LogEntry> &leader_entries,
+bool gallocy::consensus::GallocyState::try_replicate_log(const gallocy::common::Peer &leader,
+        const gallocy::vector<gallocy::consensus::LogEntry> &leader_entries,
         uint64_t leader_commit_index,
         uint64_t leader_prev_log_index,
         uint64_t leader_prev_log_term,
         uint64_t leader_term) {
+    uint64_t local_term = get_current_term();
+    // IF leader is out of date, fail.
+    if (leader_term < local_term) {
+        LOG_INFO("Rejecting leader " << leader.get_string()
+                << " because term is outdated (" << leader_term << ")");
+        return false;
+        // ELSE process leader request.
+    } else {
+        for (auto &entry : leader_entries) {
+            // FAIL if log doesn't contain valid previous entry
+            if (get_log()->log.size() - 1 < leader_prev_log_index &&
+                    get_log()->log.at(leader_prev_log_index).term != leader_prev_log_term) {
+                return false;
+            } else {
+                // DELETE conflicting entries.
+                // TODO(sholsapp): Implement me.
+
+                // APPEND new entry.
+                LOG_DEBUG("Appending " << entry.to_json() << " to local log.");
+                get_log()->append_entry(entry);
+                return true;
+            }
+        }
+
+        // SET commit index to min(leader commit, index of last new entry).
+        if (leader_commit_index > get_commit_index()) {
+            set_commit_index(
+                    std::min(leader_commit_index, get_log()->log.size() - 1));
+        }
+
+        set_current_term(leader_term);
+        set_state(gallocy::consensus::RaftState::FOLLOWER);
+        set_voted_for(leader);
+        get_timer()->reset();
+    }
     return false;
 }

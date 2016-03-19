@@ -4,6 +4,7 @@
 #include <condition_variable>
 #include <map>
 #include <mutex>
+#include <vector>
 
 #include "gallocy/allocators/internal.h"
 #include "gallocy/common/peer.h"
@@ -41,8 +42,18 @@ const gallocy::string raft_state_to_string(RaftState state);
 /**
  * State to implement the Raft consensus protocol.
  *
- * All getter and setter methods are synchronized using an internal pthread
- * mutex lock, so additional synchronization is not necessary.
+ * This abstruaction focuses on maintaining internal Raft state of the node.
+ * Both client and server abstractions interact with this object to change
+ * state. This abstraction does not focus on receiving, transmitting, encoding,
+ * or decoding Raft messages, unless it makes sense to do so for cleanliness.
+ * For protocol details, see \ref gallocy::consensus::GallocyClient and \ref
+ * gallocy::consensus::GallocyServer.
+ *
+ * Conceptually, this abstraction captures most of the logic present in the
+ * Raft consensus protocol. For example, this abstraction implements the logic
+ * that determines if a vote can be granted of if a log entry can be
+ * replicated. Additionally, this abstraction transparently implements
+ * internal state such as the timeout counter.
  *
  * See *In Search of an Understandable Consensus Algorithm (Extended
  * Version)* by Diego Ongaro and John Ousterhout.
@@ -212,7 +223,8 @@ class GallocyState {
    * \param leader_term The leader's term.
    * \return True if the log entries were successfully replicated.
    */
-  bool try_replicate_log(const gallocy::vector<gallocy::consensus::LogEntry> &leader_entries,
+  bool try_replicate_log(const gallocy::common::Peer &peer,
+                         const gallocy::vector<gallocy::consensus::LogEntry> &leader_entries,
                          uint64_t leader_commit_index,
                          uint64_t leader_prev_log_index,
                          uint64_t leader_prev_log_term,

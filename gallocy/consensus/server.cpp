@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <ctime>
 #include <functional>
 #include <map>
@@ -72,8 +71,6 @@ gallocy::http::Response *gallocy::consensus::GallocyServer::route_append_entries
     uint64_t leader_prev_log_index = request_json["previous_log_index"];
     uint64_t leader_prev_log_term = request_json["previous_log_term"];
     uint64_t leader_term = request_json["term"];
-    uint64_t local_term = gallocy_state->get_current_term();
-    bool success = false;
 
     // DECODE log entries from JSON payload
     for (auto entry_json : request_json["entries"]) {
@@ -85,40 +82,10 @@ gallocy::http::Response *gallocy::consensus::GallocyServer::route_append_entries
         leader_entries.push_back(entry);
     }
 
-    // IF leader is out of date, fail.
-    if (leader_term < local_term) {
-        LOG_INFO("Rejecting leader " << peer.get_string()
-                << " because term is outdated (" << leader_term << ")");
-        success = false;
-        // ELSE process leader request.
-    } else {
-        for (auto &entry : leader_entries) {
-            // FAIL if log doesn't contain valid previous entry
-            if (gallocy_state->get_log()->log.size() - 1 < leader_prev_log_index &&
-                    gallocy_state->get_log()->log.at(leader_prev_log_index).term != leader_prev_log_term) {
-                success = false;
-            } else {
-                // DELETE conflicting entries.
-                // TODO(sholsapp): Implement me.
+    bool success = gallocy_state->try_replicate_log(
+            peer, leader_entries, leader_commit_index,
+            leader_prev_log_index, leader_prev_log_term, leader_term);;
 
-                // APPEND new entry.
-                LOG_DEBUG("Appending " << entry.to_json() << " to local log.");
-                gallocy_state->get_log()->append_entry(entry);
-                success = true;
-            }
-        }
-
-        // SET commit index to min(leader commit, index of last new entry).
-        if (leader_commit_index > gallocy_state->get_commit_index()) {
-            gallocy_state->set_commit_index(
-                    std::min(leader_commit_index, gallocy_state->get_log()->log.size() - 1));
-        }
-
-        gallocy_state->set_current_term(leader_term);
-        gallocy_state->set_state(gallocy::consensus::RaftState::FOLLOWER);
-        gallocy_state->set_voted_for(peer);
-        gallocy_state->get_timer()->reset();
-    }
     gallocy::json response_json = {
         { "term", gallocy_state->get_current_term() },
         { "success", success },
