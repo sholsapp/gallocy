@@ -11,7 +11,7 @@
 
 #define UDP_TIMEOUT_100_MS 100000  // 100 Milliseconds
 #define UDP_BUFSIZE 65507  // Largest IPV4 packet (65,535) - UDP header (8) - IPv4 Header(20)
-
+#define TCP_BUFSIZE 2000
 
 namespace gallocy {
 
@@ -45,7 +45,6 @@ class AbstractTransport {
 /**
  * A request client that uses a raw TCP transport protocol.
  */
-// TODO(rverdon): Implement me.
 class TCPTransport: public AbstractTransport {
  public:
   /**
@@ -53,13 +52,27 @@ class TCPTransport: public AbstractTransport {
    *
    * \return HTTP data.
    */
-  virtual gallocy::string read() = 0;
+  gallocy::string read();
   /**
    * Write to the transport layer.
    *
    * \param http The HTTP to be written to the transport layer.
    */
-  virtual void write(gallocy::string http) = 0;
+  void write(gallocy::string http);
+
+
+  TCPTransport(gallocy::common::Peer dst_peer, uint16_t listen_port);
+  ~TCPTransport();
+
+  int sock;
+  // WHO to send data too
+  gallocy::common::Peer peer;
+  // LISTEN on this ip/port
+  struct sockaddr_in listen_addr;
+  // LAST ip data was received from
+  struct sockaddr_in recv_addr;
+  socklen_t recv_addr_len = sizeof(recv_addr);
+  unsigned char buf[TCP_BUFSIZE];
 };
 
 
