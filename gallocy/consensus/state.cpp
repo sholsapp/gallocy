@@ -260,18 +260,19 @@ bool gallocy::consensus::GallocyState::try_replicate_log(const gallocy::common::
         uint64_t leader_prev_log_term,
         uint64_t leader_term) {
     uint64_t local_term = get_current_term();
+    bool success = false;
     // IF leader is out of date, fail.
     if (leader_term < local_term) {
         LOG_INFO("Rejecting leader " << leader.get_string()
                 << " because term is outdated (" << leader_term << ")");
-        return false;
-        // ELSE process leader request.
+        success = false;
+    // ELSE process leader request.
     } else {
         for (auto &entry : leader_entries) {
             // FAIL if log doesn't contain valid previous entry
             if (get_log()->log.size() - 1 < leader_prev_log_index &&
                     get_log()->log.at(leader_prev_log_index).term != leader_prev_log_term) {
-                return false;
+                success = false;
             } else {
                 // DELETE conflicting entries.
                 // TODO(sholsapp): Implement me.
@@ -279,20 +280,37 @@ bool gallocy::consensus::GallocyState::try_replicate_log(const gallocy::common::
                 // APPEND new entry.
                 LOG_DEBUG("Appending " << entry.to_json() << " to local log.");
                 get_log()->append_entry(entry);
-                return true;
+                success = true;
             }
         }
 
         // SET commit index to min(leader commit, index of last new entry).
         if (leader_commit_index > get_commit_index()) {
-            set_commit_index(
-                    std::min(leader_commit_index, get_log()->log.size() - 1));
+            set_commit_index(std::min(leader_commit_index, get_log()->log.size() - 1));
         }
 
+        // SET basic follower state (may be redundant)
         set_current_term(leader_term);
         set_state(gallocy::consensus::RaftState::FOLLOWER);
         set_voted_for(leader);
+
+        // RESET leader timeout clock
         get_timer()->reset();
+
+        // APPLY committed but unapplied entries
+        try_apply();
+    }
+
+    return success;
+}
+
+
+bool gallocy::consensus::GallocyState::try_apply() {
+    if (commit_index > last_applied) {
+        // TODO(sholsapp): Apply the log here. We need more implementation in
+        // GallocyLog to make this easier. For now, do the wrong thing.
+        last_applied++;
+        return true;
     }
     return false;
 }

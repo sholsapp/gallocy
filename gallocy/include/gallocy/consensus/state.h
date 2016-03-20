@@ -230,6 +230,18 @@ class GallocyState {
                          uint64_t leader_prev_log_term,
                          uint64_t leader_term);
 
+  /**
+   * Check and apply committed but unapplied log entries.
+   *
+   * This method checks internal state for committed but unapplied log entries
+   * and applies them to the local state machine. This method is suitable for
+   * use in all servers: leaders, candidates, and followers, and is safe to
+   * call at any time.
+   *
+   * \return True if a log entry was applied.
+   */
+  bool try_apply();
+
  private:
   /**
    * The latest term this server has seen.

@@ -94,19 +94,19 @@ std::function<bool(const gallocy::http::Response &)> append_entries_callback = [
         if (supporter_term > local_term) {
             gallocy_state->set_state(gallocy::consensus::RaftState::FOLLOWER);
             gallocy_state->set_current_term(supporter_term);
-            return success;
+            return false;
         }
 
         // ON success, update peer's next index and match index.
         if (success) {
             gallocy_state->increment_next_index(peer);
             gallocy_state->increment_match_index(peer);
-            // ON failure, decremenet peer's next index and try again.
+            return true;
+        // ON failure, decremenet peer's next index and try again.
         } else {
             gallocy_state->decrement_next_index(peer);
+            return false;
         }
-
-        return success;
     }
     return false;
 };
@@ -151,13 +151,17 @@ bool gallocy::consensus::GallocyClient::send_append_entries(const gallocy::vecto
 
     bool success = raft_request(requests, append_entries_callback);
 
+    // TODO(sholsapp): If there exists an N such that N > commitIndex, a
+    // majority of matchIndex[i] >= N, and log[N].term == currentTerm, set
+    // commitIndex = N.
+
     // APPLY commands to the state machine.
     if (success) {
         int64_t idx = gallocy_state->get_log()->log.size() - 1;
         if (idx > 0) {
             gallocy_state->set_commit_index(static_cast<uint64_t>(idx));
-            gallocy_state->set_last_applied(static_cast<uint64_t>(idx));
         }
+        gallocy_state->try_apply();
         return true;
     }
     return false;
