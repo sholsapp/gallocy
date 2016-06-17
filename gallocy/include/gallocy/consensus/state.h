@@ -42,7 +42,7 @@ const gallocy::string raft_state_to_string(RaftState state);
 /**
  * State to implement the Raft consensus protocol.
  *
- * This abstruaction focuses on maintaining internal Raft state of the node.
+ * This abstraction focuses on maintaining internal Raft state of the node.
  * Both client and server abstractions interact with this object to change
  * state. This abstraction does not focus on receiving, transmitting, encoding,
  * or decoding Raft messages, unless it makes sense to do so for cleanliness.
