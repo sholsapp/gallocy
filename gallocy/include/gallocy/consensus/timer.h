@@ -109,7 +109,7 @@ class Timer {
    * Calculate a random wait time.
    *
    * The random wait time calculated is somewhere between `step` and `step /
-   * 2`, and should be suitable in a Raft consensus protocol.
+   * jitter`, and should be suitable for use within in a Raft consensus protocol.
    */
   std::chrono::milliseconds calculate_wait_time() {
     if (jitter) {
