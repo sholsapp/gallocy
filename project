@@ -168,7 +168,7 @@ sub_deb() {
   echo "Version: $DEB_VERSION" >> "$DEB_ROOT/DEBIAN/control"
   echo "Section: base" >> "$DEB_ROOT/DEBIAN/control"
   echo "Priority: optional" >> "$DEB_ROOT/DEBIAN/control"
-  echo "Architecture: x64" >> "$DEB_ROOT/DEBIAN/control"
+  echo "Architecture: amd64" >> "$DEB_ROOT/DEBIAN/control"
   echo "Depends: " >> "$DEB_ROOT/DEBIAN/control"
   echo "Maintainer: Stephen Holsapple <sholsapp@gmail.com>" >> "$DEB_ROOT/DEBIAN/control"
   echo "Description: The gallocy server." >> "$DEB_ROOT/DEBIAN/control"
