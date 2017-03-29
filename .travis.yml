@@ -21,6 +21,7 @@ install:
   - if [ "$GENERATE_COVERAGE" == "ON" ]; then
       pip install --user cpp-coveralls;
     fi
+  - gem install --user deb-s3
 
 script:
   # Run the actually build and test command
@@ -61,11 +62,16 @@ addons:
       - gcc-4.8
       - lcov
       - python-pip
+      - ruby
+
+#deploy:
+#  provider: s3
+#  access_key_id: $GALLOCY_S3_KEY_ID
+#  secret_access_key: $GALLOCY_S3_KEY
+#  bucket: "gallocy"
+#  skip_cleanup: true
+#  local_dir: build
 
 deploy:
-  provider: s3
-  access_key_id: $GALLOCY_S3_KEY_ID
-  secret_access_key: $GALLOCY_S3_KEY
-  bucket: "gallocy"
-  skip_cleanup: true
-  local_dir: build
+  provider: script
+  script: deb-s3 upload --bucket gallocy --access-key-id $GALLOCY_S3_KEY_ID --secret-access-key $GALLOCY_S3_KEY packages/*.deb
