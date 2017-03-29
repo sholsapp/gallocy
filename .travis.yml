@@ -21,7 +21,7 @@ install:
   - if [ "$GENERATE_COVERAGE" == "ON" ]; then
       pip install --user cpp-coveralls;
     fi
-  - gem install --user deb-s3
+  - gem install deb-s3
 
 script:
   # Run the actually build and test command
