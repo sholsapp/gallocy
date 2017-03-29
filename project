@@ -9,6 +9,7 @@ sub_help() {
   echo "Subcommands:"
   echo "    build - invoke cmake/make to build the code"
   echo "    clean - clean things up"
+  echo "    deb - build a debian package"
   echo "    coverage - run the system test suite and collect coverage data"
   echo "    docker - build a docker image named gallocy-example"
   echo "    integration - run the system test suite"
@@ -149,6 +150,30 @@ sub_docker() {
   fi
 
   docker build -t gallocy-example -f tools/Dockerfile .
+}
+
+
+sub_deb() {
+  sub_build
+  IFS='.' read -ra VERSION <<< "$(cat VERSION)"
+  DEB_VERSION="${VERSION[0]}.${VERSION[1]}-${VERSION[2]}"
+  DEB_ROOT="gallocy_$DEB_VERSION"
+  mkdir "$DEB_ROOT"
+  mkdir -p "$DEB_ROOT/opt/gallocy/bin"
+  mkdir -p "$DEB_ROOT/opt/gallocy/lib"
+  cp ./gallocy/build/bin/* "$DEB_ROOT/opt/gallocy/bin"
+  cp ./gallocy/build/lib/* "$DEB_ROOT/opt/gallocy/lib"
+  mkdir -p "$DEB_ROOT/DEBIAN"
+  echo "Package: gallocy" >> "$DEB_ROOT/DEBIAN/control"
+  echo "Version: $DEB_VERSION" >> "$DEB_ROOT/DEBIAN/control"
+  echo "Section: base" >> "$DEB_ROOT/DEBIAN/control"
+  echo "Priority: optional" >> "$DEB_ROOT/DEBIAN/control"
+  echo "Architecture: x64" >> "$DEB_ROOT/DEBIAN/control"
+  echo "Depends: " >> "$DEB_ROOT/DEBIAN/control"
+  echo "Maintainer: Stephen Holsapple <sholsapp@gmail.com>" >> "$DEB_ROOT/DEBIAN/control"
+  echo "Description: The gallocy server." >> "$DEB_ROOT/DEBIAN/control"
+  dpkg-deb --build "$DEB_ROOT"
+  dpkg -c "$DEB_ROOT.deb"
 }
 
 
