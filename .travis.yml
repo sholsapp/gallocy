@@ -39,6 +39,7 @@ after_success:
       --verbose;
     fi
   - echo "DONE!"
+  - ./project deb
 
 matrix:
   include:
@@ -67,4 +68,4 @@ deploy:
   secret_access_key: $GALLOCY_S3_KEY
   bucket: "gallocy"
   skip_cleanup: true
-  local_dir: packages
+  local_dir: build
