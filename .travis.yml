@@ -63,4 +63,9 @@ addons:
       - python-pip
 
 deploy:
-        - deb-s3 upload --bucket gallocy gallocy_0.0-433.deb --access-key-id=$GALLOCY_S3_KEY_ID --secret-access-key=$GALLOCY_S3_KEY
+  provider: s3
+  access_key_id: $GALLOCY_S3_KEY_ID
+  secret_access_key: $GALLOCY_S3_KEY
+  bucket: "gallocy"
+  skip_cleanup: true
+  local_dir: packages
