@@ -13,6 +13,9 @@ os:
   - linux
 #  - osx
 
+before_install:
+  - gem update --system 2.1.0
+
 install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
   # If the environment variable GENERATE_COVERAGE is set to ON then install
