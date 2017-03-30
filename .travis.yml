@@ -14,7 +14,10 @@ os:
 #  - osx
 
 before_install:
+  - rvm install ruby-2.4.0
+  - ruby -v
   - gem update --system 2.1.0
+  - gem -v
 
 install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
@@ -65,7 +68,7 @@ addons:
       - gcc-4.8
       - lcov
       - python-pip
-      - ruby
+      - rvm
 
 #deploy:
 #  provider: s3
