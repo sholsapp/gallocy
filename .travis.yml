@@ -25,9 +25,6 @@ install:
   - if [ "$GENERATE_COVERAGE" == "ON" ]; then
       pip install --user cpp-coveralls;
     fi
-  - gem install deb-s3
-  - echo "$PATH"
-  - which deb-s3
 
 script:
   # Run the actually build and test command
@@ -76,6 +73,11 @@ addons:
 #  bucket: "gallocy"
 #  skip_cleanup: true
 #  local_dir: build
+
+before_deploy:
+  - gem install deb-s3
+  - echo "$PATH"
+  - which deb-se
 
 deploy:
   provider: script
