@@ -78,4 +78,4 @@ addons:
 
 deploy:
   provider: script
-  script: deb-s3 upload --bucket gallocy --access-key-id $GALLOCY_S3_KEY_ID --secret-access-key $GALLOCY_S3_KEY packages/*.deb
+  script: /home/travis/.gem/ruby/2.1.0/bin/deb-s3 upload --bucket gallocy --access-key-id $GALLOCY_S3_KEY_ID --secret-access-key $GALLOCY_S3_KEY packages/*.deb
