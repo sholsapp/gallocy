@@ -77,7 +77,7 @@ addons:
 before_deploy:
   - gem install deb-s3
   - echo "$PATH"
-  - which deb-se
+  - which deb-s3
 
 deploy:
   provider: script
