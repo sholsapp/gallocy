@@ -80,11 +80,14 @@ before_deploy:
   - which deb-s3
 
 deploy:
-  provider: script
-  skip_cleanup: true
-  script: /home/travis/.rvm/gems/ruby-2.2.0/bin/deb-s3
-            upload
-            --bucket gallocy
-            --access-key-id $GALLOCY_S3_KEY_ID
-            --secret-access-key $GALLOCY_S3_KEY
-            packages
+  - provider: script
+    skip_cleanup: true
+    script: ls -al
+  - provider: script
+    skip_cleanup: true
+    script: /home/travis/.rvm/gems/ruby-2.2.0/bin/deb-s3
+              upload
+              --bucket gallocy
+              --access-key-id $GALLOCY_S3_KEY_ID
+              --secret-access-key $GALLOCY_S3_KEY
+              packages
