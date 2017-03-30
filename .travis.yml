@@ -25,8 +25,9 @@ install:
   - if [ "$GENERATE_COVERAGE" == "ON" ]; then
       pip install --user cpp-coveralls;
     fi
-  - gem install --user deb-s3
+  - gem install deb-s3
   - echo "$PATH"
+  - which deb-s3
 
 script:
   # Run the actually build and test command
@@ -78,4 +79,5 @@ addons:
 
 deploy:
   provider: script
-  script: /home/travis/.gem/ruby/2.1.0/bin/deb-s3 upload --bucket gallocy --access-key-id $GALLOCY_S3_KEY_ID --secret-access-key $GALLOCY_S3_KEY packages/*.deb
+  skip_cleanup: true
+  script: deb-s3 upload --bucket gallocy --access-key-id $GALLOCY_S3_KEY_ID --secret-access-key $GALLOCY_S3_KEY packages/*.deb
