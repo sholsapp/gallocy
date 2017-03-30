@@ -68,7 +68,6 @@ addons:
       - gcc-4.8
       - lcov
       - python-pip
-      - ruby-rvm
 
 #deploy:
 #  provider: s3
