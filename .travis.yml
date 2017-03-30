@@ -28,7 +28,7 @@ install:
 
 script:
   # Run the actually build and test command
-  - ./project build
+  - ./project deb
 
 after_success:
   # If the environment variable GENERATE_COVERAGE is set to ON then run
