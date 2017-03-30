@@ -90,4 +90,4 @@ deploy:
               --bucket gallocy
               --access-key-id $GALLOCY_S3_KEY_ID
               --secret-access-key $GALLOCY_S3_KEY
-              packages
+              build/*.deb
