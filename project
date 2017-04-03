@@ -168,7 +168,9 @@ sub_deb() {
   cp ./sample-config.json "$DEB_ROOT/etc/gallocy/config.json"
   cp ./tools/gallocy.init "$DEB_ROOT/etc/init.d/gallocy"
   chmod 755 "$DEB_ROOT/etc/init.d/gallocy"
+  # Create the debian directory
   mkdir -p "$DEB_ROOT/DEBIAN"
+  # Create the control file
   echo "Package: gallocy" >> "$DEB_ROOT/DEBIAN/control"
   echo "Version: $DEB_VERSION" >> "$DEB_ROOT/DEBIAN/control"
   echo "Section: base" >> "$DEB_ROOT/DEBIAN/control"
@@ -177,6 +179,9 @@ sub_deb() {
   echo "Depends: curl" >> "$DEB_ROOT/DEBIAN/control"
   echo "Maintainer: Stephen Holsapple <sholsapp@gmail.com>" >> "$DEB_ROOT/DEBIAN/control"
   echo "Description: The gallocy server." >> "$DEB_ROOT/DEBIAN/control"
+  echo "update-rc.d -f gallocy defaults" >> "$DEB_ROOT/DEBIAN/postinst"
+  # Create the post install script
+  chmod 755 "$DEB_ROOT/DEBIAN/postinst"
   dpkg-deb --build "$DEB_ROOT"
   dpkg -c "$DEB_ROOT.deb"
   mkdir build
