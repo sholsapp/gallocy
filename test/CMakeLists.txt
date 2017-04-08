@@ -42,6 +42,7 @@ set(test_sources
   test_diff.cpp
   test_free.cpp
   test_httpd.cpp
+  test_http_client.cpp
   test_internal_allocator.cpp
   test_json.cpp
   test_logging.cpp

@@ -75,12 +75,19 @@ class Request {
   gallocy::string protocol;
   gallocy::string raw_body;
   gallocy::string uri;
+  gallocy::string content_type = "application/json";
   /**
    * Get the request's URL.
    *
    * \return The request's URL.
    */
   gallocy::string get_url() const;
+  /**
+   * Build a GET request.
+   *
+   * \return The request's URL.
+   */
+  gallocy::string build_request() const;
 
  private:
   gallocy::string raw;
